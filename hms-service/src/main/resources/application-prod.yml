@@ -4,19 +4,12 @@ server:
     context-path: /api/v1
 
 spring:
-  application:
-    name: hms
   datasource:
     url: "jdbc:mysql://localhost:3306/hms"
     username: hmsuser
     password: 1234
   flyway:
     enabled: true
-  devtools:
-    add-properties: false
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  devtools:
+#    add-properties: false
 

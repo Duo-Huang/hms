@@ -22,13 +22,11 @@
     <dependencies>
         <dependency>
             <groupId>me.huangduo.hms</groupId>
-            <artifactId>financial-management</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>hms-financial</artifactId>
         </dependency>
         <dependency>
             <groupId>me.huangduo.hms</groupId>
-            <artifactId>user-management</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>hms-user</artifactId>
         </dependency>
     </dependencies>
 

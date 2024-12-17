@@ -14,12 +14,33 @@
     <name>hms</name>
     <description>my home management service</description>
     <packaging>pom</packaging>
+    <url>https://home.huangduo.me</url>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Duo Huang</name>
+            <email>huangduo.me@icloud.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
 
     <modules>
-        <module>user-management</module>
-        <module>financial-management</module>
+        <module>hms-user</module>
+        <module>hms-financial</module>
         <module>hms-service</module>
     </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <mybatis.version>3.0.4</mybatis.version>
+    </properties>
 
     <!-- 多环境配置 -->
     <profiles>
@@ -41,22 +62,6 @@
         </profile>
     </profiles>
 
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
-    <properties>
-        <java.version>21</java.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -65,7 +70,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.4</version>
+            <version>${mybatis.version}</version>
         </dependency>
 
         <dependency>
@@ -103,9 +108,24 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter-test</artifactId>
-            <version>3.0.4</version>
+            <version>${mybatis.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>me.huangduo.hms</groupId>
+                <artifactId>hms-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.huangduo.hms</groupId>
+                <artifactId>hms-financial</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

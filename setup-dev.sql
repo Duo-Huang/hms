@@ -45,7 +45,7 @@ DEALLOCATE PREPARE stmt;
 
 
 -- grant access
-SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, EXECUTE, CREATE, ALTER, INDEX, TRIGGER ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');
+SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE, TRIGGER ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');
 PREPARE stmt FROM @grant_app_privileges_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;

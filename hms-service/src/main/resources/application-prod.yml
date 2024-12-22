@@ -5,11 +5,14 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/hms"
-    username: hmsuser
-    password: 1234
+    url: "jdbc:mysql://localhost:3306/hms-prod"
+    username: "hmsuser"
+    password: "hms.app.1479162"
   flyway:
     enabled: true
+    url: "jdbc:mysql://localhost:3306/hms"
+    user: "hms_migration_user"
+    password: "hms.mig!@1234"
 #  devtools:
 #    add-properties: false
 

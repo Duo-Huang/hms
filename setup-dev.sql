@@ -11,7 +11,7 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- create migration user
-SET @create_migration_user_sql = CONCAT('CREATE USER ''', @migration_user, '''@''%'' IDENTIFIED BY ''', @migration_password, '''');
+SET @create_migration_user_sql = CONCAT('CREATE USER IF NOT EXISTS ''', @migration_user, '''@''%'' IDENTIFIED BY ''', @migration_password, ''';');
 PREPARE stmt FROM @create_migration_user_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
@@ -30,11 +30,19 @@ DEALLOCATE PREPARE stmt;
 
 FLUSH PRIVILEGES;
 
+-- drop app user to remove all default permissions
+-- SET @drop_app_user_sql = CONCAT('DROP USER IF EXISTS ''', @app_user, '''@''%'';');
+-- PREPARE stmt FROM @drop_app_user_sql;
+-- EXECUTE stmt;
+-- DEALLOCATE PREPARE stmt;
+
+
 -- create app user
-SET @create_app_user_sql = CONCAT('CREATE USER ''', @app_user, '''@''%'' IDENTIFIED BY ''', @app_password, '''');
+SET @create_app_user_sql = CONCAT('CREATE USER IF NOT EXISTS ''', @app_user, '''@''%'' IDENTIFIED BY ''', @app_password, ''';');
 PREPARE stmt FROM @create_app_user_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
 
 -- grant access
 SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, EXECUTE, CREATE, ALTER, INDEX, TRIGGER ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');

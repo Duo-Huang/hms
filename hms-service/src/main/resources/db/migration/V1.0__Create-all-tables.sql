@@ -5,7 +5,7 @@ create table homes
     home_name        varchar(60)                        not null comment 'home name',
     home_description varchar(600)                       null comment 'home description',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time ',
+    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `home_name-unique`
         unique (home_name)
 )
@@ -65,7 +65,7 @@ create table permissions
 (
     permission_id          int auto_increment comment 'primary key'
         primary key,
-    permission_name        varchar(60)                          not null comment 'permission name. Naming standard `${moduleName}.${pageName}.${elementName}`',
+    permission_name        varchar(60)                          not null comment 'permission name. Naming standard `{moduleName}.{pageName}.{elementName}`',
     permission_description varchar(600)                         not null comment 'permission description',
     module_id              int                                  not null comment 'foreign key for modules',
     page_id                int                                  null comment 'foreign key for pages',
@@ -92,28 +92,6 @@ create table permissions
             on update cascade on delete cascade
 )
     comment 'all permission points ';
-
-create definer = hmsuser@`%` trigger `check-page_id-element_id-when-insert`
-    before insert
-    on permissions
-    for each row
-begin
-    IF NEW.element_id IS NOT NULL AND NEW.page_id IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'page_id cannot be NULL when element_id has a value';
-    END IF;
-end;
-
-create definer = hmsuser@`%` trigger `check-page_id-element_id-when-update`
-    before update
-    on permissions
-    for each row
-begin
-    IF NEW.element_id IS NOT NULL AND NEW.page_id IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'page_id cannot be NULL when element_id has a value';
-    END IF;
-end;
 
 create table roles
 (

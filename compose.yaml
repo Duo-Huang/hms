@@ -1,15 +1,15 @@
 services:
-  mysql:
-    image: 'mysql:8.1'
-    container_name: 'mysql-hms-dev'
-    user: mysql
-    environment:
-      - 'MYSQL_DATABASE=hms_dev' # keep same as setup-dev.sql
-#      - 'MYSQL_PASSWORD=1234'
-      - 'MYSQL_ROOT_PASSWORD=12345'
-#      - 'MYSQL_USER=hmsuser' # keep same as setup-dev.sql
-    ports:
-      - '3308:3306'
-    volumes:
-      - "${HOME}/var/lib/mysql/hms-dev:/var/lib/mysql" # colima VM on mac
-      - "./setup-dev.sql:/docker-entrypoint-initdb.d/setup-dev.sql"  # mysql init script
+    mysql:
+        image: 'mysql:8.1'
+        container_name: 'mysql-hms-dev'
+        user: mysql
+        environment:
+            - 'MYSQL_DATABASE=hms_dev' # keep same as setup-dev.sql
+            #      - 'MYSQL_PASSWORD=1234'
+            - 'MYSQL_ROOT_PASSWORD=12345'
+        #      - 'MYSQL_USER=hmsuser' # keep same as setup-dev.sql
+        ports:
+            - '3308:3306'
+        volumes:
+            - "${HOME}/var/lib/mysql/hms-dev:/var/lib/mysql" # colima VM on mac
+            - "./setup-dev.sql:/docker-entrypoint-initdb.d/setup-dev.sql"  # mysql init script

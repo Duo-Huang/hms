@@ -1,14 +1,14 @@
 spring:
-  profiles:
-    active: @env@
-  application:
-    name: hms
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  flyway:
-    enabled: true
+    profiles:
+        active: @env@
+    application:
+        name: hms
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    flyway:
+        enabled: true
 
 mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    configuration:
+        map-underscore-to-camel-case: true
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

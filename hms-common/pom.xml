@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>me.huangduo.hms</groupId>
-    <artifactId>hms-user</artifactId>
+    <artifactId>hms-common</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -19,12 +19,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>me.huangduo.hms</groupId>
-            <artifactId>hms-common</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

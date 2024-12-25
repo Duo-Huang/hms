@@ -23,10 +23,12 @@
         <dependency>
             <groupId>me.huangduo.hms</groupId>
             <artifactId>hms-financial</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>me.huangduo.hms</groupId>
             <artifactId>hms-user</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -91,6 +93,7 @@
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </exclude>
                     </excludes>
                 </configuration>

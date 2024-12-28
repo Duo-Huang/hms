@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(userDao)) {
             throw new IllegalArgumentException();
         }
+        user.setUserId(userDao.getUserId());
         return authService.generateToken(user);
     }
 

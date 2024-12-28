@@ -6,7 +6,7 @@ import me.huangduo.hms.exceptions.AuthenticationException;
 public interface AuthService {
     String generateToken(User user);
 
-    Boolean validateToken(User user, String token) throws AuthenticationException;
+    boolean validateToken(String token) throws AuthenticationException;
 
     Integer extractUserId(String token);
 

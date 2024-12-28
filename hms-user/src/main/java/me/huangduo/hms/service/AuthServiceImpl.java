@@ -52,8 +52,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean validateToken(User user, String token) throws AuthenticationException {
-        return isTokenExpired(token);
+    public boolean validateToken(String token) throws AuthenticationException {
+        return !isTokenExpired(token);
     }
 
     @Override

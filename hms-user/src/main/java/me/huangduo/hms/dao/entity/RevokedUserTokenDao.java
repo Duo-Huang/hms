@@ -3,21 +3,20 @@ package me.huangduo.hms.dao.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDao {
+public class RevokedUserTokenDao {
 
-    private Integer userId;
+    private Integer id;
+
+    private String jti;
+
+    private LocalDateTime expiration;
 
     private String username;
-
-    private String password;
-
-    private String nickname;
 
     private LocalDateTime createdAt;
 

@@ -13,6 +13,6 @@ spring:
         url: "jdbc:mysql://localhost:3308/hms_dev"
         user: "hms_migration_user"
         password: "hms.dev.migration.1234"
-#  devtools:
-#    add-properties: false
-
+app:
+    jwt-secret: "DaBcD3fGh1jKlMnOpQrStUvWxYz1234567890!@#$%^&*()"
+    jwt-token-expired-time: 86400000

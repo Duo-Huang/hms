@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * 全局请求参数校验
+     * 全局请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出
      * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HmsResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
@@ -34,10 +34,18 @@ public class GlobalExceptionHandler {
             HmsErrorCodeEnum errorCodeEnum = (HmsErrorCodeEnum) HmsRequest.class.getMethod("getHmsErrorCodeEnum").invoke(ex.getBindingResult().getTarget());
             return ResponseEntity.badRequest().body(HmsResponse.error(errorCodeEnum.getCode(), errorCodeEnum.getMessage(), errors));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage(), null));
+            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage()));
         }
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<HmsResponse<?>> handleIllegalArgumentException(Exception ex) {
+        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage()));
+    }
+
+    /*
+    * fallback handler
+    * */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HmsResponse<?>> handleGenericException(Exception ex) {
         return ResponseEntity.internalServerError().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_001.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_001.getMessage()));

@@ -11,22 +11,22 @@ import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 public interface UserService {
 
     /**
-     * 注册用户
+     * 注册用户, 接收user业务对象而不是username, 方便以后使用邮箱或手机号登录
      * @param user 要注册的用户信息
      * @param password 要注册的用户密码
      * @return 注册成功的用户id
      * @throws IllegalArgumentException 如果用户信息无效
      * @throws UserAlreadyExistsException 用户已存在
      */
-    Integer register(User user, String password) throws IllegalArgumentException, UserAlreadyExistsException;
+    Integer register(User user, String password) throws UserAlreadyExistsException;
 
     /**
-     * 用户登录
+     * 用户登录, 接收user业务对象而不是username, 方便以后使用邮箱或手机号登录
      * @param user 登录的用户信息
      * @return jwt token
-     * @throws AuthenticationException 如果认证失败
+     * @throws IllegalArgumentException 用户名或密码错误
      */
-    String login(User user, String password) throws AuthenticationException;
+    String login(User user, String password) throws IllegalArgumentException;
 
     /**
      * 修改用户密码

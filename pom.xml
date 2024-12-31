@@ -102,7 +102,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>me.huangduo.hms</groupId>
                 <artifactId>hms-common</artifactId>

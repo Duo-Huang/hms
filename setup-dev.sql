@@ -5,7 +5,10 @@ SET @app_user = 'hmsuser';
 SET @app_password = 'hms.dev.123';
 
 -- create db
-SET @create_db_sql = CONCAT('CREATE DATABASE IF NOT EXISTS `', @db_name, '`');
+SET @create_db_sql = CONCAT(
+        'CREATE DATABASE IF NOT EXISTS ', @db_name,
+        ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci'
+                     );
 PREPARE stmt FROM @create_db_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
@@ -16,7 +19,7 @@ PREPARE stmt FROM @create_migration_user_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- grant normal access
+-- grant normal access for migration user
 SET @grant_privileges_sql = CONCAT('GRANT ALL PRIVILEGES ON `', @db_name, '`.* TO ''', @migration_user, '''@''%''');
 PREPARE stmt FROM @grant_privileges_sql;
 EXECUTE stmt;
@@ -45,7 +48,7 @@ DEALLOCATE PREPARE stmt;
 
 
 -- grant access
-SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE, TRIGGER ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');
+SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');
 PREPARE stmt FROM @grant_app_privileges_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;

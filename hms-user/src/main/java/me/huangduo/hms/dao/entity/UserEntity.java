@@ -2,14 +2,17 @@ package me.huangduo.hms.dao.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class UserDao {
+@SuperBuilder
+public class UserEntity extends BaseEntity {
 
     private Integer userId;
 
@@ -18,8 +21,4 @@ public class UserDao {
     private String password;
 
     private String nickname;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }

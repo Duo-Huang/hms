@@ -11,87 +11,18 @@ create table homes
 )
     comment 'hms homes';
 
-create table modules
-(
-    module_id          int auto_increment comment 'primary key'
-        primary key,
-    module_name        varchar(60)                        not null comment 'Module name. Naming standard: `xxx-module`',
-    module_description varchar(600)                       null comment 'module description',
-    module_path        varchar(300)                       not null comment 'module path',
-    created_at         datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `module_path-unique`
-        unique (module_path)
-)
-    comment 'hms modules';
-
-create table pages
-(
-    page_id          int auto_increment comment 'primary key'
-        primary key,
-    page_name        varchar(60)                        not null comment 'Page name. Naming standard: `xxx-page`',
-    page_description varchar(600)                       null comment 'page description',
-    page_path        varchar(300)                       not null comment 'page path',
-    module_id        int                                not null comment 'foreign key for modules',
-    created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `module_id-page_path-unique`
-        unique (module_id, page_path),
-    constraint `pages-modules-module_id-fk`
-        foreign key (module_id) references modules (module_id)
-            on update cascade on delete cascade
-)
-    comment 'hms all pages';
-
-create table elements
-(
-    element_id          int auto_increment comment 'primary key'
-        primary key,
-    element_name        varchar(60)                        not null comment 'Element name. Naming standard: `xxx-xxx-xxx...`',
-    element_type        tinyint unsigned                   not null comment 'elemment type, like button(0) or table(1)... ',
-    element_description varchar(600)                       null comment 'element description',
-    page_id             int                                not null comment 'foreign key for pages',
-    created_at          datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at          datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated at',
-    constraint `page_id-element_name-element_type-unique`
-        unique (page_id, element_name, element_type),
-    constraint `elements-pages-page_id-fk`
-        foreign key (page_id) references pages (page_id)
-            on update cascade on delete cascade
-)
-    comment 'hms all elements in all pages that need to be access controlled';
-
 create table permissions
 (
     permission_id          int auto_increment comment 'primary key'
         primary key,
-    permission_name        varchar(60)                          not null comment 'permission name. Naming standard `{moduleName}.{pageName}.{elementName}`',
-    permission_description varchar(600)                         not null comment 'permission description',
-    module_id              int                                  not null comment 'foreign key for modules',
-    page_id                int                                  null comment 'foreign key for pages',
-    element_id             int                                  null comment 'foreign key for elements',
-    is_enabled             tinyint(1) default 0                 not null comment 'is enable(1) or not(0)',
-    unique_hash            varchar(30) as ((case
-                                                when (`module_id` is not null) then concat(`module_id`, _utf8mb4'-',
-                                                                                           coalesce(`page_id`, _utf8mb4'NULL'),
-                                                                                           _utf8mb4'-',
-                                                                                           coalesce(`element_id`, _utf8mb4'NULL'))
-                                                else NULL end)) comment 'computed column used to confirm a unique row',
-    created_at             datetime   default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at             datetime   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `module_id-page_id-element_id-unique`
-        unique (unique_hash),
-    constraint `permissions-elements-element_id-fk`
-        foreign key (element_id) references elements (element_id)
-            on update cascade on delete cascade,
-    constraint `permissions-modules-module_id-fk`
-        foreign key (module_id) references modules (module_id)
-            on update cascade on delete cascade,
-    constraint `permissions-pages-page_id-fk`
-        foreign key (page_id) references pages (page_id)
-            on update cascade on delete cascade
+    permission_code        varchar(128)                       not null comment 'format: hms:{module}:{function}:{action}, for example: hms:financial:account:edit; action must be create/edit/view/delete',
+    permission_description varchar(128)                       not null comment 'permission description',
+    created_at             datetime default CURRENT_TIMESTAMP not null comment 'created time',
+    updated_at             datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `permissions_code-unique`
+        unique (permission_code)
 )
-    comment 'all permission points ';
+    comment 'permissions for roles';
 
 create table roles
 (
@@ -101,10 +32,25 @@ create table roles
     role_name        varchar(60)                        not null comment 'role name',
     role_description varchar(600)                       null comment 'role description',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `role_name-unique`
-        unique (role_name)
+    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
 );
+
+create table role_permissions
+(
+    role_permission_id int auto_increment comment 'primary key'
+        primary key,
+    role_id            int                                  not null comment 'foreign key for roles',
+    permission_id      int                                  not null comment 'foreign key for permissions',
+    is_disabled        tinyint(1) default 0                 not null comment 'disable this permission for a role or not',
+    created_at         datetime   default CURRENT_TIMESTAMP not null comment 'created time',
+    updated_at         datetime   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `role_permissions-permissions-permission_id-fk`
+        foreign key (permission_id) references permissions (permission_id),
+    constraint `role_permissions-roles-role_id-fk`
+        foreign key (role_id) references roles (role_id)
+            on update cascade on delete cascade
+)
+    comment 'role permissins relationship';
 
 create table users
 (
@@ -119,6 +65,22 @@ create table users
         unique (username)
 )
     comment 'hms users table';
+
+create table revoked_tokens
+(
+    id         int auto_increment comment 'primary key'
+        primary key,
+    jti        varchar(60)                         not null comment 'jwt id',
+    expiration datetime                            not null comment 'expiration time',
+    username   varchar(30)                         not null comment 'foreign key for users',
+    created_at datetime  default CURRENT_TIMESTAMP not null comment 'created time',
+    updated_at timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `jti-unique`
+        unique (username),
+    constraint `revoked_tokens-users-username-fk`
+        foreign key (username) references users (username)
+)
+    comment 'logged out tokens';
 
 create table user_home_roles
 (

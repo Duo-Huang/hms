@@ -2,19 +2,3 @@ server:
     port: 8082
     servlet:
         context-path: /api/v1
-
-spring:
-    datasource:
-        url: "jdbc:mysql://localhost:3322/hms_prod"
-        username: "hmsuser"
-        password: "hms.app.1479162"
-    flyway:
-        enabled: true
-        url: "jdbc:mysql://localhost:3322/hms_prod"
-        user: "hms_migration_user"
-        password: "hms.mig@!!1234"
-app:
-    jwt-secret: "PaBcD3fGhIjKlMnOpQrStUvWxYz1234567890!@#$%^&*()"
-    jwt-token-expired-time: 86400000
-
-

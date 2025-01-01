@@ -2,6 +2,7 @@ package me.huangduo.hms.service;
 
 
 import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 
@@ -27,6 +28,8 @@ public interface UserService {
      * @throws IllegalArgumentException 用户名或密码错误
      */
     String login(User user, String password) throws IllegalArgumentException;
+
+    void logout(UserToken token) throws AuthenticationException;
 
     /**
      * 修改用户密码

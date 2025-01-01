@@ -1,8 +1,12 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.dao.RevokedUserTokensMapper;
 import me.huangduo.hms.dao.UsersMapper;
+import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dao.entity.UserEntity;
+import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -16,9 +20,12 @@ public class UserServiceImpl implements UserService {
     private final UsersMapper usersMapper;
     private final AuthService authService;
 
-    public UserServiceImpl(UsersMapper usersMapper, AuthService authService) {
+    private final RevokedUserTokensMapper revokedUserTokensMapper;
+
+    public UserServiceImpl(UsersMapper usersMapper, AuthService authService, RevokedUserTokensMapper revokedUserTokensMapper) {
         this.usersMapper = usersMapper;
         this.authService = authService;
+        this.revokedUserTokensMapper = revokedUserTokensMapper;
     }
 
     @Override
@@ -39,8 +46,19 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(userEntity)) {
             throw new IllegalArgumentException();
         }
+        // TODO: use auto mapper ?
         user.setUserId(userEntity.getUserId());
+        user.setUsername(userEntity.getUsername());
+        user.setNickname(userEntity.getNickname());
+        user.setCreatedAt(userEntity.getCreatedAt());
+        user.setUpdatedAt(userEntity.getUpdatedAt());
         return authService.generateToken(user);
+    }
+
+    @Override
+    public void logout(UserToken userToken) throws AuthenticationException {
+        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder().jti(userToken.jti()).expiration(userToken.expiration()).username(userToken.userInfo().getUsername()).build();
+        revokedUserTokensMapper.create(revokedUserTokenEntity);
     }
 
     @Override

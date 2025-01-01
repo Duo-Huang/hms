@@ -4,6 +4,7 @@ services:
         container_name: 'mysql-hms-dev'
         user: mysql
         environment:
+            - 'TZ=Asia/Shanghai'  # 设置宿主机时区
             - 'MYSQL_DATABASE=hms_dev' # keep same as setup-dev.sql
             #      - 'MYSQL_PASSWORD=1234'
             - 'MYSQL_ROOT_PASSWORD=12345'

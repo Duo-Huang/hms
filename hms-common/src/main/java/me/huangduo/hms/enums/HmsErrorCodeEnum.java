@@ -19,6 +19,7 @@ public enum HmsErrorCodeEnum {
     SYSTEM_ERROR_001(1001, "系统内部错误"),
     SYSTEM_ERROR_002(1002, "数据库连接失败"),
     SYSTEM_ERROR_003(1003, "请求参数错误"), // 全局参数校验的fallback消息
+    SYSTEM_ERROR_004(1004, "请求的资源未找到"),
 
     // 用户模块错误
     USER_ERROR_101(2101, "用户未认证"),

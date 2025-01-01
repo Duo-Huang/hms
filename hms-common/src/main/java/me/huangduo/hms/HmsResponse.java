@@ -2,6 +2,10 @@ package me.huangduo.hms;
 
 public record HmsResponse<T>(int code, String message, T data) {
 
+    public static <T> HmsResponse<T> success() {
+        return new HmsResponse<>(0, null, null);
+    }
+
     public static <T> HmsResponse<T> success(T data) {
         return new HmsResponse<>(0, null, data);
     }

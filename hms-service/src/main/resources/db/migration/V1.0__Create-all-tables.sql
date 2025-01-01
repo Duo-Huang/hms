@@ -76,9 +76,10 @@ create table revoked_tokens
     created_at datetime  default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `jti-unique`
-        unique (username),
+        unique (jti),
     constraint `revoked_tokens-users-username-fk`
         foreign key (username) references users (username)
+            on update cascade on delete cascade
 )
     comment 'logged out tokens';
 

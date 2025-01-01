@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /*
+    * 认证失败
+    * */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<HmsResponse<?>> handleRecordNotFound(AuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_101.getCode(), HmsErrorCodeEnum.USER_ERROR_101.getMessage()));
@@ -45,6 +49,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HmsResponse<?>> handleIllegalArgumentException(Exception ex) {
         return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage()));
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<HmsResponse<?>> handleNoHandlerFoundException(NoHandlerFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_004.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_004.getMessage()));
     }
 
     /*

@@ -3,6 +3,7 @@ package me.huangduo.hms.controller;
 import jakarta.validation.Valid;
 import me.huangduo.hms.HmsResponse;
 import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.UserLoginRequest;
 import me.huangduo.hms.dto.request.UserRegistrationRequest;
 import me.huangduo.hms.dto.response.UserRegistrationResponse;
@@ -11,10 +12,7 @@ import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 import me.huangduo.hms.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -49,5 +47,11 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_106.getCode(), HmsErrorCodeEnum.USER_ERROR_106.getMessage()));
         }
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<HmsResponse<?>> logout(@RequestAttribute UserToken userToken) {
+        userService.logout(userToken);
+        return ResponseEntity.ok(HmsResponse.success());
     }
 }

@@ -16,7 +16,6 @@ public interface UserService {
      * @param user 要注册的用户信息
      * @param password 要注册的用户密码
      * @return 注册成功的用户id
-     * @throws IllegalArgumentException 如果用户信息无效
      * @throws UserAlreadyExistsException 用户已存在
      */
     Integer register(User user, String password) throws UserAlreadyExistsException;

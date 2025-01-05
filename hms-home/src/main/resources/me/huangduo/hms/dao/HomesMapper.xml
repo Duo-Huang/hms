@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.huangduo.hms.dao.HomesMapper">
+
+    <update id="update">
+        update homes
+        <set>
+            <if test="homeName != null">
+                home_name = #{homeName},
+            </if>
+            <if test="homeDescription != null">
+                home_description = #{homeDescription},
+            </if>
+        </set>
+        where home_id = #{homeId};
+    </update>
+</mapper>

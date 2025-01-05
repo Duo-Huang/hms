@@ -8,7 +8,7 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record UserRegistrationRequest(
         @NotNull(message = "username can not be null")
-        @Size(max = 20, message = "username must be at most 10 characters long")
+        @Size(max = 16, message = "username must be at most 16 characters long")
         @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "username can only contain letters, numbers, underscores, and hyphens")
         String username,
 

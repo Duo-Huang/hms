@@ -1,4 +1,4 @@
 package me.huangduo.hms.exceptions;
 
-public class UserAlreadyExistsException extends RuntimeException{
+public class UserAlreadyExistsException extends RuntimeException {
 }

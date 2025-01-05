@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<HmsResponse<?>> logout(@RequestAttribute UserToken userToken) {
+    public ResponseEntity<HmsResponse<Void>> logout(@RequestAttribute UserToken userToken) {
         userService.logout(userToken);
         return ResponseEntity.ok(HmsResponse.success());
     }

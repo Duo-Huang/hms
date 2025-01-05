@@ -10,8 +10,9 @@
     </parent>
 
     <groupId>me.huangduo.hms</groupId>
-    <artifactId>hms-user</artifactId>
-    <description>Manage user information and authentication</description>
+    <artifactId>hms-home</artifactId>
+    <description>Manage family-related configurations, including family members and family roles</description>
+
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -23,11 +24,6 @@
         <dependency>
             <groupId>me.huangduo.hms</groupId>
             <artifactId>hms-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.12.3</version>
         </dependency>
     </dependencies>
 

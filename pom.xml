@@ -12,9 +12,9 @@
     <artifactId>hms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>hms</name>
-    <description>my home management service</description>
+    <description>home management service</description>
     <packaging>pom</packaging>
-    <url>https://home.huangduo.me</url>
+    <url>https://hms.huangduo.me</url>
     <licenses>
         <license/>
     </licenses>
@@ -36,6 +36,7 @@
         <module>hms-financial</module>
         <module>hms-service</module>
         <module>hms-common</module>
+        <module>hms-home</module>
     </modules>
 
     <properties>

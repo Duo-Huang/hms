@@ -5,8 +5,8 @@ CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `appuser-can-not-modify-system-r
     FOR EACH ROW
 BEGIN
     SET @user_name = SUBSTRING_INDEX(SESSION_USER(), '@', 1);
-    IF @user_name = 'hmsuser' AND OLD.role_type = 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'This user cannot modify system role';
+    IF @user_name = 'hmsuser' AND (OLD.role_type = 0 OR New.role_type = 0) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'This user cannot modify system role or change a custom role to system role';
     END IF;
 END;
 //

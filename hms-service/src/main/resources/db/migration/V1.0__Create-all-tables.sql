@@ -32,20 +32,22 @@ create table roles
     role_name        varchar(60)                        not null comment 'role name',
     role_description varchar(600)                       null comment 'role description',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
+    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint check__role_type
+        check (`role_type` in (0, 1))
 );
 
 create table role_permissions
 (
     role_permission_id int auto_increment comment 'primary key'
         primary key,
-    role_id            int                                  not null comment 'foreign key for roles',
-    permission_id      int                                  not null comment 'foreign key for permissions',
-    is_disabled        tinyint(1) default 0                 not null comment 'disable this permission for a role or not',
-    created_at         datetime   default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at         datetime   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    role_id            int                                not null comment 'foreign key for roles',
+    permission_id      int                                not null comment 'foreign key for permissions',
+    created_at         datetime default CURRENT_TIMESTAMP not null comment 'created time',
+    updated_at         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `role_permissions-permissions-permission_id-fk`
-        foreign key (permission_id) references permissions (permission_id),
+        foreign key (permission_id) references permissions (permission_id)
+            on update cascade on delete cascade,
     constraint `role_permissions-roles-role_id-fk`
         foreign key (role_id) references roles (role_id)
             on update cascade on delete cascade
@@ -89,7 +91,7 @@ create table user_home_roles
         primary key,
     user_id           int                                not null comment 'foreign key for users',
     home_id           int                                not null comment 'foreign key for homes',
-    role_id           int                                not null comment 'foreign key for roles',
+    role_id           int                                null comment 'foreign key for roles',
     created_at        datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at        datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `user_id-home_id-unique`

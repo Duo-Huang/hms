@@ -1,11 +1,10 @@
 package me.huangduo.hms.exceptions;
 
-public class RecordNotFoundException extends RuntimeException {
-    public RecordNotFoundException(String message) {
-        super(message);
-    }
+import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
-    public RecordNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+public class RecordNotFoundException extends BusinessException {
+
+    public RecordNotFoundException(HmsErrorCodeEnum hmsErrorCodeEnum) {
+        super(hmsErrorCodeEnum);
     }
 }

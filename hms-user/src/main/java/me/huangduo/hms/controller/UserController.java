@@ -33,7 +33,7 @@ public class UserController {
             return ResponseEntity.ok(HmsResponse.success(new UserRegistrationResponse(userId)));
 
         } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_103.getCode(), HmsErrorCodeEnum.USER_ERROR_103.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
         }
     }
 

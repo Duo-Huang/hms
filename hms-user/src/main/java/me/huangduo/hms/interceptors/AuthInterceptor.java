@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.service.AuthService;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,6 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        throw new AuthenticationException();
+        throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
     }
 }

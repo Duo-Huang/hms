@@ -9,13 +9,15 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class UserEntity extends BaseEntity {
+public class HomeMemberRoleEntity extends BaseEntity {
+
+    private Integer memberId;
 
     private Integer userId;
 
-    private String username;
+    private Integer homeId;
 
-    private String password;
+    private Integer roleId;
 
-    private String nickname; // can modify freely by user themselves
+    private String memberName; // member name in the home, default is nickname
 }

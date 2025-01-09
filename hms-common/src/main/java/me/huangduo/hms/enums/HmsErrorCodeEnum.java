@@ -20,11 +20,12 @@ public enum HmsErrorCodeEnum {
     SYSTEM_ERROR_002(1002, "数据库连接失败"),
     SYSTEM_ERROR_003(1003, "请求参数错误"), // 全局参数校验的fallback消息
     SYSTEM_ERROR_004(1004, "请求的资源未找到"),
+    SYSTEM_ERROR_005(1005, "业务异常"), // 具体异常api内处理, 这里是全局兜底的错误
 
     // 用户模块错误 21xx
     USER_ERROR_101(2101, "用户未认证"),
     USER_ERROR_102(2102, "此用户无权限, 请联系家庭管理员"),
-    USER_ERROR_103(2103, "用户已存在, 请直接登录"),
+    USER_ERROR_103(2103, "用户已存在"),
     USER_ERROR_104(2104, "用户未找到"),
     USER_ERROR_105(2105, "用户名或密码格式错误"), // 注册
     USER_ERROR_106(2106, "用户名或密码错误"), // 登录
@@ -32,6 +33,11 @@ public enum HmsErrorCodeEnum {
     // 家庭模块错误 22xx
     HOME_ERROR_201(2201, "该家庭已存在"),
     HOME_ERROR_202(2202, "家庭名称或描述格式错误"),
+    HOME_ERROR_203(2203, "该家庭不存在"),
+    HOME_ERROR_204(2204, "该用户不存在"),
+    HOME_ERROR_205(2205, "该家庭成员已存在"),
+    HOME_ERROR_206(2206, "该家庭成员不存在"),
+    HOME_ERROR_207(2207, "家庭成员名称格式错误"),
 
     // 财务模块错误 23xx
     FINANCE_ERROR_301(2301, "预算不足");

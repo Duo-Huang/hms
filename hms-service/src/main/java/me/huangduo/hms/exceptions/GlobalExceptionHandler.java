@@ -17,16 +17,6 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
-    /*
-     * 认证失败
-     * */
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<HmsResponse<Void>> handleRecordNotFound(AuthenticationException ex) {
-        log.error("The user fails to be authenticated", ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_101.getCode(), HmsErrorCodeEnum.USER_ERROR_101.getMessage()));
-    }
-
     /*
      * Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出
      * */
@@ -51,18 +41,39 @@ public class GlobalExceptionHandler {
      * Service 层参数校验
      * */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<HmsResponse<Void>> handleIllegalArgumentException(Exception ex) {
+    public ResponseEntity<HmsResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("The request parameter verification failed and get a fallback error", ex);
         return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage()));
+    }
+
+    /*
+     * 认证失败 (业务异常)
+     * */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<HmsResponse<Void>> handleRecordNotFound(AuthenticationException ex) {
+        log.error("The user fails to be authenticated", ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponse.error(ex.getHmsErrorCodeEnum().getCode(), ex.getHmsErrorCodeEnum().getMessage()));
     }
 
     /*
      * 资源找不到
      * */
     @ExceptionHandler({NoHandlerFoundException.class, RecordNotFoundException.class})
-    public ResponseEntity<HmsResponse<Void>> handleNotFoundFoundException(Exception e) {
+    public ResponseEntity<HmsResponse<Void>> handleNotFoundException(Exception e) {
         log.error("The requested resource could not be found", e);
+        if (e instanceof RecordNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(((RecordNotFoundException) e).getHmsErrorCodeEnum().getCode(), ((RecordNotFoundException) e).getHmsErrorCodeEnum().getMessage()));
+        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_004.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_004.getMessage()));
+    }
+
+    /*
+     * 业务异常兜底
+     * */
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<HmsResponse<Void>> handleBusinessException(BusinessException e) {
+        log.error("A business error occurred", e);
+        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_005.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_005.getMessage()));
     }
 
     /*

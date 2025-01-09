@@ -12,6 +12,7 @@ import me.huangduo.hms.dao.RevokedUserTokensMapper;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             return Jwts.parser().verifyWith(key).requireIssuer(appConfig.getJwtIssuer()).build().parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
-            throw new AuthenticationException();
+            throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
         }
     }
 

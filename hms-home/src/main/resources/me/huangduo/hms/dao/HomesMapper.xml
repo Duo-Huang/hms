@@ -6,7 +6,7 @@
 <mapper namespace="me.huangduo.hms.dao.HomesMapper">
 
     <update id="update">
-        update homes
+        UPDATE homes
         <set>
             <if test="homeName != null">
                 home_name = #{homeName},
@@ -17,4 +17,15 @@
         </set>
         where home_id = #{homeId};
     </update>
+    <select id="getByIds" resultType="me.huangduo.hms.dao.entity.HomeEntity">
+        SELECT * FROM homes
+        <where>
+            <if test="homeIds != null and homeIds.size() > 0">
+                home_id IN
+                <foreach collection="homeIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

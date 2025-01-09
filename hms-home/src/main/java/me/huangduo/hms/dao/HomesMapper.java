@@ -6,11 +6,15 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface HomesMapper {
 
     @Select("SELECT * FROM homes WHERE home_id = #{homeId}")
     HomeEntity getById(Integer homeId);
+
+    List<HomeEntity> getByIds(List<Integer> homeIds);
 
     @Insert("INSERT INTO homes (home_name, home_description) VALUES (#{homeName}, #{homeDescription})")
     int create(HomeEntity homeEntity);

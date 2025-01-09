@@ -1,4 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-public class HomeAlreadyExistsException extends RuntimeException {
+import me.huangduo.hms.enums.HmsErrorCodeEnum;
+
+public class HomeAlreadyExistsException extends BusinessException {
+    public HomeAlreadyExistsException(HmsErrorCodeEnum hmsErrorCodeEnum) {
+        super(hmsErrorCodeEnum);
+    }
 }

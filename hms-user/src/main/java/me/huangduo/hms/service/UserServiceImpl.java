@@ -6,6 +6,7 @@ import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dao.entity.UserEntity;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 import org.springframework.dao.DuplicateKeyException;
@@ -31,11 +32,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Integer register(User user, String password) throws UserAlreadyExistsException {
         // TODO: use auto mapper ?
-        UserEntity userEntity = UserEntity.builder().username(user.getUsername()).password(password).build();
+        UserEntity userEntity = UserEntity.builder().username(user.getUsername()).password(password).nickname(user.getUsername()).build();
         try {
             usersMapper.create(userEntity);
         } catch (DuplicateKeyException e) {
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException(HmsErrorCodeEnum.USER_ERROR_103);
         }
         return userEntity.getUserId();
     }

@@ -18,7 +18,7 @@ public class User {
 
     private String username;
 
-    private String nickname;
+    private String nickname; // can modify freely by user themselves, will display in user profile. default value is username
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

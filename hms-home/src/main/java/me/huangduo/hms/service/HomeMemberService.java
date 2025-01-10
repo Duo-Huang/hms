@@ -18,23 +18,15 @@ interface HomeMemberService {
 
     void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException; // 接受邀请信息
 
-    void removeMember(Integer homeId, Integer userId) throws RecordNotFoundException;
+    void removeMember(Member member) throws RecordNotFoundException;
 
-    void updateMemberInfo(Integer homeId, Integer userId, MemberInfoUpdateRequest memberInfoUpdateRequest) throws RecordNotFoundException; // 修改家庭成员的名称, 不是user的信息
+    void updateMemberInfo(Member member) throws RecordNotFoundException; // 修改家庭成员的信息, 不是user的信息
 
-    List<HomeEntity> getHomesForMember(Integer userId);
+    List<HomeEntity> getHomesForMember(Member member);
 
-    List<Member> getMembersWithRolesForHome(Integer homeId) throws RecordNotFoundException;
+    List<Member> getMembersForHome(Integer homeId) throws RecordNotFoundException; // 包含角色信息
 
-    void assignRoleForHomeMember(Integer homeId, Integer userId, Integer roleId) throws RecordNotFoundException;
+    void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException;
 
-    void removeRoleForHomeMember(Integer homeId, Integer userId) throws RecordNotFoundException;
-
-    RoleEntity getHomeMemberRole(Integer homeId, Integer userId) throws RecordNotFoundException;
-
-    List<PermissionEntity> getHomeMemberPermissions(Integer roleId) throws RecordNotFoundException;
-
-    void assignPermissionsForHomeMember(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException;
-
-    void removePermissionsForHomeMember(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException;
+    void removeRoleForMember(Member member) throws RecordNotFoundException;
 }

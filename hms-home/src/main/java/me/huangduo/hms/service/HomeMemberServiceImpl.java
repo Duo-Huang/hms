@@ -7,11 +7,9 @@ import me.huangduo.hms.dao.HomesMapper;
 import me.huangduo.hms.dao.RolesMapper;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dao.entity.PermissionEntity;
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dto.model.Member;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
@@ -70,24 +68,38 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         // assign a default role for this member
         RoleEntity homeMemberRole = rolesMapper.getByName("home member");
         Integer roleId = null;
+
         if (Objects.isNull(homeMemberRole)) {
             log.warn("The member is not assigned a default role");
         } else {
             roleId = homeMemberRole.getRoleId();
         }
 
-        homeMemberRolesMapper.addUserToTheHome(HomeMemberRoleEntity.builder().userId(user.getUserId()).homeId(homeId).roleId(roleId).memberName(user.getNickname()).build());
+        homeMemberRolesMapper.addUserToTheHome(
+                HomeMemberRoleEntity.builder()
+                        .userId(user.getUserId())
+                        .homeId(homeId)
+                        .roleId(roleId)
+                        .memberName(user.getNickname())
+                        .build()
+        );
     }
 
     @Override
-    public void removeMember(Integer homeId, Integer userId) throws RecordNotFoundException {
-        HomeEntity homeEntity = homesMapper.getById(homeId);
+    public void removeMember(Member member) throws RecordNotFoundException {
+        HomeEntity homeEntity = homesMapper.getById(member.getHomeId());
         if (Objects.isNull(homeEntity)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
             log.error("This home does not existed.", e);
             throw e;
         }
-        int row = homeMemberRolesMapper.removeMemberFromTheHome(HomeMemberRoleEntity.builder().userId(userId).homeId(homeId).build());
+        int row = homeMemberRolesMapper.removeMemberFromTheHome(
+                HomeMemberRoleEntity.builder()
+                        .userId(member.getUserId())
+                        .homeId(member.getHomeId())
+                        .build()
+        );
+
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
             log.error("This home member doesn't existed", e);
@@ -96,15 +108,21 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void updateMemberInfo(Integer homeId, Integer userId, MemberInfoUpdateRequest memberInfoUpdateRequest) throws RecordNotFoundException {
-        HomeEntity homeEntity = homesMapper.getById(homeId);
+    public void updateMemberInfo(Member member) throws RecordNotFoundException {
+        HomeEntity homeEntity = homesMapper.getById(member.getHomeId());
         if (Objects.isNull(homeEntity)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
             log.error("This home does not existed.", e);
             throw e;
         }
 
-        int row = homeMemberRolesMapper.updateMemberName(HomeMemberRoleEntity.builder().userId(userId).homeId(homeId).memberName(memberInfoUpdateRequest.memberName()).build());
+        int row = homeMemberRolesMapper.updateMemberName(
+                HomeMemberRoleEntity.builder()
+                        .userId(member.getUserId())
+                        .homeId(member.getHomeId())
+                        .memberName(member.getMemberName())
+                        .build()
+        );
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
             log.error("This home member doesn't exist", e);
@@ -113,8 +131,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public List<HomeEntity> getHomesForMember(Integer userId) {
-        List<Integer> homeIds = homeMemberRolesMapper.getHomeIdsByUserId(userId);
+    public List<HomeEntity> getHomesForMember(Member member) {
+        List<Integer> homeIds = homeMemberRolesMapper.getHomeIdsByUserId(member.getUserId());
         if (homeIds.isEmpty()) {
             return List.of();
         }
@@ -122,7 +140,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public List<Member> getMembersWithRolesForHome(Integer homeId) throws RecordNotFoundException {
+    public List<Member> getMembersForHome(Integer homeId) throws RecordNotFoundException {
         HomeEntity homeEntity = homesMapper.getById(homeId);
         if (Objects.isNull(homeEntity)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
@@ -134,15 +152,21 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void assignRoleForHomeMember(Integer homeId, Integer userId, Integer roleId) throws RecordNotFoundException {
-        HomeEntity homeEntity = homesMapper.getById(homeId);
+    public void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException {
+        HomeEntity homeEntity = homesMapper.getById(member.getHomeId());
         if (Objects.isNull(homeEntity)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
             log.error("This home does not existed.", e);
             throw e;
         }
 
-        int row = homeMemberRolesMapper.updateRoleForTheMember(HomeMemberRoleEntity.builder().userId(userId).homeId(homeId).roleId(roleId).build());
+        int row = homeMemberRolesMapper.updateRoleForTheMember(
+                HomeMemberRoleEntity.builder()
+                        .userId(member.getUserId())
+                        .homeId(member.getHomeId())
+                        .roleId(roleId)
+                        .build()
+        );
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
             log.error("This home member doesn't exist", e);
@@ -151,27 +175,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void removeRoleForHomeMember(Integer homeId, Integer userId) throws RecordNotFoundException {
-        assignRoleForHomeMember(homeId, userId, null);
-    }
-
-    @Override
-    public RoleEntity getHomeMemberRole(Integer homeId, Integer userId) throws RecordNotFoundException {
-        return null;
-    }
-
-    @Override
-    public List<PermissionEntity> getHomeMemberPermissions(Integer roleId) throws RecordNotFoundException {
-        return null;
-    }
-
-    @Override
-    public void assignPermissionsForHomeMember(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException {
-
-    }
-
-    @Override
-    public void removePermissionsForHomeMember(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException {
-
+    public void removeRoleForMember(Member member) throws RecordNotFoundException {
+        assignRoleForMember(member, null);
     }
 }

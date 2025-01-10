@@ -30,10 +30,21 @@ public interface HomeMemberRolesMapper {
     @Select("SELECT home_id FROM home_member_roles WHERE user_id = ${userId}")
     List<Integer> getHomeIdsByUserId(Integer userId);
 
-    @Select("SELECT hmr.*, r.role_name, r.role_description\n" +
+    @Select("SELECT hmr.*, r.*, u.*\n" +
             "FROM home_member_roles hmr\n" +
             "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
+            "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
             "WHERE hmr.home_id = 1;")
+    @Results({
+        @Result(property = "userId", column = "hmr.user_id"),
+        @Result(property = "homeId", column = "hmr.home_id"),
+        @Result(property = "createdAt", column = "hmr.created_at"),
+        @Result(property = "updatedAT", column = "hmr.updated_at"),
+        @Result(property = "role.roleId", column = "hmr.role_id"),
+        @Result(property = "role.roleType", column = "role_type"),
+        @Result(property = "role.roleName", column = "role_name"),
+        @Result(property = "role.roleDescription", column = "role_description"),
+    })
     List<Member> getMembersWithRolesByHomeId(Integer homeId); // 组合查询
 
 }

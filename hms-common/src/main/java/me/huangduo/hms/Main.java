@@ -16,9 +16,6 @@ public class Main {
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         // 设置全局时区
         objectMapper.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        Test test = new Test(objectMapper);
-
-        test.doTest();
 
     }
 }

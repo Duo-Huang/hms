@@ -3,7 +3,7 @@ package me.huangduo.hms.dto.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.HmsRoleType;
 
 @Data
 @NoArgsConstructor
@@ -11,7 +11,7 @@ import me.huangduo.hms.enums.RoleType;
 public class Role {
     private Integer roleId;
 
-    private RoleType roleType;
+    private HmsRoleType roleType;
 
     private String roleName;
 

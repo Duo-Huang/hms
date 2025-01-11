@@ -1,6 +1,6 @@
 package me.huangduo.hms.dao.handler;
 
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.HmsRoleType;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.springframework.stereotype.Component;
@@ -11,29 +11,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class RoleTypeHandler extends BaseTypeHandler<RoleType> {
+public class RoleTypeHandler extends BaseTypeHandler<HmsRoleType> {
 
     @Override
-    public void setNonNullParameter(PreparedStatement ps, int i, RoleType parameter, JdbcType jdbcType) throws SQLException {
+    public void setNonNullParameter(PreparedStatement ps, int i, HmsRoleType parameter, JdbcType jdbcType) throws SQLException {
         ps.setInt(i, parameter.getValue());
     }
 
     @Override
-    public RoleType getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    public HmsRoleType getNullableResult(ResultSet rs, String columnName) throws SQLException {
         int value = rs.getInt(columnName);
-        return RoleType.fromValue(value);
+        return HmsRoleType.fromValue(value);
     }
 
     @Override
-    public RoleType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+    public HmsRoleType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         int value = rs.getInt(columnIndex);
-        return RoleType.fromValue(value);
+        return HmsRoleType.fromValue(value);
     }
 
     @Override
-    public RoleType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public HmsRoleType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         int value = cs.getInt(columnIndex);
-        return RoleType.fromValue(value);
+        return HmsRoleType.fromValue(value);
     }
 }
 

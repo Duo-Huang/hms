@@ -41,9 +41,9 @@ public class GlobalExceptionHandler {
      * Service 层参数校验
      * */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<HmsResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<HmsResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("The request parameter verification failed and get a fallback error", ex);
-        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage()));
+        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage(), ex.getMessage()));
     }
 
     /*

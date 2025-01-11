@@ -3,20 +3,20 @@ package me.huangduo.hms.enums;
 import lombok.Getter;
 
 @Getter
-public enum RoleType {
+public enum HmsRoleType {
     SYSTEM_ROLE(0),
     CUSTOM_ROLE(1);
 
     private final int value;
 
-    RoleType(int value) {
+    HmsRoleType(int value) {
         this.value = value;
     }
 
-    public static RoleType fromValue(int value) {
-        for (RoleType roleType : RoleType.values()) {
-            if (roleType.getValue() == value) {
-                return roleType;
+    public static HmsRoleType fromValue(int value) {
+        for (HmsRoleType hmsRoleType : HmsRoleType.values()) {
+            if (hmsRoleType.getValue() == value) {
+                return hmsRoleType;
             }
         }
         throw new IllegalArgumentException("invalid RoleType value " + value);

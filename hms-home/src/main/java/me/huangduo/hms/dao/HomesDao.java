@@ -1,15 +1,12 @@
 package me.huangduo.hms.dao;
 
 import me.huangduo.hms.dao.entity.HomeEntity;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
-public interface HomesMapper {
+public interface HomesDao {
 
     @Select("SELECT * FROM homes WHERE home_id = #{homeId}")
     HomeEntity getById(Integer homeId);
@@ -17,6 +14,7 @@ public interface HomesMapper {
     List<HomeEntity> getByIds(List<Integer> homeIds);
 
     @Insert("INSERT INTO homes (home_name, home_description) VALUES (#{homeName}, #{homeDescription})")
+    @Options(useGeneratedKeys = true, keyProperty = "homeId")
     int create(HomeEntity homeEntity);
 
     int update(HomeEntity homeEntity);

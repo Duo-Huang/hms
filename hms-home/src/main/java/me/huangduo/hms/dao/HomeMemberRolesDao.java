@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 @Mapper
-public interface HomeMemberRolesMapper {
+public interface HomeMemberRolesDao {
 
     @Insert("INSERT INTO home_member_roles (user_id, home_id) VALUES (#{userId}, #{homeId})")
     int addUserToTheHome(HomeMemberRoleEntity homeMemberRoleEntity);

@@ -40,4 +40,7 @@ public interface UserService {
      */
     void changePassword(User user, String oldPassword, String newPassword) throws IllegalArgumentException;
 
+    User getProfile(Integer userId);
+
+    void updateProfile(User user);
 }

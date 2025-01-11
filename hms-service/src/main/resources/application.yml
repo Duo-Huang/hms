@@ -11,11 +11,5 @@ spring:
         resources:
             add-mappings: false
 
-
-mybatis:
-    configuration:
-        map-underscore-to-camel-case: true
-        log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
-
 app:
     jwt-issuer: hms

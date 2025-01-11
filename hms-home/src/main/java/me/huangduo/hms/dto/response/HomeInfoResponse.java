@@ -1,4 +1,11 @@
 package me.huangduo.hms.dto.response;
 
-public record HomeInfoResponse(Integer homeId, String homeName, String HomeDescription) {
+import java.time.LocalDateTime;
+
+public record HomeInfoResponse(
+        Integer homeId,
+        String homeName,
+        String HomeDescription,
+        LocalDateTime createdAt
+) {
 }

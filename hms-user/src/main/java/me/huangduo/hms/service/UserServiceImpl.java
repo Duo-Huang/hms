@@ -1,7 +1,7 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dao.RevokedUserTokensMapper;
-import me.huangduo.hms.dao.UsersMapper;
+import me.huangduo.hms.dao.RevokedUserTokensDao;
+import me.huangduo.hms.dao.UsersDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dao.entity.UserEntity;
 import me.huangduo.hms.dto.model.User;
@@ -9,6 +9,7 @@ import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
+import me.huangduo.hms.mapper.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -18,23 +19,27 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UsersMapper usersMapper;
+    private final UsersDao usersDao;
     private final AuthService authService;
 
-    private final RevokedUserTokensMapper revokedUserTokensMapper;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UsersMapper usersMapper, AuthService authService, RevokedUserTokensMapper revokedUserTokensMapper) {
-        this.usersMapper = usersMapper;
+    private final RevokedUserTokensDao revokedUserTokensDao;
+
+    public UserServiceImpl(UsersDao usersDao, AuthService authService, UserMapper userMapper, RevokedUserTokensDao revokedUserTokensDao) {
+        this.usersDao = usersDao;
         this.authService = authService;
-        this.revokedUserTokensMapper = revokedUserTokensMapper;
+        this.userMapper = userMapper;
+        this.revokedUserTokensDao = revokedUserTokensDao;
     }
 
     @Override
     public Integer register(User user, String password) throws UserAlreadyExistsException {
-        // TODO: use auto mapper ?
-        UserEntity userEntity = UserEntity.builder().username(user.getUsername()).password(password).nickname(user.getUsername()).build();
+        UserEntity userEntity = userMapper.toEntity(user);
+        userEntity.setNickname(user.getUsername());
+        userEntity.setPassword(password);
         try {
-            usersMapper.create(userEntity);
+            usersDao.create(userEntity);
         } catch (DuplicateKeyException e) {
             throw new UserAlreadyExistsException(HmsErrorCodeEnum.USER_ERROR_103);
         }
@@ -43,26 +48,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(User user, String password) throws IllegalArgumentException {
-        UserEntity userEntity = usersMapper.findUserByUsernameAndPassword(user.getUsername(), password);
+        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(user.getUsername(), password);
         if (Objects.isNull(userEntity)) {
             throw new IllegalArgumentException();
         }
-        // TODO: use auto mapper ?
-        user.setUserId(userEntity.getUserId());
-        user.setUsername(userEntity.getUsername());
-        user.setNickname(userEntity.getNickname());
-        user.setCreatedAt(userEntity.getCreatedAt());
-        user.setUpdatedAt(userEntity.getUpdatedAt());
+        user = userMapper.toModel(userEntity);
         return authService.generateToken(user);
     }
 
     @Override
     public void logout(UserToken userToken) throws AuthenticationException {
         RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder().jti(userToken.jti()).expiration(userToken.expiration()).username(userToken.userInfo().getUsername()).build();
-        revokedUserTokensMapper.create(revokedUserTokenEntity);
+        revokedUserTokensDao.create(revokedUserTokenEntity);
     }
 
     @Override
-    public void changePassword(User user, String oldPassword, String newPassword) {
+    public void changePassword(User user, String oldPassword, String newPassword) throws IllegalArgumentException {
+        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(user.getUsername(), oldPassword);
+        if (Objects.isNull(userEntity)) {
+            throw new IllegalArgumentException();
+        }
+        userEntity.setPassword(newPassword);
+        usersDao.update(userEntity);
+    }
+
+    @Override
+    public User getProfile(Integer userId) {
+        UserEntity userInfo = usersDao.getUserInfoById(userId);
+        return userMapper.toModel(userInfo);
+    }
+
+    @Override
+    public void updateProfile(User user) {
+        UserEntity userEntity = userMapper.toEntity(user);
+        usersDao.update(userEntity);
     }
 }

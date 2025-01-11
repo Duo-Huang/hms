@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface PermissionsMapper {
+public interface PermissionsDao {
 
     @Select("SELECT * FROM permissions WHERE permission_id = #{permissionId}")
     PermissionEntity getById(Integer permissionId);

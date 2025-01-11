@@ -34,6 +34,8 @@ create table roles
     home_id          int                                null comment 'foreign key for homes',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `role_name-home_id-unique`
+        unique (role_name, home_id),
     constraint `roles-homes-home_id-fk`
         foreign key (home_id) references homes (home_id)
             on update cascade on delete cascade,

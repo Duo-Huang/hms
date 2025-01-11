@@ -29,6 +29,9 @@ public enum HmsErrorCodeEnum {
     USER_ERROR_104(2104, "用户未找到"),
     USER_ERROR_105(2105, "用户名或密码格式错误"), // 注册
     USER_ERROR_106(2106, "用户名或密码错误"), // 登录
+    USER_ERROR_107(2107, "用户昵称格式错误"),
+    USER_ERROR_108(2108, "密码格式错误"),
+    USER_ERROR_109(2109, "密码错误"),
 
     // 家庭模块错误 22xx
     HOME_ERROR_201(2201, "该家庭已存在"),
@@ -38,6 +41,10 @@ public enum HmsErrorCodeEnum {
     HOME_ERROR_205(2205, "该家庭成员已存在"),
     HOME_ERROR_206(2206, "该家庭成员不存在"),
     HOME_ERROR_207(2207, "家庭成员名称格式错误"),
+    HOME_ERROR_208(2208, "该角色不存在"),
+    HOME_ERROR_209(2209, "家庭管理员角色不存在"),
+    HOME_ERROR_2010(2210, "家庭成员角色不存在"),
+    HOME_ERROR_2011(2211, "用户名格式错误"),
 
     // 财务模块错误 23xx
     FINANCE_ERROR_301(2301, "预算不足");

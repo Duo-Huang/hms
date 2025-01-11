@@ -5,19 +5,17 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import java.util.List;
 
 @Mapper
-public interface RolesMapper {
+public interface RolesDao {
 
     @Select("SELECT * from roles WHERE role_id = #{roleId}")
     RoleEntity getById(Integer roleId);
 
+    @Select("SELECT * FROM roles WHERE role_name = ${roleName} AND role_type = 0")
+    RoleEntity getSystemRoleByName(String roleName);
 
-    @Select("SELECT * FROM roles WHERE role_name = #{roleName}")
-    RoleEntity getByName(String roleName);
-
-    @Insert("INSERT INTO roles (role_type, role_name, role_description) VALUES (#{roleTypeValue, typeHandler=me.huangduo.hms.dao.handler.RoleTypeHandler}, #{roleName}, #{roleDescription})")
+    @Insert("INSERT INTO roles (role_type, role_name, role_description) VALUES (#{roleTypeValue}, #{roleName}, #{roleDescription})")
     int create(RoleEntity roleEntity);
 
     int update(RoleEntity roleEntity);

@@ -8,7 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.config.AppConfig;
-import me.huangduo.hms.dao.RevokedUserTokensMapper;
+import me.huangduo.hms.dao.RevokedUserTokensDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
@@ -30,15 +30,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppConfig appConfig;
 
-    private final RevokedUserTokensMapper revokedUserTokensMapper;
+    private final RevokedUserTokensDao revokedUserTokensDao;
 
     private final ObjectMapper objectMapper;
 
 
-    public AuthServiceImpl(AppConfig appConfig, RevokedUserTokensMapper revokedUserTokensMapper, ObjectMapper objectMapper) {
+    public AuthServiceImpl(AppConfig appConfig, RevokedUserTokensDao revokedUserTokensDao, ObjectMapper objectMapper) {
         this.appConfig = appConfig;
         this.key = Keys.hmacShaKeyFor(appConfig.getJwtSecret().getBytes(StandardCharsets.UTF_8));
-        this.revokedUserTokensMapper = revokedUserTokensMapper;
+        this.revokedUserTokensDao = revokedUserTokensDao;
         this.objectMapper = objectMapper;
     }
 
@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Boolean isTokenRevoked(UserToken userToken) {
-        RevokedUserTokenEntity revokedJti = revokedUserTokensMapper.getByJti(userToken.jti());
+        RevokedUserTokenEntity revokedJti = revokedUserTokensDao.getByJti(userToken.jti());
         return Objects.nonNull(revokedJti);
     }
 

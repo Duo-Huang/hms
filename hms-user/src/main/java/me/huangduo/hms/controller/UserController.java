@@ -5,6 +5,8 @@ import me.huangduo.hms.HmsResponse;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.UserLoginRequest;
+import me.huangduo.hms.dto.request.UserPasswordUpdateRequest;
+import me.huangduo.hms.dto.request.UserProfileUpdateRequest;
 import me.huangduo.hms.dto.request.UserRegistrationRequest;
 import me.huangduo.hms.dto.response.UserRegistrationResponse;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
@@ -27,7 +29,6 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<HmsResponse<UserRegistrationResponse>> register(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
         try {
-            // TODO: use auto mapper ?
             User user = new User(null, userRegistrationRequest.username(), null, null, null);
             Integer userId = userService.register(user, userRegistrationRequest.password());
             return ResponseEntity.ok(HmsResponse.success(new UserRegistrationResponse(userId)));
@@ -40,18 +41,57 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<HmsResponse<String>> login(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         try {
-            // TODO: use auto mapper ?
             User user = new User(null, userLoginRequest.username(), null, null, null);
             String token = userService.login(user, userLoginRequest.password());
             return ResponseEntity.ok(HmsResponse.success(token));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_106.getCode(), HmsErrorCodeEnum.USER_ERROR_106.getMessage()));
+            return ResponseEntity.badRequest().body(
+                    HmsResponse.error(
+                            HmsErrorCodeEnum.USER_ERROR_106.getCode(),
+                            HmsErrorCodeEnum.USER_ERROR_106.getMessage()
+                    )
+            );
         }
     }
 
     @GetMapping("/logout")
     public ResponseEntity<HmsResponse<Void>> logout(@RequestAttribute UserToken userToken) {
         userService.logout(userToken);
+        return ResponseEntity.ok(HmsResponse.success());
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<HmsResponse<Void>> changePassword(
+            @Valid @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest,
+            @RequestAttribute UserToken userToken
+    ) {
+        try {
+            userService.changePassword(userToken.userInfo(), userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
+            return ResponseEntity.ok(HmsResponse.success());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(
+                    HmsResponse.error(
+                            HmsErrorCodeEnum.USER_ERROR_109.getCode(),
+                            HmsErrorCodeEnum.USER_ERROR_109.getMessage()
+                    )
+            );
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<HmsResponse<User>> getProfile(@RequestAttribute UserToken userToken) {
+        User profile = userService.getProfile(userToken.userInfo().getUserId());
+        return ResponseEntity.ok(HmsResponse.success(profile));
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<HmsResponse<Void>> getProfile(
+            @Valid @RequestBody UserProfileUpdateRequest userProfileUpdateRequest,
+            @RequestAttribute UserToken userToken
+    ) {
+        User profile = userToken.userInfo();
+        profile.setNickname(userProfileUpdateRequest.nickname());
+        userService.updateProfile(profile);
         return ResponseEntity.ok(HmsResponse.success());
     }
 }

@@ -3,13 +3,12 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.HmsResponse;
-import me.huangduo.hms.dao.entity.HomeEntity;
+import me.huangduo.hms.dto.model.Home;
+import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.HomeCreateOrUpdateRequest;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.service.HomeService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,24 +24,26 @@ public class HomeController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
+    public ResponseEntity<HmsResponse<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest, @RequestAttribute UserToken userToken) {
+        Home home = new Home(null, homeCreateOrUpdateRequest.homeName(), homeCreateOrUpdateRequest.homeDescription(), null, null);
         try {
-            homeService.createHome(homeCreateOrUpdateRequest);
+            homeService.createHome(home, userToken.userInfo());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(HmsErrorCodeEnum.HOME_ERROR_201.getCode(), HmsErrorCodeEnum.HOME_ERROR_201.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
         }
     }
 
     @GetMapping("/{homeId}")
     public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@PathVariable Integer homeId) {
-        HomeEntity homeInfo = homeService.getHomeInfo(homeId);
-        return ResponseEntity.ok(HmsResponse.success(new HomeInfoResponse(homeInfo.getHomeId(), homeInfo.getHomeName(), homeInfo.getHomeDescription())));
+        Home homeInfo = homeService.getHomeInfo(homeId);
+        return ResponseEntity.ok(HmsResponse.success(new HomeInfoResponse(homeInfo.getHomeId(), homeInfo.getHomeName(), homeInfo.getHomeDescription(), homeInfo.getCreatedAt())));
     }
 
-    @PutMapping("/{homeId}") // 测试不传id的路由
+    @PutMapping("/{homeId}")
     public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
-        homeService.updateHomeInfo(homeId, homeCreateOrUpdateRequest);
+        Home home = new Home(null, homeCreateOrUpdateRequest.homeName(), homeCreateOrUpdateRequest.homeDescription(), null, null);
+        homeService.updateHomeInfo(home);
         return ResponseEntity.ok(HmsResponse.success());
     }
 

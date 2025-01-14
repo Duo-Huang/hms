@@ -15,7 +15,7 @@ create table permissions
 (
     permission_id          int auto_increment comment 'primary key'
         primary key,
-    permission_code        varchar(128)                       not null comment 'format: hms:{module}:{function}:{action}, for example: hms:financial:account:edit; action must be create/edit/view/delete',
+    permission_code        varchar(128)                       not null comment 'format: {module}:{function}:{action}, for example: financial:account:edit; action must be create/edit/view/delete',
     permission_description varchar(128)                       not null comment 'permission description',
     created_at             datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at             datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
@@ -51,6 +51,8 @@ create table role_permissions
     permission_id      int                                not null comment 'foreign key for permissions',
     created_at         datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at         datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `role_id-permissions_id-unique`
+        unique (role_id, permission_id),
     constraint `role_permissions-permissions-permission_id-fk`
         foreign key (permission_id) references permissions (permission_id)
             on update cascade on delete cascade,

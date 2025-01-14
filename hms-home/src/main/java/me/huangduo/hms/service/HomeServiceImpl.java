@@ -1,6 +1,7 @@
 package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
+import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
@@ -45,19 +46,20 @@ public class HomeServiceImpl implements HomeService {
             homesDao.create(homeEntity);
         } catch (DuplicateKeyException e) {
             BusinessException ex = new HomeAlreadyExistsException(HmsErrorCodeEnum.HOME_ERROR_201);
-            log.error("This home is already existed", ex);
+            log.error("This home is already existed.", ex);
             throw ex;
         }
 
-        // assign current user to admin in this home
+        // assign current user to default system admin role in this home
         Member member = new Member();
         member.setHomeId(homeEntity.getHomeId());
         member.setUserId(user.getUserId());
+
         RoleEntity adminRole = rolesDao.getSystemRoleByName(HmsSystemRole.HOME_ADMIN.getRoleName());
 
         if (Objects.isNull(adminRole)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_209);
-            log.error("The member is not assigned a default admin role for this home", e);
+            log.error("The member is not assigned a default admin role for this home.", e);
             throw e;
         }
 
@@ -69,7 +71,7 @@ public class HomeServiceImpl implements HomeService {
         HomeEntity homeInfo = homesDao.getById(homeId);
         if (Objects.isNull(homeInfo)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home doesn't exist", e);
+            log.error("This home doesn't exist.", e);
             throw e;
         }
         return homeMapper.toModel(homeInfo);
@@ -77,11 +79,10 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public void updateHomeInfo(Home home) throws RecordNotFoundException {
-        HomeEntity homeEntity = homeMapper.toEntity(home);
-        int row = homesDao.update(homeEntity);
+        int row = homesDao.update(homeMapper.toEntity(home));
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home doesn't exist", e);
+            log.error("This home doesn't exist.", e);
             throw e;
         }
     }
@@ -91,7 +92,7 @@ public class HomeServiceImpl implements HomeService {
         int row = homesDao.delete(homeId);
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home doesn't exist", e);
+            log.error("This home doesn't exist.", e);
             throw e;
         }
     }

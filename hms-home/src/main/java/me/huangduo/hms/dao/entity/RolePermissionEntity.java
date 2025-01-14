@@ -6,20 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder
-public class RevokedUserTokenEntity extends BaseEntity {
+public class RolePermissionEntity extends BaseEntity {
+    private Integer rolePermissionId;
 
-    private Integer id;
+    private Integer roleId;
 
-    private String jti;
-
-    private LocalDateTime expiration;
-
-    private String username;
+    private Integer permissionId;
 }

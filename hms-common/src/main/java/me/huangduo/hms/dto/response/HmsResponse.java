@@ -1,4 +1,4 @@
-package me.huangduo.hms;
+package me.huangduo.hms.dto.response;
 
 public record HmsResponse<T>(int code, String message, T data) {
 

@@ -47,9 +47,14 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     @Override
     public void inviteMember(Integer homeId, User user) throws RecordNotFoundException {
-        if (homeId == null || Objects.isNull(homesDao.getById(homeId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home does not existed.", e);
+        checkHomeExisted(homeId, "This home doesn't existed.");
+        final User userInfo = checkUserExisted(user.getUserId()); // check and get all newest user info
+
+        List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
+
+        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(userInfo.getUserId()))) {
+            BusinessException e = new HomeMemberAlreadyExistsException(HmsErrorCodeEnum.HOME_ERROR_205);
+            log.error("This home member is already existed.", e);
             throw e;
         }
         // TODO: 事件驱动
@@ -62,28 +67,18 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void addMember(Integer homeId, Integer userId) throws RecordNotFoundException, HomeMemberAlreadyExistsException {
-        if (homeId == null || Objects.isNull(homesDao.getById(homeId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home does not existed.", e);
-            throw e;
-        }
-
-        User user = null;
-        if (userId == null || Objects.isNull(user = commonDao.getUserInfoById(userId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
-            log.error("This user does not existed.", e);
-            throw e;
-        }
+    public void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException {
+        checkHomeExisted(homeId, "This home doesn't existed.");
+        final User userInfo = checkUserExisted(user.getUserId()); // check and get all newest user info
 
         List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
 
-        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(userId))) {
+        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(userInfo.getUserId()))) {
             BusinessException e = new HomeMemberAlreadyExistsException(HmsErrorCodeEnum.HOME_ERROR_205);
-            log.error("This home member is already existed", e);
+            log.error("This home member is already existed.", e);
             throw e;
         }
-        // assign a default home member role for this member
+        // assign a default system home member role for this member
         RoleEntity homeMemberRole = rolesDao.getSystemRoleByName(HmsSystemRole.HOME_MEMBER.getRoleName());
         Integer roleId = null;
 
@@ -93,24 +88,21 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             roleId = homeMemberRole.getRoleId();
         }
 
-        homeMemberRolesDao.addUserToTheHome(
+        homeMemberRolesDao.add(
                 HomeMemberRoleEntity.builder()
-                        .userId(user.getUserId())
+                        .userId(userInfo.getUserId())
                         .homeId(homeId)
                         .roleId(roleId)
-                        .memberName(user.getNickname())
+                        .memberName(userInfo.getNickname())
                         .build()
         );
     }
 
     @Override
     public void removeMember(Member member) throws RecordNotFoundException {
-        if (member.getHomeId() == null || Objects.isNull(homesDao.getById(member.getHomeId()))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("The member's home does not exist.", e);
-            throw e;
-        }
-        int row = homeMemberRolesDao.removeMemberFromTheHome(
+        checkHomeExisted(member.getHomeId(), "The member's home does not exist.");
+
+        int row = homeMemberRolesDao.removeItemByUserIdAndHomeId(
                 HomeMemberRoleEntity.builder()
                         .userId(member.getUserId())
                         .homeId(member.getHomeId())
@@ -119,20 +111,16 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
-            log.error("This home member doesn't existed", e);
+            log.error("This home member doesn't existed.", e);
             throw e;
         }
     }
 
     @Override
     public void updateMemberInfo(Member member) throws RecordNotFoundException {
-        if (member.getHomeId() == null || Objects.isNull(homesDao.getById(member.getHomeId()))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("The member's home does not exist.", e);
-            throw e;
-        }
+        checkHomeExisted(member.getHomeId(), "The member's home does not exist.");
 
-        int row = homeMemberRolesDao.updateMemberName(
+        int row = homeMemberRolesDao.updateMemberNameByUserIdAndHomeId(
                 HomeMemberRoleEntity.builder()
                         .userId(member.getUserId())
                         .homeId(member.getHomeId())
@@ -147,8 +135,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public List<Home> getHomesForMember(Member member) {
-        List<Integer> homeIds = homeMemberRolesDao.getHomeIdsByUserId(member.getUserId());
+    public List<Home> getHomesForUser(User user) {
+        List<Integer> homeIds = homeMemberRolesDao.getHomeIdsByUserId(user.getUserId());
         if (homeIds.isEmpty()) {
             return List.of();
         }
@@ -157,23 +145,15 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public List<Member> getMembersForHome(Integer homeId) throws RecordNotFoundException {
-        if (homeId == null || Objects.isNull(homesDao.getById(homeId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home does not existed.", e);
-            throw e;
-        }
+    public List<Member> getMembersWithRolesForHome(Integer homeId) throws RecordNotFoundException {
+        checkHomeExisted(homeId, "This home does not existed.");
 
         return homeMemberRolesDao.getMembersWithRolesByHomeId(homeId);
     }
 
     @Override
     public void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException {
-        if (member.getHomeId() == null || Objects.isNull(homesDao.getById(member.getHomeId()))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("The member's home does not exist.", e);
-            throw e;
-        }
+        checkHomeExisted(member.getHomeId(), "The member's home does not exist.");
 
         if (roleId != null && Objects.isNull(rolesDao.getById(roleId))) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_208);
@@ -181,7 +161,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             throw e;
         }
 
-        int row = homeMemberRolesDao.updateRoleForTheMember(
+        int row = homeMemberRolesDao.updateRoleByUserIdAndHomeId(
                 HomeMemberRoleEntity.builder()
                         .userId(member.getUserId())
                         .homeId(member.getHomeId())
@@ -190,7 +170,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         );
         if (row == 0) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
-            log.error("This home member doesn't exist", e);
+            log.error("This home member doesn't exist.", e);
             throw e;
         }
     }
@@ -198,5 +178,26 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     @Override
     public void removeRoleForMember(Member member) throws RecordNotFoundException {
         assignRoleForMember(member, null);
+    }
+
+    private Home checkHomeExisted(Integer homeId, String errMsg) {
+        HomeEntity homeEntity = null;
+        if (homeId == null || Objects.isNull(homeEntity = homesDao.getById(homeId))) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
+            log.error(errMsg, e);
+            throw e;
+        }
+
+        return homeMapper.toModel(homeEntity);
+    }
+
+    private User checkUserExisted(Integer userId) {
+        User user = null;
+        if (userId == null || Objects.isNull(user = commonDao.getUserInfoById(userId))) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
+            log.error("This user does not existed.", e);
+            throw e;
+        }
+        return user;
     }
 }

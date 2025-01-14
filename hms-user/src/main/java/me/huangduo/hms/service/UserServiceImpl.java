@@ -8,6 +8,7 @@ import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
+import me.huangduo.hms.exceptions.DuplicatedPasswordException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 import me.huangduo.hms.mapper.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
@@ -63,13 +64,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(User user, String oldPassword, String newPassword) throws IllegalArgumentException {
-        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(user.getUsername(), oldPassword);
+    public void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
+        if (Objects.equals(oldPassword, newPassword)) {
+            throw new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_1010);
+        }
+        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(userToken.userInfo().getUsername(), oldPassword);
         if (Objects.isNull(userEntity)) {
             throw new IllegalArgumentException();
         }
         userEntity.setPassword(newPassword);
         usersDao.update(userEntity);
+        authService.revokeToken(userToken);
     }
 
     @Override

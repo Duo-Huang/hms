@@ -13,4 +13,6 @@ public interface AuthService {
 
     Boolean isTokenRevoked(UserToken userToken);
 
+    void revokeToken(UserToken userToken);
+
 }

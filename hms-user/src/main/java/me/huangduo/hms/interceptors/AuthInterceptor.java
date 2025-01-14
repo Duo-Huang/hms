@@ -35,10 +35,10 @@ public class AuthInterceptor implements HandlerInterceptor {
             String token = authorizationHeader.substring(7);
             UserToken userToken = authService.parseToken(token);
             if (Objects.isNull(userToken.userInfo())) {
-                log.error("Current userInfo in request is null");
-            } else {
-                System.out.println(userToken.userInfo().getCreatedAt());
+                log.error("Current userInfo in request is null.");
+                throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
             }
+
             if (!authService.isTokenRevoked(userToken) && authService.validateToken(userToken)) {
                 request.setAttribute("userToken", userToken); // 包含User对象
                 return true;

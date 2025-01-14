@@ -1,17 +1,21 @@
-package me.huangduo.hms.dao.entity;
+package me.huangduo.hms.dto.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class BaseEntity {
+public class Permission {
+    private Integer permissionId;
+
+    private String permissionCode;
+
+    private String permissionDescription;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

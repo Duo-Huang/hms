@@ -1,4 +1,4 @@
-package me.huangduo.hms;
+package me.huangduo.hms.dto.request;
 
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 

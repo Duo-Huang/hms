@@ -15,7 +15,7 @@
                 home_description = #{homeDescription},
             </if>
         </set>
-        where home_id = #{homeId};
+        WHERE home_id = #{homeId};
     </update>
     <select id="getByIds" resultType="me.huangduo.hms.dao.entity.HomeEntity">
         SELECT * FROM homes

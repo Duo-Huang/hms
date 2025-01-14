@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             userJson = objectMapper.writeValueAsString(user);
         } catch (JsonProcessingException e) {
-            log.error("Failed to generate token due to JSON stringify error", e);
+            log.error("Failed to generate token due to JSON stringify error.", e);
         }
 
         claims.put("userInfo", userJson);
@@ -58,7 +58,16 @@ public class AuthServiceImpl implements AuthService {
 
         Date now = new Date(System.currentTimeMillis());
 
-        return Jwts.builder().id(jti).claims(claims).subject(user.getUsername()).issuer(appConfig.getJwtIssuer()).issuedAt(now).notBefore(now).expiration(new Date(System.currentTimeMillis() + appConfig.getJwtTokenExpiredTime())).signWith(key).compact();
+        return Jwts.builder()
+                .id(jti)
+                .claims(claims)
+                .subject(user.getUsername())
+                .issuer(appConfig.getJwtIssuer())
+                .issuedAt(now)
+                .notBefore(now)
+                .expiration(new Date(System.currentTimeMillis() + appConfig.getJwtTokenExpiredTime()))
+                .signWith(key)
+                .compact();
     }
 
     @Override
@@ -74,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             userInfo = objectMapper.readValue(userInfoJson, User.class);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse token due to JSON parse error", e);
+            log.error("Failed to parse token due to JSON parse error.", e);
         }
         LocalDateTime issuedAt = claims.getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime notBefore = claims.getNotBefore().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -87,6 +96,16 @@ public class AuthServiceImpl implements AuthService {
     public Boolean isTokenRevoked(UserToken userToken) {
         RevokedUserTokenEntity revokedJti = revokedUserTokensDao.getByJti(userToken.jti());
         return Objects.nonNull(revokedJti);
+    }
+
+    @Override
+    public void revokeToken(UserToken userToken) {
+        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder()
+                .jti(userToken.jti())
+                .expiration(userToken.expiration())
+                .username(userToken.userInfo().getUsername())
+                .build();
+        revokedUserTokensDao.create(revokedUserTokenEntity);
     }
 
     private Claims extractAllClaims(String token) {

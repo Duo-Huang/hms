@@ -4,7 +4,7 @@ import me.huangduo.hms.dto.model.Role;
 
 import java.time.LocalDateTime;
 
-public record HomeMemberResponse(
+public record MemberResponse(
         Integer userId,
         String username,
         String memberName,

@@ -32,13 +32,13 @@ public interface UserService {
 
     /**
      * 修改用户密码
-     * @param user 用户信息
+     * @param userToken 用户token
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      * @return 是否修改成功
      * @throws IllegalArgumentException 如果输入的参数无效
      */
-    void changePassword(User user, String oldPassword, String newPassword) throws IllegalArgumentException;
+    void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException;
 
     User getProfile(Integer userId);
 

@@ -1,7 +1,7 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.HmsResponse;
+import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.UserLoginRequest;
@@ -10,7 +10,9 @@ import me.huangduo.hms.dto.request.UserProfileUpdateRequest;
 import me.huangduo.hms.dto.request.UserRegistrationRequest;
 import me.huangduo.hms.dto.response.UserRegistrationResponse;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.exceptions.DuplicatedPasswordException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
+import me.huangduo.hms.mapper.UserMapper;
 import me.huangduo.hms.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +24,17 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final UserMapper userMapper;
+
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
     public ResponseEntity<HmsResponse<UserRegistrationResponse>> register(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
         try {
-            User user = new User(null, userRegistrationRequest.username(), null, null, null);
-            Integer userId = userService.register(user, userRegistrationRequest.password());
+            Integer userId = userService.register(userMapper.toModel(userRegistrationRequest), userRegistrationRequest.password());
             return ResponseEntity.ok(HmsResponse.success(new UserRegistrationResponse(userId)));
 
         } catch (UserAlreadyExistsException e) {
@@ -41,8 +45,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<HmsResponse<String>> login(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         try {
-            User user = new User(null, userLoginRequest.username(), null, null, null);
-            String token = userService.login(user, userLoginRequest.password());
+            String token = userService.login(userMapper.toModel(userLoginRequest), userLoginRequest.password());
             return ResponseEntity.ok(HmsResponse.success(token));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
@@ -66,8 +69,10 @@ public class UserController {
             @RequestAttribute UserToken userToken
     ) {
         try {
-            userService.changePassword(userToken.userInfo(), userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
+            userService.changePassword(userToken, userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
             return ResponseEntity.ok(HmsResponse.success());
+        } catch (DuplicatedPasswordException e) {
+            return ResponseEntity.badRequest().body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
                     HmsResponse.error(

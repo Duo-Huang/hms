@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.huangduo.hms.dao.RolePermissionsDao">
+
+    <insert id="batchCreate">
+        INSERT INTO role_permissions (role_id, permission_id) VALUES
+        <foreach collection="permissionEntities" item="item" separator=",">
+            (#{item.roleId}, #{item.permissionId})
+        </foreach>
+    </insert>
+
+    <delete id="batchDelete">
+        <if test="permissionEntities != null and permissionEntities.size() > 0">
+            DELETE FROM role_permissions
+            WHERE (role_id, permission_id) IN
+            <foreach collection="permissionEntities" item="item" open="(" separator="," close=")">
+                (#{item.roleId}, #{item.permissionId})
+            </foreach>
+        </if>
+    </delete>
+</mapper>

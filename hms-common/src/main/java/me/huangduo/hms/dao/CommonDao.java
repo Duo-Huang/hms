@@ -1,6 +1,5 @@
 package me.huangduo.hms.dao;
 
-
 import me.huangduo.hms.dto.model.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

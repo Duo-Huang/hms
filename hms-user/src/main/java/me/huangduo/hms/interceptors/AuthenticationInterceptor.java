@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
-import me.huangduo.hms.service.AuthService;
+import me.huangduo.hms.service.AuthenticationService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -14,11 +14,11 @@ import java.util.Objects;
 
 @Component
 @Slf4j
-public class AuthInterceptor implements HandlerInterceptor {
+public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private final AuthService authService;
+    private final AuthenticationService authService;
 
-    public AuthInterceptor(AuthService authService) {
+    public AuthenticationInterceptor(AuthenticationService authService) {
         this.authService = authService;
     }
 
@@ -28,8 +28,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws AuthenticationException {
         String authorizationHeader = request.getHeader("Authorization");
-
-        response.setContentType("application/json");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);

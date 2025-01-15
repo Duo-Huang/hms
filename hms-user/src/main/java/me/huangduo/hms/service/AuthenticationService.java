@@ -4,7 +4,7 @@ import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.exceptions.AuthenticationException;
 
-public interface AuthService {
+public interface AuthenticationService {
     String generateToken(User user);
 
     boolean validateToken(UserToken userToken) throws AuthenticationException;

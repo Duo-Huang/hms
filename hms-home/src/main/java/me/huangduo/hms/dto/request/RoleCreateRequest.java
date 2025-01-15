@@ -6,15 +6,15 @@ import jakarta.validation.constraints.Size;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record RoleCreateRequest(
-        @NotNull
-        @Positive(message = "system role id is a positive integer.")
+        @NotNull(message = "baseRoleId can not be null")
+        @Positive(message = "baseRoleId is a positive integer.")
         Integer systemRoleId,
 
-        @NotNull
-        @Size(max = 12, message = "role name must be at most 12 characters long")
+        @NotNull(message = "roleName can not be null")
+        @Size(max = 12, message = "roleName must be at most 12 characters long")
         String roleName,
 
-        @Size(max = 100, message = "role name must be at most 100 characters long")
+        @Size(max = 100, message = "roleDescription must be at most 100 characters long")
         String roleDescription
 ) implements HmsRequest {
     @Override

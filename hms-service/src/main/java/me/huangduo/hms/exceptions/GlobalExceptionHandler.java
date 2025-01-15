@@ -56,6 +56,15 @@ public class GlobalExceptionHandler {
     }
 
     /*
+     * 鉴权失败 (业务异常)
+     * */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<HmsResponse<Void>> handleRecordNotFound(AccessDeniedException ex) {
+        log.error("The user fails to be authorized.", ex);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponse.error(ex.getHmsErrorCodeEnum().getCode(), ex.getHmsErrorCodeEnum().getMessage()));
+    }
+
+    /*
      * 资源找不到
      * */
     @ExceptionHandler({NoHandlerFoundException.class, RecordNotFoundException.class})

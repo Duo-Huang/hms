@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/homes/{homeId}/roles")
+@RequestMapping("/roles")
 public class HomeRoleController {
 
     private final HomeRoleService homeRoleService;
@@ -29,11 +29,11 @@ public class HomeRoleController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> createHomeRole(@PathVariable Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateOrUpdateRequest) {
-        Role role = roleMapper.toModel(roleCreateOrUpdateRequest);
+    public ResponseEntity<HmsResponse<Void>> createHomeRole(@RequestAttribute Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateRequest) {
+        Role role = roleMapper.toModel(roleCreateRequest);
         role.setHomeId(homeId);
         try {
-            homeRoleService.createHomeRole(roleCreateOrUpdateRequest.systemRoleId(), role);
+            homeRoleService.createHomeRole(roleCreateRequest.systemRoleId(), role);
             return ResponseEntity.ok(HmsResponse.success());
         } catch (RoleAlreadyExistedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
@@ -41,13 +41,13 @@ public class HomeRoleController {
     }
 
     @GetMapping
-    public ResponseEntity<HmsResponse<List<RoleResponse>>> getAvailableRolesFromHome(@PathVariable Integer homeId) {
+    public ResponseEntity<HmsResponse<List<RoleResponse>>> getAvailableRolesFromHome(@RequestAttribute Integer homeId) {
         List<Role> roles = homeRoleService.getAvailableRolesFromHome(homeId);
         return ResponseEntity.ok(HmsResponse.success(roles.stream().map(roleMapper::toResponse).toList()));
     }
 
     @PutMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@PathVariable Integer homeId, @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
+    public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         Role role = roleMapper.toModel(roleUpdateRequest);
         role.setHomeId(homeId);
         role.setRoleId(roleId);
@@ -56,8 +56,9 @@ public class HomeRoleController {
     }
 
     @DeleteMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<Void>> deleteHomeRole(@PathVariable Integer homeId, @PathVariable Integer roleId) {
+    public ResponseEntity<HmsResponse<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @PathVariable Integer roleId) {
         homeRoleService.deleteHomeRole(homeId, roleId);
         return ResponseEntity.ok(HmsResponse.success());
     }
+
 }

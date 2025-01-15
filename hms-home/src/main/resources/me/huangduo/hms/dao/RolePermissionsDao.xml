@@ -6,10 +6,12 @@
 <mapper namespace="me.huangduo.hms.dao.RolePermissionsDao">
 
     <insert id="batchCreate">
-        INSERT INTO role_permissions (role_id, permission_id) VALUES
-        <foreach collection="permissionEntities" item="item" separator=",">
-            (#{item.roleId}, #{item.permissionId})
-        </foreach>
+        <if test="permissionEntities != null and permissionEntities.size() > 0">
+            INSERT INTO role_permissions (role_id, permission_id) VALUES
+            <foreach collection="permissionEntities" item="item" separator=",">
+                (#{item.roleId}, #{item.permissionId})
+            </foreach>
+        </if>
     </insert>
 
     <delete id="batchDelete">

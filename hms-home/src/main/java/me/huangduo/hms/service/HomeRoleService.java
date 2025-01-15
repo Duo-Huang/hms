@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface HomeRoleService {
 
-    void createHomeRole(Integer systemRoleId, Role role) throws RoleAlreadyExistedException; // create a role base on system role
+    void createHomeRole(Integer basRoleId, Role role) throws RoleAlreadyExistedException; // create a role base on system role
 
     List<Role> getAvailableRolesFromHome(Integer homeId) throws RecordNotFoundException;
 
@@ -18,7 +18,7 @@ public interface HomeRoleService {
 
     Role getHomeRoleWithPermissions(Integer homeId, Integer roleId) throws RecordNotFoundException; // can only get home role
 
-    void assignPermissionsForHomeRole(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException;
+    void assignPermissionsForHomeRole(Integer roleId, List<Integer> permissionIds) throws RecordNotFoundException;
 
-    void removePermissionsForHomeRole(Integer roleId, Integer[] permissionIds) throws RecordNotFoundException;
+    void removePermissionsForHomeRole(Integer roleId, List<Integer> permissionIds) throws RecordNotFoundException;
 }

@@ -2,6 +2,8 @@ package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dto.model.Role;
+import me.huangduo.hms.dto.request.RoleCreateRequest;
+import me.huangduo.hms.dto.request.RoleUpdateRequest;
 import me.huangduo.hms.dto.response.RoleResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -10,7 +12,11 @@ import org.mapstruct.MappingConstants;
 public interface RoleMapper {
     RoleEntity toEntity(Role home);
 
-    <T> Role toModel(T source);
+    Role toModel(RoleEntity roleEntity);
+
+    Role toModel(RoleCreateRequest roleCreateRequest);
+
+    Role toModel(RoleUpdateRequest roleUpdateRequest);
 
     RoleResponse toResponse(Role role);
 }

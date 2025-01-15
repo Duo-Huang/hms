@@ -50,6 +50,7 @@ public enum HmsErrorCodeEnum {
     HOME_ERROR_2013(2213, "该角色已存在"),
     HOME_ERROR_2014(2214, "该角色不存在"),
     HOME_ERROR_2015(2215, "角色信息格式错误"),
+    HOME_ERROR_2016(2216, "该用户无权访问此家庭"),
 
     // 财务模块错误 23xx
     FINANCE_ERROR_301(2301, "预算不足");

@@ -21,15 +21,15 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
 
     private final UsersDao usersDao;
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
 
     private final UserMapper userMapper;
 
     private final RevokedUserTokensDao revokedUserTokensDao;
 
-    public UserServiceImpl(UsersDao usersDao, AuthService authService, UserMapper userMapper, RevokedUserTokensDao revokedUserTokensDao) {
+    public UserServiceImpl(UsersDao usersDao, AuthenticationService authenticationService, UserMapper userMapper, RevokedUserTokensDao revokedUserTokensDao) {
         this.usersDao = usersDao;
-        this.authService = authService;
+        this.authenticationService = authenticationService;
         this.userMapper = userMapper;
         this.revokedUserTokensDao = revokedUserTokensDao;
     }
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException();
         }
         user = userMapper.toModel(userEntity);
-        return authService.generateToken(user);
+        return authenticationService.generateToken(user);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
         }
         userEntity.setPassword(newPassword);
         usersDao.update(userEntity);
-        authService.revokeToken(userToken);
+        authenticationService.revokeToken(userToken);
     }
 
     @Override

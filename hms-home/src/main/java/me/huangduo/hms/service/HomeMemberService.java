@@ -16,11 +16,13 @@ public interface HomeMemberService {
 
     void removeMember(Member member) throws RecordNotFoundException;
 
+    Member getMemberWithRole(Integer homeId, User user) throws RecordNotFoundException;
+
     void updateMemberInfo(Member member) throws RecordNotFoundException; // 修改家庭成员的信息, 不是user的信息
 
     List<Home> getHomesForUser(User user);
 
-    List<Member> getMembersWithRolesForHome(Integer homeId) throws RecordNotFoundException; // 包含角色信息
+    List<Member> getMembersWithRoles(Integer homeId) throws RecordNotFoundException; // 包含角色信息
 
     void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException;
 

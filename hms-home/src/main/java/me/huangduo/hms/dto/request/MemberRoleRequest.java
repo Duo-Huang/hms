@@ -1,4 +1,4 @@
-package me.huangduo.hms.dto.response;
+package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -6,7 +6,7 @@ import me.huangduo.hms.dto.request.HmsRequest;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record MemberRoleRequest(
-        @NotNull
+        @NotNull(message = "role id can not be null")
         @Positive(message = "role id is a positive integer.")
         Integer roleId
 ) implements HmsRequest {

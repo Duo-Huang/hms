@@ -31,7 +31,7 @@ public interface HomeMemberRolesDao {
             "FROM home_member_roles hmr\n" +
             "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
             "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
-            "WHERE hmr.home_id = 1;")
+            "WHERE hmr.home_id = #{homeId}")
     @Results({
             @Result(property = "userId", column = "hmr.user_id"),
             @Result(property = "homeId", column = "hmr.home_id"),
@@ -43,5 +43,22 @@ public interface HomeMemberRolesDao {
             @Result(property = "role.roleDescription", column = "role_description"),
     })
     List<Member> getMembersWithRolesByHomeId(Integer homeId); // 组合查询
+
+    @Select("SELECT hmr.*, r.*, u.*\n" +
+            "FROM home_member_roles hmr\n" +
+            "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
+            "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
+            "WHERE hmr.home_id = #{homeId} AND hmr.user_id = #{userId}")
+    @Results({
+            @Result(property = "userId", column = "hmr.user_id"),
+            @Result(property = "homeId", column = "hmr.home_id"),
+            @Result(property = "createdAt", column = "hmr.created_at"),
+            @Result(property = "updatedAT", column = "hmr.updated_at"),
+            @Result(property = "role.roleId", column = "hmr.role_id"),
+            @Result(property = "role.roleType", column = "role_type"),
+            @Result(property = "role.roleName", column = "role_name"),
+            @Result(property = "role.roleDescription", column = "role_description"),
+    })
+    Member getMemberWithRoleByHomeIdAndUserId(Integer homeId, Integer userId); // 组合查询
 
 }

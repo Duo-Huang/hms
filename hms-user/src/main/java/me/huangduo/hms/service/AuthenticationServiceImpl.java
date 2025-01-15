@@ -24,7 +24,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class AuthServiceImpl implements AuthService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final SecretKey key;
 
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final ObjectMapper objectMapper;
 
 
-    public AuthServiceImpl(AppConfig appConfig, RevokedUserTokensDao revokedUserTokensDao, ObjectMapper objectMapper) {
+    public AuthenticationServiceImpl(AppConfig appConfig, RevokedUserTokensDao revokedUserTokensDao, ObjectMapper objectMapper) {
         this.appConfig = appConfig;
         this.key = Keys.hmacShaKeyFor(appConfig.getJwtSecret().getBytes(StandardCharsets.UTF_8));
         this.revokedUserTokensDao = revokedUserTokensDao;

@@ -6,10 +6,10 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record RoleUpdateRequest(
         @NotNull
-        @Size(max = 12, message = "role name must be at most 12 characters long")
+        @Size(max = 12, message = "roleName must be at most 12 characters long")
         String roleName,
 
-        @Size(max = 100, message = "role name must be at most 100 characters long")
+        @Size(max = 100, message = "roleDescription must be at most 100 characters long")
         String roleDescription
 ) implements HmsRequest {
     @Override

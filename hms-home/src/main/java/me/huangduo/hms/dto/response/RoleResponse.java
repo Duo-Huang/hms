@@ -11,8 +11,6 @@ public record RoleResponse(
         HmsRoleType roleType,
         String roleName,
         String roleDescription,
-        Integer homeId,
-        List<PermissionResponse> permissions,
         LocalDateTime createdAt
 ) {
 }

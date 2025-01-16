@@ -31,20 +31,20 @@ public interface HomeMemberRolesDao {
     @Select("SELECT home_id FROM home_member_roles WHERE user_id = ${userId}")
     List<Integer> getHomeIdsByUserId(Integer userId);
 
-    @Select("SELECT hmr.*, r.*, u.*\n" +
+    @Select("SELECT hmr.member_name, hmr.created_at AS hmr_created_at, hmr.updated_at AS hmr_updated_at, r.*, u.user_id, u.username\n" +
             "FROM home_member_roles hmr\n" +
             "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
             "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
-            "WHERE hmr.home_id = #{homeId}")
+            "WHERE hmr.home_id = 1;")
     @Results({
-            @Result(property = "userId", column = "hmr.user_id"),
-            @Result(property = "homeId", column = "hmr.home_id"),
-            @Result(property = "createdAt", column = "hmr.created_at"),
-            @Result(property = "updatedAT", column = "hmr.updated_at"),
-            @Result(property = "role.roleId", column = "hmr.role_id"),
+            @Result(property = "createdAt", column = "hmr_created_at"),
+            @Result(property = "updatedAt", column = "hmr_updated_at"),
+            @Result(property = "role.roleId", column = "role_id"),
             @Result(property = "role.roleType", column = "role_type"),
             @Result(property = "role.roleName", column = "role_name"),
             @Result(property = "role.roleDescription", column = "role_description"),
+            @Result(property = "role.createdAt", column = "created_at"),
+            @Result(property = "role.updatedAt", column = "updated_at"),
     })
     List<Member> getMembersWithRolesByHomeId(Integer homeId); // 组合查询
 
@@ -54,11 +54,7 @@ public interface HomeMemberRolesDao {
             "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
             "WHERE hmr.home_id = #{homeId} AND hmr.user_id = #{userId}")
     @Results({
-            @Result(property = "userId", column = "hmr.user_id"),
-            @Result(property = "homeId", column = "hmr.home_id"),
-            @Result(property = "createdAt", column = "hmr.created_at"),
-            @Result(property = "updatedAT", column = "hmr.updated_at"),
-            @Result(property = "role.roleId", column = "hmr.role_id"),
+            @Result(property = "role.roleId", column = "role_id"),
             @Result(property = "role.roleType", column = "role_type"),
             @Result(property = "role.roleName", column = "role_name"),
             @Result(property = "role.roleDescription", column = "role_description"),

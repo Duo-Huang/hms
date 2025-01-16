@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import me.huangduo.hms.dto.model.*;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
+import me.huangduo.hms.dto.request.UserAcceptHomeInvitationRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
-import me.huangduo.hms.enums.HmsSystemRole;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
@@ -31,13 +31,10 @@ public class HomeMemberController {
 
     private final HomeMapper homeMapper;
 
-    private final CommonService commonService;
-
-    public HomeMemberController(HomeMemberService homeMemberService, MemberMapper memberMapper, HomeMapper homeMapper, CommonService commonService) {
+    public HomeMemberController(HomeMemberService homeMemberService, MemberMapper memberMapper, HomeMapper homeMapper) {
         this.homeMemberService = homeMemberService;
         this.memberMapper = memberMapper;
         this.homeMapper = homeMapper;
-        this.commonService = commonService;
     }
 
     @PostMapping("/invite")
@@ -60,12 +57,9 @@ public class HomeMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken) {
+    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) {
         try {
-            homeMemberService.addMember(homeId, userToken.userInfo());
-            // assign a default home member role for this user
-            SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
-            homeMemberService.assignRoleForMember(Member.builder().homeId(homeId).userId(userToken.userInfo().getUserId()).build(), homeMemberRole.getRoleId());
+            homeMemberService.acceptInvitation(homeId, userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));

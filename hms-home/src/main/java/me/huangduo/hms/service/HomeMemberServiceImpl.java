@@ -8,8 +8,10 @@ import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.HmsSystemRole;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
@@ -66,11 +68,21 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         }
         // TODO: 事件驱动
         /*
-         * 1. 创建一个消息表(通用, 未来支持更多的系统消息)
-         * 2. 存储一个邀请信息, 消息做成家庭内广播即可, 如果有收件人, 只有收件人可以操作消息, 其他人只能看到
+         * 1. 创建一个消息表(通用, 未来支持更多的系统消息),消息做成家庭内广播即可,每条消息都有type 如果有收件人, 只有收件人可以操作消息, 其他人只能看到
+         * 2. 存储一个邀请type的消息, 包含消息id, 邀请码, 收件人, 接受状态, 只有收件人可以接受邀请
          * 3. 发布一个事件,
          * */
 
+    }
+
+    @Override
+    public void acceptInvitation(Integer homeId, User user, String invitationCode) throws IllegalArgumentException {
+        // 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人是否是当前user, 不是就返回400
+
+        addMember(homeId, user);
+        // assign a default home member role for this user
+        SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
+        assignRoleForMember(Member.builder().homeId(homeId).userId(user.getUserId()).build(), homeMemberRole.getRoleId());
     }
 
     @Override
@@ -132,7 +144,14 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     @Override
     public List<Member> getMembersWithRoles(Integer homeId) throws RecordNotFoundException {
-        return homeMemberRolesDao.getMembersWithRolesByHomeId(homeId);
+        List<Member> members = homeMemberRolesDao.getMembersWithRolesByHomeId(homeId);
+        members.forEach(x -> {
+            if (x.getRole().getRoleId() == null) {
+                x.setRole(null);
+            }
+        });
+
+        return members;
     }
 
     @Override

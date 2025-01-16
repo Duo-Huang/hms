@@ -19,7 +19,7 @@ public class Member extends User {
 
     private String memberName; // default is user nickname
 
-    private HomeRole role; // can be system role or home role
+    private SystemRole role; // can be system role or home role
 
     private LocalDateTime createdAt;
 

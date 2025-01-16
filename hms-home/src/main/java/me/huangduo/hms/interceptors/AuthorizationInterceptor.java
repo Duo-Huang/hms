@@ -3,7 +3,6 @@ package me.huangduo.hms.interceptors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
@@ -42,10 +41,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 ? getHomeIdFromPath(request)
                 : getHomeIdFromHeader(request);
 
-        validateHomeAndUser(homeId, user.getUserId());
-
-        request.setAttribute("homeId", homeId);
         MDC.put("homeId", String.valueOf(homeId));
+        validateHomeAndUser(homeId, user.getUserId());
+        request.setAttribute("homeId", homeId);
+
         return true;
     }
 
@@ -93,14 +92,16 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private void checkHomeExisted(Integer homeId) {
         if (commonService.getHomeInfo(homeId) == null) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("The requested home does not exist: homeId={}", homeId, e);
+            log.error("The requested home does not exist", e);
             throw e;
         }
     }
 
     private void checkUserInHome(Integer homeId, Integer userId) {
-        if (commonService.isUserInHome(homeId, userId)) {
-            throw new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2016);
+        if (!commonService.isUserInHome(homeId, userId)) {
+            BusinessException e = new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2016);
+            log.error("There is no such user in this home", e);
+            throw e;
         }
     }
 }

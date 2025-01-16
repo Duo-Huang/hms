@@ -24,6 +24,10 @@ public interface HomeMemberRolesDao {
     @Select("SELECT * FROM home_member_roles WHERE home_id = ${homeId}")
     List<HomeMemberRoleEntity> getItemsByHomeId(Integer homeId);
 
+
+    @Select("SELECT * FROM home_member_roles WHERE home_id = #{homeId} AND role_id = #{roleId}")
+    HomeMemberRoleEntity getItemByHomeIdAndRoleId(Integer homeId, Integer roleId);
+
     @Select("SELECT home_id FROM home_member_roles WHERE user_id = ${userId}")
     List<Integer> getHomeIdsByUserId(Integer userId);
 

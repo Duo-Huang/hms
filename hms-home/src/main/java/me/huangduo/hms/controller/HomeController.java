@@ -45,7 +45,9 @@ public class HomeController {
 
     @PutMapping("/{homeId}")
     public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
-        homeService.updateHomeInfo(homeMapper.toModel(homeCreateOrUpdateRequest));
+        Home home = homeMapper.toModel(homeCreateOrUpdateRequest);
+        home.setHomeId(homeId);
+        homeService.updateHomeInfo(home);
         return ResponseEntity.ok(HmsResponse.success());
     }
 

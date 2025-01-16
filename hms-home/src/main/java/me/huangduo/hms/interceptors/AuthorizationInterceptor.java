@@ -10,6 +10,8 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
+import me.huangduo.hms.service.CommonService;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -24,10 +26,10 @@ import java.util.Optional;
 @Slf4j
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
-    private final CommonDao commonDao;
+    private final CommonService commonService;
 
-    public AuthorizationInterceptor(CommonDao commonDao) {
-        this.commonDao = commonDao;
+    public AuthorizationInterceptor(CommonService commonService) {
+        this.commonService = commonService;
     }
 
     @Override
@@ -36,14 +38,20 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         UserToken userToken = (UserToken) request.getAttribute("userToken");
         User user = userToken.userInfo();
 
-        Integer homeId = url.startsWith("/homes")
+        Integer homeId = url.startsWith("/api/homes")
                 ? getHomeIdFromPath(request)
                 : getHomeIdFromHeader(request);
 
         validateHomeAndUser(homeId, user.getUserId());
 
         request.setAttribute("homeId", homeId);
+        MDC.put("homeId", String.valueOf(homeId));
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        MDC.clear();
     }
 
     @SuppressWarnings("unchecked")
@@ -71,7 +79,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         try {
             return Integer.parseInt(homeIdStr);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(errorMessage);
+            RuntimeException ex = new IllegalArgumentException(errorMessage);
+            log.error("homeId cannot be converted to a number: homeId={}", homeIdStr, ex);
+            throw ex;
         }
     }
 
@@ -81,7 +91,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     }
 
     private void checkHomeExisted(Integer homeId) {
-        if (commonDao.getHomeById(homeId) == null) {
+        if (commonService.getHomeInfo(homeId) == null) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
             log.error("The requested home does not exist: homeId={}", homeId, e);
             throw e;
@@ -89,7 +99,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     }
 
     private void checkUserInHome(Integer homeId, Integer userId) {
-        if (commonDao.isUserInHome(homeId, userId) == 0) {
+        if (commonService.isUserInHome(homeId, userId)) {
             throw new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2016);
         }
     }

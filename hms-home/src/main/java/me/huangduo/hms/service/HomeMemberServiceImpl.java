@@ -1,24 +1,20 @@
 package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
-import me.huangduo.hms.enums.HmsSystemRole;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
-import me.huangduo.hms.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +29,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private final HomesDao homesDao;
 
-    private final CommonDao commonDao;
+    private final CommonService commonService;
 
     private final RolesDao rolesDao;
 
@@ -44,14 +40,14 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     public HomeMemberServiceImpl(
             HomeMemberRolesDao homeMemberRolesDao,
             HomesDao homesDao,
-            CommonDao commonDao,
+            CommonService commonService,
             RolesDao rolesDao,
             HomeMapper homeMapper,
             MemberMapper memberMapper
             ) {
         this.homeMemberRolesDao = homeMemberRolesDao;
         this.homesDao = homesDao;
-        this.commonDao = commonDao;
+        this.commonService = commonService;
         this.rolesDao = rolesDao;
         this.homeMapper = homeMapper;
         this.memberMapper = memberMapper;
@@ -88,21 +84,11 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             log.error("This home member is already existed.", e);
             throw e;
         }
-        // assign a default system home member role for this member
-        RoleEntity homeMemberRole = rolesDao.getSystemRoleByName(HmsSystemRole.HOME_MEMBER.getRoleName());
-        Integer roleId = null;
-
-        if (Objects.isNull(homeMemberRole)) {
-            log.warn("The member is not assigned a default role.");
-        } else {
-            roleId = homeMemberRole.getRoleId();
-        }
 
         homeMemberRolesDao.add(
                 HomeMemberRoleEntity.builder()
                         .userId(userInfo.getUserId())
                         .homeId(homeId)
-                        .roleId(roleId)
                         .memberName(userInfo.getNickname())
                         .build()
         );
@@ -175,7 +161,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private User checkUserExisted(Integer userId) {
         User user = null;
-        if (userId == null || Objects.isNull(user = commonDao.getUserById(userId))) {
+        if (userId == null || Objects.isNull(user = commonService.getUserInfo(userId))) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
             log.error("This user does not existed.", e);
             throw e;

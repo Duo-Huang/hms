@@ -12,7 +12,7 @@ public record RoleResponse(
         String roleName,
         String roleDescription,
         Integer homeId,
-        List<Permission> permissions,
+        List<PermissionResponse> permissions,
         LocalDateTime createdAt
 ) {
 }

@@ -1,13 +1,13 @@
 package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.enums.HmsSystemRole;
@@ -32,11 +32,14 @@ public class HomeServiceImpl implements HomeService {
 
     private final HomeMapper homeMapper;
 
-    public HomeServiceImpl(HomesDao homesDao, HomeMemberService homeMemberService, RolesDao rolesDao, HomeMapper homeMapper) {
+    private final CommonService commonService;
+
+    public HomeServiceImpl(HomesDao homesDao, HomeMemberService homeMemberService, RolesDao rolesDao, HomeMapper homeMapper, CommonService commonService) {
         this.homesDao = homesDao;
         this.homeMemberService = homeMemberService;
         this.rolesDao = rolesDao;
         this.homeMapper = homeMapper;
+        this.commonService = commonService;
     }
 
     @Override
@@ -50,12 +53,14 @@ public class HomeServiceImpl implements HomeService {
             throw ex;
         }
 
-        // assign current user to default system admin role in this home
+        // add this user to this home and assign current user to default system admin role
         Member member = new Member();
         member.setHomeId(homeEntity.getHomeId());
         member.setUserId(user.getUserId());
 
-        RoleEntity adminRole = rolesDao.getSystemRoleByName(HmsSystemRole.HOME_ADMIN.getRoleName());
+        homeMemberService.addMember(member.getHomeId(), user);
+
+        SystemRole adminRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_ADMIN);
 
         if (Objects.isNull(adminRole)) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_209);
@@ -79,21 +84,11 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public void updateHomeInfo(Home home) throws RecordNotFoundException {
-        int row = homesDao.update(homeMapper.toEntity(home));
-        if (row == 0) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home doesn't exist.", e);
-            throw e;
-        }
+        homesDao.update(homeMapper.toEntity(home));
     }
 
     @Override
     public void deleteHome(Integer homeId) throws RecordNotFoundException {
-        int row = homesDao.delete(homeId);
-        if (row == 0) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
-            log.error("This home doesn't exist.", e);
-            throw e;
-        }
+        homesDao.delete(homeId);
     }
 }

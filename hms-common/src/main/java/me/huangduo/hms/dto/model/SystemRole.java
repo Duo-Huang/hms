@@ -1,6 +1,9 @@
 package me.huangduo.hms.dto.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import me.huangduo.hms.enums.HmsRoleType;
 
 import java.time.LocalDateTime;
@@ -9,8 +12,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-
+@SuperBuilder
+public class SystemRole {
     private Integer roleId;
 
     private HmsRoleType roleType;
@@ -18,8 +21,6 @@ public class Role {
     private String roleName;
 
     private String roleDescription;
-
-    private Integer homeId;
 
     private List<Permission> permissions;
 

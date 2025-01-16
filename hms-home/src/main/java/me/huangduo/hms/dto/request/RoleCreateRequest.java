@@ -8,7 +8,7 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 public record RoleCreateRequest(
         @NotNull(message = "baseRoleId can not be null")
         @Positive(message = "baseRoleId is a positive integer.")
-        Integer systemRoleId,
+        Integer baseRoleId,
 
         @NotNull(message = "roleName can not be null")
         @Size(max = 12, message = "roleName must be at most 12 characters long")

@@ -15,12 +15,6 @@ public interface RolesDao {
     @Select("SELECT * FROM roles WHERE role_id = #{roleId}")
     RoleEntity getById(Integer roleId);
 
-    @Select("SELECT * FROM roles WHERE role_name = ${roleName} AND role_type = 0 AND home_id IS NULL")
-    RoleEntity getSystemRoleByName(String roleName);
-
-    @Select("SELECT * FROM roles WHERE role_type = 0 AND home_id IS NULL")
-    RoleEntity getSystemRoles();
-
     @Select("SELECT * from roles WHERE role_id = #{roleId} AND home_id = #{homeId}")
     RoleEntity getItemByIdAndHomeId(Integer homeId, Integer roleId);
 

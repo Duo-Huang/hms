@@ -1,5 +1,6 @@
 package me.huangduo.hms.service;
 
+import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.RevokedUserTokensDao;
 import me.huangduo.hms.dao.UsersDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
@@ -8,6 +9,7 @@ import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
+import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.DuplicatedPasswordException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 import me.huangduo.hms.mapper.UserMapper;
@@ -18,6 +20,7 @@ import java.util.Objects;
 
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UsersDao usersDao;
@@ -42,7 +45,9 @@ public class UserServiceImpl implements UserService {
         try {
             usersDao.create(userEntity);
         } catch (DuplicateKeyException e) {
-            throw new UserAlreadyExistsException(HmsErrorCodeEnum.USER_ERROR_103);
+            BusinessException ex = new UserAlreadyExistsException(HmsErrorCodeEnum.USER_ERROR_103);
+            log.error("This is user is already existed", e);
+            throw ex;
         }
         return userEntity.getUserId();
     }
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService {
     public String login(User user, String password) throws IllegalArgumentException {
         UserEntity userEntity = usersDao.findUserByUsernameAndPassword(user.getUsername(), password);
         if (Objects.isNull(userEntity)) {
+            log.error("Wrong username or password");
             throw new IllegalArgumentException();
         }
         user = userMapper.toModel(userEntity);
@@ -66,11 +72,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
         if (Objects.equals(oldPassword, newPassword)) {
-            throw new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_1010);
+            BusinessException e = new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_1010);
+            log.error("The new password cannot be the same as the old password", e);
+            throw e;
         }
         UserEntity userEntity = usersDao.findUserByUsernameAndPassword(userToken.userInfo().getUsername(), oldPassword);
         if (Objects.isNull(userEntity)) {
-            throw new IllegalArgumentException();
+            RuntimeException e = new IllegalArgumentException();
+            log.error("Wrong password", e);
+            throw e;
         }
         userEntity.setPassword(newPassword);
         usersDao.update(userEntity);

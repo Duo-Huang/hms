@@ -1,19 +1,18 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.Member;
-import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.dto.model.*;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
+import me.huangduo.hms.enums.HmsSystemRole;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
+import me.huangduo.hms.service.CommonService;
 import me.huangduo.hms.service.HomeMemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +31,13 @@ public class HomeMemberController {
 
     private final HomeMapper homeMapper;
 
-    public HomeMemberController(HomeMemberService homeMemberService, MemberMapper memberMapper, HomeMapper homeMapper) {
+    private final CommonService commonService;
+
+    public HomeMemberController(HomeMemberService homeMemberService, MemberMapper memberMapper, HomeMapper homeMapper, CommonService commonService) {
         this.homeMemberService = homeMemberService;
         this.memberMapper = memberMapper;
         this.homeMapper = homeMapper;
+        this.commonService = commonService;
     }
 
     @PostMapping("/invite")
@@ -61,6 +63,9 @@ public class HomeMemberController {
     public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken) {
         try {
             homeMemberService.addMember(homeId, userToken.userInfo());
+            // assign a default home member role for this user
+            SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
+            homeMemberService.assignRoleForMember(Member.builder().homeId(homeId).userId(userToken.userInfo().getUserId()).build(), homeMemberRole.getRoleId());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));

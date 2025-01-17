@@ -14,6 +14,9 @@ public interface CommonDao {
     @Select("SELECT user_id, username, nickname, created_at, updated_at FROM users WHERE user_id = #{userId}")
     User getUserById(Integer userId);
 
+    @Select("SELECT user_id, username, nickname, created_at, updated_at FROM users WHERE username = #{username}")
+    User getUserByName(String username);
+
     @Select("SELECT * FROM homes WHERE home_id = #{homeId}")
     Home getHomeById(Integer homeId);
 

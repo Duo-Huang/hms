@@ -37,13 +37,13 @@ public class HomeController {
         }
     }
 
-    @GetMapping("/{homeId}")
+    @GetMapping("/{homeId:\\d+}")
     public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@PathVariable Integer homeId) {
         Home homeInfo = homeService.getHomeInfo(homeId);
         return ResponseEntity.ok(HmsResponse.success(new HomeInfoResponse(homeInfo.getHomeId(), homeInfo.getHomeName(), homeInfo.getHomeDescription(), homeInfo.getCreatedAt())));
     }
 
-    @PutMapping("/{homeId}")
+    @PatchMapping("/{homeId:\\d+}")
     public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
         Home home = homeMapper.toModel(homeCreateOrUpdateRequest);
         home.setHomeId(homeId);
@@ -51,7 +51,7 @@ public class HomeController {
         return ResponseEntity.ok(HmsResponse.success());
     }
 
-    @DeleteMapping("/{homeId}")
+    @DeleteMapping("/{homeId:\\d+}")
     public ResponseEntity<HmsResponse<Void>> deleteHome(@PathVariable Integer homeId) {
         homeService.deleteHome(homeId);
         return ResponseEntity.ok(HmsResponse.success());

@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface CommonService {
 
-    User getUserInfo(Integer userId);
+    User getUserById(Integer userId);
 
-    Home getHomeInfo(Integer homeId);
+    User getUserByName(String username);
+
+    Home getHomeById(Integer homeId);
 
     boolean isUserInHome(Integer homeId, Integer userId);
 

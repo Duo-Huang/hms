@@ -12,6 +12,7 @@ import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.service.CommonService;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -34,6 +36,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String url = request.getRequestURI();
+        if (url.equals("/api/members") && Objects.equals(request.getMethod(), HttpMethod.POST.name())) { // ignore invite accept request
+            return true;
+        }
+
         UserToken userToken = (UserToken) request.getAttribute("userToken");
         User user = userToken.userInfo();
 
@@ -90,7 +96,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     }
 
     private void checkHomeExisted(Integer homeId) {
-        if (commonService.getHomeInfo(homeId) == null) {
+        if (commonService.getHomeById(homeId) == null) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
             log.error("The requested home does not exist", e);
             throw e;

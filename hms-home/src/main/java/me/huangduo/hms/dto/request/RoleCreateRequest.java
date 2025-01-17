@@ -1,5 +1,6 @@
 package me.huangduo.hms.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -10,7 +11,7 @@ public record RoleCreateRequest(
         @Positive(message = "baseRoleId is a positive integer.")
         Integer baseRoleId,
 
-        @NotNull(message = "roleName can not be null")
+        @NotEmpty(message = "roleName can not be empty.")
         @Size(max = 12, message = "roleName must be at most 12 characters long")
         String roleName,
 

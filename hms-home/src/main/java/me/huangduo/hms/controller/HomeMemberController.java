@@ -10,9 +10,9 @@ import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
+import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
-import me.huangduo.hms.service.CommonService;
 import me.huangduo.hms.service.HomeMemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +38,11 @@ public class HomeMemberController {
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<HmsResponse<Void>> inviteMember(@RequestAttribute Integer homeId, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
+    public ResponseEntity<HmsResponse<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
         try {
-            homeMemberService.inviteMember(homeId, user);
+            homeMemberService.inviteUser(homeId, userToken.userInfo().getUserId(), user);
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
@@ -57,16 +57,16 @@ public class HomeMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) {
+    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) {
         try {
-            homeMemberService.acceptInvitation(homeId, userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
+            homeMemberService.acceptInvitation(userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
             return ResponseEntity.ok(HmsResponse.success());
-        } catch (HomeAlreadyExistsException e) {
+        } catch (HomeMemberAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
         }
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{userId:\\d+}")
     public ResponseEntity<HmsResponse<Void>> removeMember(@RequestAttribute Integer homeId, @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
@@ -75,7 +75,7 @@ public class HomeMemberController {
         return ResponseEntity.ok(HmsResponse.success());
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId:\\d+}")
     public ResponseEntity<HmsResponse<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @PathVariable Integer userId) {
         User user = new User();
         user.setUserId(userId);
@@ -84,7 +84,7 @@ public class HomeMemberController {
         return ResponseEntity.ok(HmsResponse.success(memberMapper.toResponse(member)));
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/{userId:\\d+}")
     public ResponseEntity<HmsResponse<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
         Member member = memberMapper.toModel(memberInfoUpdateRequest);
         member.setHomeId(homeId);
@@ -99,7 +99,7 @@ public class HomeMemberController {
         return ResponseEntity.ok(HmsResponse.success(homes.stream().map(homeMapper::toResponse).collect(Collectors.toList())));
     }
 
-    @PutMapping("/{userId}/role")
+    @PutMapping("/{userId:\\d+}/role")
     public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@PathVariable Integer homeId, @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
         Member member = new Member();
         member.setHomeId(homeId);
@@ -108,7 +108,7 @@ public class HomeMemberController {
         return ResponseEntity.ok(HmsResponse.success());
     }
 
-    @DeleteMapping("/{userId}/role")
+    @DeleteMapping("/{userId:\\d+}/role")
     public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@PathVariable Integer homeId, @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);

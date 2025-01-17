@@ -1,11 +1,11 @@
 package me.huangduo.hms.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record MemberInfoUpdateRequest(
-        @NotNull(message = "home member name can not be null.")
+        @NotEmpty(message = "home member name can not be empty.")
         @Size(max = 16, message = "home member name must be at most 16 characters long.")
         String memberName
 ) implements HmsRequest {

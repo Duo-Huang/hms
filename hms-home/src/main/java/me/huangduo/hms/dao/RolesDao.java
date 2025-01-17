@@ -1,10 +1,7 @@
 package me.huangduo.hms.dao;
 
 import me.huangduo.hms.dao.entity.RoleEntity;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -21,10 +18,11 @@ public interface RolesDao {
     @Select("SELECT * FROM roles WHERE home_id = #{homeId}")
     List<RoleEntity> getItemsByHomeId(Integer homeId);
 
-    @Insert("INSERT INTO roles (role_type, role_name, role_description, home_id) VALUES (#{roleTypeValue}, #{roleName}, #{roleDescription}, #{homeId})")
+    @Insert("INSERT INTO roles (role_type, role_name, role_description, home_id) VALUES (#{roleType}, #{roleName}, #{roleDescription}, #{homeId})")
+    @Options(useGeneratedKeys = true, keyProperty = "roleId")
     int add(RoleEntity roleEntity);
 
-    int updateByIdAndHomeId(Integer homeId, Integer roleId);
+    int updateByIdAndHomeId(RoleEntity roleEntity);
 
     @Delete("DELETE FROM roles WHERE role_id = #{roleId} AND home_id=#{homeId}")
     int deleteByIdAndHomeId(Integer homeId, Integer roleId);

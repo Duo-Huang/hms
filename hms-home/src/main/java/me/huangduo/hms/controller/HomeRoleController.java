@@ -7,6 +7,7 @@ import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.response.RoleResponse;
+import me.huangduo.hms.dto.response.RoleWithPermissionResponse;
 import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
 import me.huangduo.hms.mapper.RoleMapper;
 import me.huangduo.hms.service.HomeRoleService;
@@ -47,7 +48,7 @@ public class HomeRoleController {
         return ResponseEntity.ok(HmsResponse.success(roles.stream().map(roleMapper::toResponse).toList()));
     }
 
-    @PutMapping("/{roleId}")
+    @PatchMapping("/{roleId}")
     public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         HomeRole role = roleMapper.toModel(roleUpdateRequest);
         role.setHomeId(homeId);
@@ -63,9 +64,9 @@ public class HomeRoleController {
     }
 
     @GetMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<RoleResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @PathVariable Integer roleId) {
+    public ResponseEntity<HmsResponse<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @PathVariable Integer roleId) {
         HomeRole role = homeRoleService.getHomeRoleWithPermissions(homeId, roleId);
-        return ResponseEntity.ok(HmsResponse.success(roleMapper.toResponse(role)));
+        return ResponseEntity.ok(HmsResponse.success(roleMapper.toResponseWithPermission(role)));
     }
 
     @PostMapping("/{roleId}/permissions")

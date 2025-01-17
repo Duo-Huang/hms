@@ -17,6 +17,7 @@ import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
+import me.huangduo.hms.utils.InvitationCoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,8 +57,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void inviteMember(Integer homeId, User user) throws RecordNotFoundException {
-        final User userInfo = checkUserExisted(user.getUserId()); // check and get all newest user info
+    public void inviteUser(Integer homeId, Integer inviterId, User user) throws RecordNotFoundException {
+        final User userInfo = checkUserExisted(user.getUsername()); // check and get all newest user info
 
         List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
 
@@ -66,23 +67,27 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             log.error("This home member is already existed.", e);
             throw e;
         }
+        String invitationCode = InvitationCoder.userIdToCode(inviterId);
+        log.info("invitationCode: {}, invitee userId: {}", invitationCode, userInfo.getUserId());
+
         // TODO: 事件驱动
         /*
          * 1. 创建一个消息表(通用, 未来支持更多的系统消息),消息做成家庭内广播即可,每条消息都有type 如果有收件人, 只有收件人可以操作消息, 其他人只能看到
-         * 2. 存储一个邀请type的消息, 包含消息id, 邀请码, 收件人, 接受状态, 只有收件人可以接受邀请
+         * 2. 存储一个邀请type的消息, 包含消息id, 邀请码, inviterId 收件人inviteeId, 接受状态, 只有收件人可以接受邀请
          * 3. 发布一个事件,
          * */
 
     }
 
     @Override
-    public void acceptInvitation(Integer homeId, User user, String invitationCode) throws IllegalArgumentException {
-        // 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人是否是当前user, 不是就返回400
-
-        addMember(homeId, user);
+    public void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException {
+        // 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人inviteeId是否是当前user, 不是就抛IllegalArgumentException
+        Integer inviterId = InvitationCoder.codeToUserId(invitationCode);
+        Integer inviterHomeId = homeMemberRolesDao.getHomeIdByUserId(inviterId);
+        addMember(inviterHomeId, user);
         // assign a default home member role for this user
         SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
-        assignRoleForMember(Member.builder().homeId(homeId).userId(user.getUserId()).build(), homeMemberRole.getRoleId());
+        assignRoleForMember(Member.builder().homeId(inviterHomeId).userId(user.getUserId()).build(), homeMemberRole.getRoleId());
     }
 
     @Override
@@ -180,7 +185,17 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private User checkUserExisted(Integer userId) {
         User user = null;
-        if (userId == null || Objects.isNull(user = commonService.getUserInfo(userId))) {
+        if (userId == null || Objects.isNull(user = commonService.getUserById(userId))) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
+            log.error("This user does not existed.", e);
+            throw e;
+        }
+        return user;
+    }
+
+    private User checkUserExisted(String username) {
+        User user = null;
+        if (username == null || Objects.isNull(user = commonService.getUserByName(username))) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
             log.error("This user does not existed.", e);
             throw e;

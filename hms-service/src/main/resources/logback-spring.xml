@@ -131,8 +131,11 @@
             <appender-ref ref="console"/>
         </logger>
 
-
         <logger name="me.huangduo.hms" level="DEBUG" additivity="false">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <logger name="org.springframework.jdbc.support.jdbcTransactionManager" level="DEBUG" additivity="false">
             <appender-ref ref="console"/>
         </logger>
         <!--

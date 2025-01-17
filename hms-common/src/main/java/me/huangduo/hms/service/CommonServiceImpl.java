@@ -20,12 +20,17 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public User getUserInfo(Integer userId) {
+    public User getUserById(Integer userId) {
         return commonDao.getUserById(userId);
     }
 
     @Override
-    public Home getHomeInfo(Integer homeId) {
+    public User getUserByName(String username) {
+        return commonDao.getUserByName(username);
+    }
+
+    @Override
+    public Home getHomeById(Integer homeId) {
         return commonDao.getHomeById(homeId);
     }
 

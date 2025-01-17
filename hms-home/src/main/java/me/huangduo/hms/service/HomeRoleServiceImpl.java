@@ -16,6 +16,7 @@ import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
 import me.huangduo.hms.mapper.PermissionMapper;
 import me.huangduo.hms.mapper.RoleMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,16 +32,13 @@ public class HomeRoleServiceImpl implements HomeRoleService {
 
     private final RolePermissionsDao rolePermissionsDao;
 
-    private final HomeMemberRolesDao homeMemberRolesDao;
-
     private final PermissionMapper permissionMapper;
 
 
-    public HomeRoleServiceImpl(RolesDao rolesDao, RoleMapper roleMapper, RolePermissionsDao rolePermissionsDao, HomeMemberRolesDao homeMemberRolesDao, PermissionMapper permissionMapper) {
+    public HomeRoleServiceImpl(RolesDao rolesDao, RoleMapper roleMapper, RolePermissionsDao rolePermissionsDao, PermissionMapper permissionMapper) {
         this.rolesDao = rolesDao;
         this.roleMapper = roleMapper;
         this.rolePermissionsDao = rolePermissionsDao;
-        this.homeMemberRolesDao = homeMemberRolesDao;
         this.permissionMapper = permissionMapper;
     }
 
@@ -55,7 +53,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
 
         try {
             rolesDao.add(roleEntity);
-        } catch (RoleAlreadyExistedException e) {
+        } catch (DuplicateKeyException e) {
             BusinessException ex = new RoleAlreadyExistedException(HmsErrorCodeEnum.HOME_ERROR_2013);
             log.error("This role is already existed.", ex);
             throw ex;
@@ -64,7 +62,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
         // assign permissions for new role
         baseRolePermissions.forEach(x -> {
             x.setRolePermissionId(null);
-            x.setRoleId(role.getRoleId());
+            x.setRoleId(roleEntity.getRoleId());
             x.setCreatedAt(null);
             x.setUpdatedAt(null);
         });
@@ -82,7 +80,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
     @Override
     public void updateHomeRoleInfo(HomeRole role) throws RecordNotFoundException {
         checkRoleInHome(role.getHomeId(), role.getRoleId());
-        rolesDao.updateByIdAndHomeId(role.getHomeId(), role.getRoleId());
+        rolesDao.updateByIdAndHomeId(roleMapper.toEntity(role));
     }
 
     @Override
@@ -121,7 +119,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
     }
 
     private void checkRoleInHome(Integer homeId, Integer roleId) {
-        if (roleId == null || Objects.isNull(homeMemberRolesDao.getItemByHomeIdAndRoleId(homeId, roleId))) {
+        if (roleId == null || Objects.isNull(rolesDao.getItemByIdAndHomeId(homeId, roleId))) {
             BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_2014);
             log.error("This role does not exists in this home.", e);
             throw e;

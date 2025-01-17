@@ -8,8 +8,6 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import java.util.List;
 
 public record PermissionAssignOrRemoveRequest(
-
-        @NotNull(message = "permissionIds can not be null.")
         @NotEmpty(message = "permissionIds can not be empty.")
         List<@NotNull @Positive Integer> permissionIds
 ) implements HmsRequest {

@@ -5,6 +5,7 @@ import me.huangduo.hms.dto.model.HomeRole;
 import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;
 import me.huangduo.hms.dto.response.RoleResponse;
+import me.huangduo.hms.dto.response.RoleWithPermissionResponse;
 import me.huangduo.hms.enums.HmsRoleType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,4 +29,6 @@ public interface RoleMapper {
 //    default int hmsRoleTypeToInt(HmsRoleType roleType) {
 //        return roleType != null ? roleType.getValue() : -1;
 //    }
+
+    RoleWithPermissionResponse toResponseWithPermission(HomeRole role);
 }

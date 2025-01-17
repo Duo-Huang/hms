@@ -1,8 +1,8 @@
 DELIMITER //
 
-CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `appuser-can-not-modify-system-role`
-    BEFORE UPDATE ON hms_dev.roles
-    FOR EACH ROW
+create definer=`hms_migration_user`@`%` trigger `appuser-can-not-modify-system-role`
+    before update on roles
+    for each row
 BEGIN
     SET @user_name = SUBSTRING_INDEX(SESSION_USER(), '@', 1);
     IF @user_name = 'hmsuser' AND (OLD.role_type = 0 OR NEW.role_type = 0) THEN
@@ -11,9 +11,9 @@ BEGIN
 END;
 //
 
-CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `appuser-can-not-delete-system-role`
-    BEFORE DELETE ON hms_dev.roles
-    FOR EACH ROW
+create definer=`hms_migration_user`@`%` trigger `appuser-can-not-delete-system-role`
+    BEFORE DELETE ON roles
+    for each row
 BEGIN
     SET @user_name = SUBSTRING_INDEX(SESSION_USER(), '@', 1);
     IF @user_name = 'hmsuser' AND OLD.role_type = 0 THEN
@@ -22,9 +22,9 @@ BEGIN
 END;
 //
 
-CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `appuser-can-not-create-system-role`
-    BEFORE INSERT ON hms_dev.roles
-    FOR EACH ROW
+create definer=`hms_migration_user`@`%` trigger `appuser-can-not-create-system-role`
+    BEFORE INSERT ON roles
+    for each row
 BEGIN
     SET @user_name = SUBSTRING_INDEX(SESSION_USER(), '@', 1);
     IF @user_name = 'hmsuser' AND NEW.role_type = 0 THEN
@@ -33,9 +33,9 @@ BEGIN
 END;
 //
 
-CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `create-nonsystem-role-must-in-a-home`
-    BEFORE INSERT ON hms_dev.roles
-    FOR EACH ROW
+create definer=`hms_migration_user`@`%` trigger `create-nonsystem-role-must-in-a-home`
+    BEFORE INSERT ON roles
+    for each row
 BEGIN
     IF NEW.role_type != 0 AND NEW.home_id IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'home_id must be provided when is not a system role';
@@ -43,9 +43,9 @@ BEGIN
 END;
 //
 
-CREATE DEFINER=`hms_migration_user`@`%` TRIGGER `update-nonsystem-role-must-in-a-home`
-    BEFORE UPDATE ON hms_dev.roles
-    FOR EACH ROW
+create definer=`hms_migration_user`@`%` trigger `update-nonsystem-role-must-in-a-home`
+    before update on roles
+    for each row
 BEGIN
     IF NEW.role_type != 0 AND NEW.home_id IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'home_id must be provided when is not a system role';

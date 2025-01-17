@@ -1,13 +1,13 @@
 package me.huangduo.hms.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record UserLoginRequest(
-        @NotNull(message = "username can not be null.")
+        @NotEmpty(message = "username can not be empty.")
         String username,
 
-        @NotNull(message = "password can not be null.")
+        @NotEmpty(message = "password can not be empty.")
         String password
 ) implements HmsRequest {
 

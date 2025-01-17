@@ -6,7 +6,13 @@ import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -17,14 +23,21 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
     /*
-     * Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出
+     * 400 - Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出
      * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<HmsResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
+    public ResponseEntity<HmsResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            if (error instanceof FieldError fieldError) {
+                // Handling field level errors
+                errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+            } else {
+                // Handling class level errors
+                errors.put("requestBody", error.getDefaultMessage());
+            }
         });
         try {
             HmsErrorCodeEnum errorCodeEnum = (HmsErrorCodeEnum) HmsRequest.class.getMethod("getHmsErrorCodeEnum").invoke(ex.getBindingResult().getTarget());
@@ -36,9 +49,8 @@ public class GlobalExceptionHandler {
         }
     }
 
-
     /*
-     * Service 层参数校验
+     * 400 - Service 层参数校验
      * */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HmsResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -47,7 +59,16 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * 认证失败 (业务异常)
+    * 400
+    * */
+    @ExceptionHandler({HttpMessageNotReadableException.class, MissingServletRequestParameterException.class})
+    public ResponseEntity<HmsResponse<Void>> handleBadRequestException(Exception e) {
+        log.error("Bad request", e);
+        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_008.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_008.getMessage()));
+    }
+
+    /*
+     * 401 - 认证失败 (业务异常)
      * */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<HmsResponse<Void>> handleRecordNotFound(AuthenticationException ex) {
@@ -56,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * 鉴权失败 (业务异常)
+     * 403 - 鉴权失败 (业务异常)
      * */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<HmsResponse<Void>> handleRecordNotFound(AccessDeniedException ex) {
@@ -65,7 +86,7 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * 资源找不到
+     * 404
      * */
     @ExceptionHandler({NoHandlerFoundException.class, RecordNotFoundException.class})
     public ResponseEntity<HmsResponse<Void>> handleNotFoundException(Exception e) {
@@ -74,6 +95,26 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(((RecordNotFoundException) e).getHmsErrorCodeEnum().getCode(), ((RecordNotFoundException) e).getHmsErrorCodeEnum().getMessage()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_004.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_004.getMessage()));
+    }
+
+    /*
+     * 405
+     * */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<HmsResponse<Void>> handleMethodNotAllowException(HttpRequestMethodNotSupportedException e) {
+        log.error("Request method is not supported", e);
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_006.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_006.getMessage()));
+    }
+
+    /*
+     * 415
+     * */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<HmsResponse<Void>> handleMethodNotAllowException(HttpMediaTypeNotSupportedException e) {
+        log.error("Request media type is not supported", e);
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_007.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_007.getMessage()));
     }
 
     /*
@@ -86,7 +127,7 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * fallback handler
+     * 500 - fallback handler
      * */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HmsResponse<Void>> handleGenericException(Exception ex) {

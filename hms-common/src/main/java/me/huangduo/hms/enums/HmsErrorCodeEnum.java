@@ -21,6 +21,9 @@ public enum HmsErrorCodeEnum {
     SYSTEM_ERROR_003(1003, "请求参数错误"), // 全局参数校验的fallback消息
     SYSTEM_ERROR_004(1004, "请求的资源未找到"),
     SYSTEM_ERROR_005(1005, "业务异常"), // 具体异常api内处理, 这里是全局兜底的错误
+    SYSTEM_ERROR_006(1006, "请求方法不支持"),
+    SYSTEM_ERROR_007(1007, "不支持的媒体类型"),
+    SYSTEM_ERROR_008(1008, "错误的请求"), // 400 fallback
 
     // 用户模块错误 21xx
     USER_ERROR_101(2101, "用户未认证"),
@@ -30,7 +33,7 @@ public enum HmsErrorCodeEnum {
     USER_ERROR_105(2105, "用户名或密码格式错误"), // 注册
     USER_ERROR_106(2106, "用户名或密码错误"), // 登录
     USER_ERROR_107(2107, "用户昵称格式错误"),
-    USER_ERROR_108(2108, "密码格式错误"),
+    USER_ERROR_108(2108, "更新密码信息错误"),
     USER_ERROR_109(2109, "密码错误"),
     USER_ERROR_1010(2110, "新密码不能和旧密码相同"),
 

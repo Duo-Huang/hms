@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
         if (Objects.equals(oldPassword, newPassword)) {
-            BusinessException e = new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_1010);
+            BusinessException e = new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_109);
             log.error("The new password cannot be the same as the old password", e);
             throw e;
         }

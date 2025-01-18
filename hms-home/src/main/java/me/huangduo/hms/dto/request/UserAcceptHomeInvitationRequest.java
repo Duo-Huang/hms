@@ -11,6 +11,6 @@ public record UserAcceptHomeInvitationRequest(
 ) implements HmsRequest {
         @Override
         public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-                return HmsErrorCodeEnum.HOME_ERROR_2018;
+                return HmsErrorCodeEnum.HOME_ERROR_2015;
         }
 }

@@ -14,6 +14,6 @@ public record RoleUpdateRequest(
 ) implements HmsRequest {
     @Override
     public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.HOME_ERROR_2015;
+        return HmsErrorCodeEnum.HOME_ERROR_2012;
     }
 }

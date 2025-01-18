@@ -10,6 +10,7 @@ import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.service.CommonService;
+import me.huangduo.hms.validators.IdValidator;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,8 +30,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private final CommonService commonService;
 
-    public AuthorizationInterceptor(CommonService commonService) {
+    private final IdValidator idValidator;
+
+    public AuthorizationInterceptor(CommonService commonService, IdValidator idValidator) {
         this.commonService = commonService;
+        this.idValidator = idValidator;
     }
 
     @Override
@@ -69,28 +73,31 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                     Collections.list(request.getHeaderNames()).forEach(headerName -> headers.add(headerName, request.getHeader(headerName)));
                     return new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), headers);
                 });
-
-        return parseHomeId(pathVariables.get("homeId"), "homeId is invalid");
+        return checkHomeId(pathVariables.get("homeId"), "homeId is invalid");
     }
 
     private Integer getHomeIdFromHeader(HttpServletRequest request) {
         String homeIdStr = Optional.ofNullable(request.getHeader("X-Home-ID"))
                 .orElseThrow(() -> new IllegalArgumentException("Header X-Home-ID is required."));
 
-        return parseHomeId(homeIdStr, "Header X-Home-ID is invalid.");
+        return checkHomeId(homeIdStr, "Header X-Home-ID is invalid.");
     }
 
-    private Integer parseHomeId(String homeIdStr, String errorMessage) {
-        try {
+    private Integer checkHomeId(String homeIdStr, String errorMessage) {
+        if (idValidator.isValid(homeIdStr, null)) {
             return Integer.parseInt(homeIdStr);
-        } catch (NumberFormatException e) {
-            RuntimeException ex = new IllegalArgumentException(errorMessage);
-            log.error("homeId cannot be converted to a number: homeId={}", homeIdStr, ex);
-            throw ex;
+        } else {
+            log.error("homeId is invalid: homeId={}", homeIdStr);
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 
     private void validateHomeAndUser(Integer homeId, Integer userId) {
+        if (!(homeId > 0)) {
+            RuntimeException ex = new IllegalArgumentException("homeId is invalid.");
+            log.error("homeId is invalid: homeId={}", homeId, ex);
+            throw ex;
+        }
         checkHomeExisted(homeId);
         checkUserInHome(homeId, userId);
     }
@@ -105,7 +112,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private void checkUserInHome(Integer homeId, Integer userId) {
         if (!commonService.isUserInHome(homeId, userId)) {
-            BusinessException e = new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2016);
+            BusinessException e = new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2013);
             log.error("There is no such user in this home", e);
             throw e;
         }

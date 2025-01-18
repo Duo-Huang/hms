@@ -93,7 +93,7 @@ create table home_member_roles
             on update cascade on delete cascade,
     constraint `user_home_roles-roles-role_id-fk`
         foreign key (role_id) references roles (role_id)
-            on update cascade on delete cascade,
+            on update set null on delete set null,
     constraint `user_home_roles-users-user_id-fk`
         foreign key (user_id) references users (user_id)
             on update cascade on delete cascade

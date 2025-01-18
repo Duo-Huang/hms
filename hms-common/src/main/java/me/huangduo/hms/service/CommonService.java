@@ -20,4 +20,6 @@ public interface CommonService {
     SystemRole getSystemRoleByName(HmsSystemRole hmsSystemRole);
 
     List<SystemRole> getSystemRoles();
+
+    boolean isSystemRole(Integer roleId);
 }

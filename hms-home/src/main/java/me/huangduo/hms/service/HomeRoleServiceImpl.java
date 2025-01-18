@@ -1,7 +1,6 @@
 package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.RolePermissionsDao;
 import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.PermissionEntity;
@@ -18,10 +17,11 @@ import me.huangduo.hms.mapper.RoleMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -34,16 +34,26 @@ public class HomeRoleServiceImpl implements HomeRoleService {
 
     private final PermissionMapper permissionMapper;
 
+    private final CommonService commonService;
 
-    public HomeRoleServiceImpl(RolesDao rolesDao, RoleMapper roleMapper, RolePermissionsDao rolePermissionsDao, PermissionMapper permissionMapper) {
+    private final CheckService checkService;
+
+
+    public HomeRoleServiceImpl(RolesDao rolesDao, RoleMapper roleMapper, RolePermissionsDao rolePermissionsDao, PermissionMapper permissionMapper, CommonService commonService, CheckService checkService) {
         this.rolesDao = rolesDao;
         this.roleMapper = roleMapper;
         this.rolePermissionsDao = rolePermissionsDao;
         this.permissionMapper = permissionMapper;
+        this.commonService = commonService;
+        this.checkService = checkService;
     }
 
     @Override
-    public void createHomeRole(Integer baseRoleId, HomeRole role) throws RoleAlreadyExistedException {
+    @Transactional
+    public void createHomeRole(Integer baseRoleId, HomeRole role) throws RoleAlreadyExistedException, IllegalArgumentException {
+        if (role == null) {
+            throw new IllegalArgumentException("role can not be null.");
+        }
         List<RolePermissionEntity> baseRolePermissions = rolePermissionsDao.getItemByRoleId(baseRoleId);
         if (baseRolePermissions.isEmpty()) {
             log.warn("Will create a home role without any permissions");
@@ -54,7 +64,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
         try {
             rolesDao.add(roleEntity);
         } catch (DuplicateKeyException e) {
-            BusinessException ex = new RoleAlreadyExistedException(HmsErrorCodeEnum.HOME_ERROR_2013);
+            BusinessException ex = new RoleAlreadyExistedException(HmsErrorCodeEnum.HOME_ERROR_2010);
             log.error("This role is already existed.", ex);
             throw ex;
         }
@@ -73,25 +83,37 @@ public class HomeRoleServiceImpl implements HomeRoleService {
     @Override
     public List<HomeRole> getAvailableRolesFromHome(Integer homeId) throws RecordNotFoundException {
         List<RoleEntity> roleEntities = rolesDao.getItemsByHomeId(homeId);
+        Stream<HomeRole> systemRoleStream = commonService.getSystemRoles().stream()
+                .map(x -> HomeRole.builder()
+                        .roleId(x.getRoleId())
+                        .roleType(x.getRoleType())
+                        .roleName(x.getRoleName())
+                        .roleDescription(x.getRoleDescription())
+                        .createdAt(x.getCreatedAt())
+                        .build()
+                );
 
-        return roleEntities.stream().map(roleMapper::toModel).collect(Collectors.toList());
+        return Stream.concat(systemRoleStream, roleEntities.stream().map(roleMapper::toModel)).collect(Collectors.toList());
     }
 
     @Override
-    public void updateHomeRoleInfo(HomeRole role) throws RecordNotFoundException {
-        checkRoleInHome(role.getHomeId(), role.getRoleId());
+    public void updateHomeRoleInfo(HomeRole role) throws RecordNotFoundException, IllegalArgumentException {
+        if (role == null) {
+            throw new IllegalArgumentException("role can not be null.");
+        }
+        checkService.checkRoleAccess(role.getHomeId(), role.getRoleId(), true);
         rolesDao.updateByIdAndHomeId(roleMapper.toEntity(role));
     }
 
     @Override
-    public void deleteHomeRole(Integer homeId, Integer roleId) throws RecordNotFoundException {
-        checkRoleInHome(homeId, roleId);
+    public void deleteHomeRole(Integer homeId, Integer roleId) throws RecordNotFoundException, IllegalArgumentException {
+        checkService.checkRoleAccess(homeId, roleId, true);
         rolesDao.deleteByIdAndHomeId(homeId, roleId);
     }
 
     @Override
-    public HomeRole getHomeRoleWithPermissions(Integer homeId, Integer roleId) throws RecordNotFoundException {
-        checkRoleInHome(homeId, roleId);
+    public HomeRole getHomeRoleWithPermissions(Integer homeId, Integer roleId) throws RecordNotFoundException, IllegalArgumentException {
+        checkService.checkRoleAccess(homeId, roleId, false);
         HomeRole homeRole = roleMapper.toModel(rolesDao.getById(roleId));
         List<PermissionEntity> permissionEntities = rolePermissionsDao.getPermissionsByRoleId(roleId);
 
@@ -100,29 +122,19 @@ public class HomeRoleServiceImpl implements HomeRoleService {
     }
 
     @Override
-    public void assignPermissionsForHomeRole(Integer homeId, Integer roleId, List<Integer> permissionIds) throws RecordNotFoundException {
-        checkRoleInHome(homeId, roleId);
+    @Transactional
+    public void updatePermissionsForHomeRole(Integer homeId, Integer roleId, List<Integer> permissionIds) throws RecordNotFoundException, IllegalArgumentException {
+        if (permissionIds == null || permissionIds.isEmpty()) {
+            throw new IllegalArgumentException("permissionIds cannot be empty.");
+        }
+        checkService.checkRoleAccess(homeId, roleId, true);
+        rolePermissionsDao.removeAllPermissionsByRoleId(roleId);
         List<RolePermissionEntity> rolePermissionEntities = permissionIds.stream().map(x -> RolePermissionEntity.builder().roleId(roleId).permissionId(x).build()).collect(Collectors.toList());
         try {
             rolePermissionsDao.batchCreate(rolePermissionEntities);
         } catch (DataIntegrityViolationException e) {
             log.error("Batch create permissions failed:", e);
             throw new IllegalArgumentException("some permissions doesn't existed.");
-        }
-    }
-
-    @Override
-    public void removePermissionsForHomeRole(Integer homeId, Integer roleId, List<Integer> permissionIds) throws RecordNotFoundException {
-        checkRoleInHome(homeId, roleId);
-        List<RolePermissionEntity> rolePermissionEntities = permissionIds.stream().map(x -> RolePermissionEntity.builder().roleId(roleId).permissionId(x).build()).collect(Collectors.toList());
-        rolePermissionsDao.batchDelete(rolePermissionEntities);
-    }
-
-    private void checkRoleInHome(Integer homeId, Integer roleId) {
-        if (roleId == null || Objects.isNull(rolesDao.getItemByIdAndHomeId(homeId, roleId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_2014);
-            log.error("This role does not exists in this home.", e);
-            throw e;
         }
     }
 }

@@ -1,7 +1,6 @@
 package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
@@ -18,6 +17,6 @@ public record UserRegistrationRequest(
 ) implements HmsRequest {
     @Override
     public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_105;
+        return HmsErrorCodeEnum.USER_ERROR_104;
     }
 }

@@ -48,4 +48,10 @@ public class CommonServiceImpl implements CommonService {
     public List<SystemRole> getSystemRoles() {
         return commonDao.getSystemRoles();
     }
+
+    @Override
+    public boolean isSystemRole(Integer roleId) {
+        List<SystemRole> roles = getSystemRoles();
+        return roles.stream().anyMatch(role -> role.getRoleId().equals(roleId));
+    }
 }

@@ -1,8 +1,9 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
+import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.dto.model.HomeRole;
-import me.huangduo.hms.dto.request.PermissionAssignOrRemoveRequest;
+import me.huangduo.hms.dto.request.RolePermissionUpdateRequest;
 import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
@@ -13,12 +14,14 @@ import me.huangduo.hms.mapper.RoleMapper;
 import me.huangduo.hms.service.HomeRoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
+@Validated
 public class HomeRoleController {
 
     private final HomeRoleService homeRoleService;
@@ -48,8 +51,8 @@ public class HomeRoleController {
         return ResponseEntity.ok(HmsResponse.success(roles.stream().map(roleMapper::toResponse).toList()));
     }
 
-    @PatchMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
+    @PatchMapping("/{roleId:\\d+}")
+    public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         HomeRole role = roleMapper.toModel(roleUpdateRequest);
         role.setHomeId(homeId);
         role.setRoleId(roleId);
@@ -57,27 +60,21 @@ public class HomeRoleController {
         return ResponseEntity.ok(HmsResponse.success());
     }
 
-    @DeleteMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @PathVariable Integer roleId) {
+    @DeleteMapping("/{roleId:\\d+}")
+    public ResponseEntity<HmsResponse<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         homeRoleService.deleteHomeRole(homeId, roleId);
         return ResponseEntity.ok(HmsResponse.success());
     }
 
-    @GetMapping("/{roleId}")
-    public ResponseEntity<HmsResponse<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @PathVariable Integer roleId) {
+    @GetMapping("/{roleId:\\d+}")
+    public ResponseEntity<HmsResponse<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         HomeRole role = homeRoleService.getHomeRoleWithPermissions(homeId, roleId);
         return ResponseEntity.ok(HmsResponse.success(roleMapper.toResponseWithPermission(role)));
     }
 
-    @PostMapping("/{roleId}/permissions")
-    public ResponseEntity<HmsResponse<Void>> assignPermissionsForHomeRole(@PathVariable Integer roleId, @RequestAttribute Integer homeId, @RequestBody PermissionAssignOrRemoveRequest permissionsBody) {
-        homeRoleService.assignPermissionsForHomeRole(homeId, roleId, permissionsBody.permissionIds());
-        return ResponseEntity.ok(HmsResponse.success());
-    }
-
-    @DeleteMapping("/{roleId}/permissions")
-    public ResponseEntity<HmsResponse<Void>> removePermissionsForHomeRole(@PathVariable Integer roleId, @RequestAttribute Integer homeId, @RequestBody PermissionAssignOrRemoveRequest permissionsBody) {
-        homeRoleService.removePermissionsForHomeRole(homeId, roleId, permissionsBody.permissionIds());
+    @PutMapping("/{roleId:\\d+}/permissions")
+    public ResponseEntity<HmsResponse<Void>> updatePermissionsForHomeRole(@ValidId @PathVariable Integer roleId, @RequestAttribute Integer homeId, @Valid @RequestBody RolePermissionUpdateRequest permissionsBody) {
+        homeRoleService.updatePermissionsForHomeRole(homeId, roleId, permissionsBody.permissionIds());
         return ResponseEntity.ok(HmsResponse.success());
     }
 }

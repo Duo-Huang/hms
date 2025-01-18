@@ -11,6 +11,6 @@ public record UserProfileUpdateRequest(
 ) implements HmsRequest {
     @Override
     public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_107;
+        return HmsErrorCodeEnum.USER_ERROR_106;
     }
 }

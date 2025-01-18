@@ -13,14 +13,4 @@
             </foreach>
         </if>
     </insert>
-
-    <delete id="batchDelete">
-        <if test="permissionEntities != null and permissionEntities.size() > 0">
-            DELETE FROM role_permissions
-            WHERE (role_id, permission_id) IN
-            <foreach collection="permissionEntities" item="item" open="(" separator="," close=")">
-                (#{item.roleId}, #{item.permissionId})
-            </foreach>
-        </if>
-    </delete>
 </mapper>

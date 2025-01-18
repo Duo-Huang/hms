@@ -7,12 +7,12 @@ import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 import java.util.List;
 
-public record PermissionAssignOrRemoveRequest(
+public record RolePermissionUpdateRequest(
         @NotEmpty(message = "permissionIds can not be empty.")
         List<@NotNull @Positive Integer> permissionIds
 ) implements HmsRequest {
         @Override
         public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-                return HmsErrorCodeEnum.HOME_ERROR_2017;
+                return HmsErrorCodeEnum.HOME_ERROR_2014;
         }
 }

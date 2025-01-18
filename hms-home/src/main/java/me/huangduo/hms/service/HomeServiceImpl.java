@@ -2,9 +2,7 @@ package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.HomesDao;
-import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
-import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
 import me.huangduo.hms.dto.model.SystemRole;
@@ -17,6 +15,7 @@ import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.mapper.HomeMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -28,22 +27,28 @@ public class HomeServiceImpl implements HomeService {
 
     private final HomeMemberService homeMemberService;
 
-    private final RolesDao rolesDao;
-
     private final HomeMapper homeMapper;
 
     private final CommonService commonService;
 
-    public HomeServiceImpl(HomesDao homesDao, HomeMemberService homeMemberService, RolesDao rolesDao, HomeMapper homeMapper, CommonService commonService) {
+    public HomeServiceImpl(HomesDao homesDao, HomeMemberService homeMemberService, HomeMapper homeMapper, CommonService commonService) {
         this.homesDao = homesDao;
         this.homeMemberService = homeMemberService;
-        this.rolesDao = rolesDao;
         this.homeMapper = homeMapper;
         this.commonService = commonService;
     }
 
     @Override
-    public void createHome(Home home, User user) throws HomeAlreadyExistsException {
+    @Transactional
+    public void createHome(Home home, User user) throws HomeAlreadyExistsException, IllegalArgumentException {
+        if (user == null) {
+            throw new IllegalArgumentException("user can not be null.");
+        }
+
+        if (home == null) {
+            throw new IllegalArgumentException("home can not be null.");
+        }
+
         HomeEntity homeEntity = homeMapper.toEntity(home);
         try {
             homesDao.create(homeEntity);
@@ -63,7 +68,7 @@ public class HomeServiceImpl implements HomeService {
         SystemRole adminRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_ADMIN);
 
         if (Objects.isNull(adminRole)) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_209);
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_208);
             log.error("The member is not assigned a default admin role for this home.", e);
             throw e;
         }
@@ -84,11 +89,21 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public void updateHomeInfo(Home home) throws RecordNotFoundException {
-        homesDao.update(homeMapper.toEntity(home));
+        int row = homesDao.update(homeMapper.toEntity(home));
+        if (row == 0) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
+            log.error("This home doesn't exist.", e);
+            throw e;
+        }
     }
 
     @Override
     public void deleteHome(Integer homeId) throws RecordNotFoundException {
-        homesDao.delete(homeId);
+        int row = homesDao.delete(homeId);
+        if (row == 0) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
+            log.error("This home doesn't exist.", e);
+            throw e;
+        }
     }
 }

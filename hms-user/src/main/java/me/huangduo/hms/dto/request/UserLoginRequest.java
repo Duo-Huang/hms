@@ -13,6 +13,6 @@ public record UserLoginRequest(
 
     @Override
     public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_106;
+        return HmsErrorCodeEnum.USER_ERROR_105;
     }
 }

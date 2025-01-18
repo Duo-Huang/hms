@@ -1,14 +1,18 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.dto.model.*;
+import me.huangduo.hms.annotations.ValidId;
+import me.huangduo.hms.dto.model.Home;
+import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
+import me.huangduo.hms.dto.request.MemberRoleRequest;
 import me.huangduo.hms.dto.request.UserAcceptHomeInvitationRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
-import me.huangduo.hms.dto.request.MemberRoleRequest;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.mapper.HomeMapper;
@@ -16,6 +20,7 @@ import me.huangduo.hms.mapper.MemberMapper;
 import me.huangduo.hms.service.HomeMemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/members")
+@Validated
 public class HomeMemberController {
 
     private final HomeMemberService homeMemberService;
@@ -67,7 +73,7 @@ public class HomeMemberController {
     }
 
     @DeleteMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> removeMember(@RequestAttribute Integer homeId, @PathVariable Integer userId) {
+    public ResponseEntity<HmsResponse<Void>> removeMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
@@ -76,16 +82,14 @@ public class HomeMemberController {
     }
 
     @GetMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @PathVariable Integer userId) {
-        User user = new User();
-        user.setUserId(userId);
-        Member member = homeMemberService.getMemberWithRole(homeId, user);
+    public ResponseEntity<HmsResponse<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
+        Member member = homeMemberService.getMemberWithRole(homeId, userId);
 
         return ResponseEntity.ok(HmsResponse.success(memberMapper.toResponse(member)));
     }
 
     @PutMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
+    public ResponseEntity<HmsResponse<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
         Member member = memberMapper.toModel(memberInfoUpdateRequest);
         member.setHomeId(homeId);
         member.setUserId(userId);
@@ -100,7 +104,7 @@ public class HomeMemberController {
     }
 
     @PutMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@PathVariable Integer homeId, @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
+    public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
@@ -109,7 +113,7 @@ public class HomeMemberController {
     }
 
     @DeleteMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@PathVariable Integer homeId, @PathVariable Integer userId) {
+    public ResponseEntity<HmsResponse<Void>> removeRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);

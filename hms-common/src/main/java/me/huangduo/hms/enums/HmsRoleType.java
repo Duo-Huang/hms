@@ -19,6 +19,6 @@ public enum HmsRoleType {
                 return hmsRoleType;
             }
         }
-        throw new IllegalArgumentException("invalid RoleType value " + value);
+        throw new IllegalArgumentException("Invalid RoleType value " + value);
     }
 }

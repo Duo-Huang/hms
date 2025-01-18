@@ -19,6 +19,7 @@ import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
 import me.huangduo.hms.utils.InvitationCoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,25 +41,31 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private final MemberMapper memberMapper;
 
+    private final CheckService checkService;
+
     public HomeMemberServiceImpl(
             HomeMemberRolesDao homeMemberRolesDao,
             HomesDao homesDao,
             CommonService commonService,
             RolesDao rolesDao,
             HomeMapper homeMapper,
-            MemberMapper memberMapper
-            ) {
+            MemberMapper memberMapper,
+            CheckService checkService) {
         this.homeMemberRolesDao = homeMemberRolesDao;
         this.homesDao = homesDao;
         this.commonService = commonService;
         this.rolesDao = rolesDao;
         this.homeMapper = homeMapper;
         this.memberMapper = memberMapper;
+        this.checkService = checkService;
     }
 
     @Override
-    public void inviteUser(Integer homeId, Integer inviterId, User user) throws RecordNotFoundException {
-        final User userInfo = checkUserExisted(user.getUsername()); // check and get all newest user info
+    public void inviteUser(Integer homeId, Integer inviterId, User user) throws RecordNotFoundException, IllegalArgumentException {
+        if (user == null) {
+            throw new IllegalArgumentException("user can not be null.");
+        }
+        final User userInfo = checkService.checkUserExisted(user.getUsername()); // check and get all newest user info
 
         List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
 
@@ -80,10 +87,19 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
+    @Transactional
     public void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException {
-        // 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人inviteeId是否是当前user, 不是就抛IllegalArgumentException
+        if (user == null) {
+            throw new IllegalArgumentException("user can not be null.");
+        }
+        // TODO: 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人inviteeId是否是当前user, 不是就抛IllegalArgumentException
+
         Integer inviterId = InvitationCoder.codeToUserId(invitationCode);
         Integer inviterHomeId = homeMemberRolesDao.getHomeIdByUserId(inviterId);
+        if (inviterHomeId == null) {
+            log.error("The home of the inviter cannot be found. inviterId: {}", inviterId);
+            throw new IllegalArgumentException("Invalid invitation code.");
+        }
         addMember(inviterHomeId, user);
         // assign a default home member role for this user
         SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
@@ -91,8 +107,11 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException {
-        final User userInfo = checkUserExisted(user.getUserId()); // check and get all newest user info
+    public void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException, IllegalArgumentException {
+        if (user == null) {
+            throw new IllegalArgumentException("user can not be null.");
+        }
+        final User userInfo = checkService.checkUserExisted(user.getUserId()); // check and get all newest user info
 
         List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
 
@@ -123,8 +142,17 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public Member getMemberWithRole(Integer homeId, User user) throws RecordNotFoundException {
-        return homeMemberRolesDao.getMemberWithRoleByHomeIdAndUserId(homeId, user.getUserId());
+    public Member getMemberWithRole(Integer homeId, Integer userId) throws RecordNotFoundException {
+        Member member = homeMemberRolesDao.getMemberWithRoleByHomeIdAndUserId(homeId, userId);
+        if (member == null) {
+            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
+            log.error("This home member doesn't exist.", e);
+            throw e;
+        }
+        if (member.getRole().getRoleId() == null) {
+            member.setRole(null);
+        }
+        return member;
     }
 
     @Override
@@ -138,7 +166,10 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public List<Home> getHomesForUser(User user) {
+    public List<Home> getHomesForUser(User user) throws IllegalArgumentException {
+        if (user == null) {
+            throw new IllegalArgumentException("user can not be null.");
+        }
         List<Integer> homeIds = homeMemberRolesDao.getHomeIdsByUserId(user.getUserId());
         if (homeIds.isEmpty()) {
             return List.of();
@@ -160,12 +191,12 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException {
-        if (roleId != null && Objects.isNull(rolesDao.getById(roleId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_208);
-            log.error("This role does not exist.", e);
-            throw e;
+    public void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException, IllegalArgumentException {
+        if (member == null) {
+            throw new IllegalArgumentException("user can not be null.");
         }
+
+        checkService.checkRoleAccess(member.getHomeId(), roleId, false);
 
         HomeMemberRoleEntity homeMemberRoleEntity = memberMapper.toEntity(member);
         homeMemberRoleEntity.setRoleId(roleId);
@@ -179,27 +210,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void removeRoleForMember(Member member) throws RecordNotFoundException {
+    public void removeRoleForMember(Member member) throws RecordNotFoundException, IllegalArgumentException {
         assignRoleForMember(member, null);
-    }
-
-    private User checkUserExisted(Integer userId) {
-        User user = null;
-        if (userId == null || Objects.isNull(user = commonService.getUserById(userId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
-            log.error("This user does not existed.", e);
-            throw e;
-        }
-        return user;
-    }
-
-    private User checkUserExisted(String username) {
-        User user = null;
-        if (username == null || Objects.isNull(user = commonService.getUserByName(username))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
-            log.error("This user does not existed.", e);
-            throw e;
-        }
-        return user;
     }
 }

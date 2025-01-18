@@ -2,6 +2,7 @@ package me.huangduo.hms.dao;
 
 import me.huangduo.hms.dao.entity.PermissionEntity;
 import me.huangduo.hms.dao.entity.RolePermissionEntity;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,5 +20,6 @@ public interface RolePermissionsDao {
 
     int batchCreate(List<RolePermissionEntity> permissionEntities);
 
-    int batchDelete(List<RolePermissionEntity> permissionEntities);
+    @Delete("DELETE FROM role_permissions WHERE role_id = #{roleId}")
+    int removeAllPermissionsByRoleId(Integer roleId);
 }

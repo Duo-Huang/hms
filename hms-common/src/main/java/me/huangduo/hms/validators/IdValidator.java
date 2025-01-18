@@ -4,25 +4,28 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.annotations.AtLeastOneNotNull;
+import me.huangduo.hms.annotations.ValidId;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
+@Component
 @Slf4j
-public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOneNotNull, Object> {
+public class IdValidator implements ConstraintValidator<ValidId, Object> {
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null) {
             return true;
         }
 
-        for (Field field : value.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
+        if (value instanceof Integer) {
+            return (Integer) value > 0;
+        } else if (value instanceof String) {
             try {
-                if (field.get(value) != null) {
-                    return true;
-                }
-            } catch (IllegalAccessException e) {
-               log.error("AtLeastOneNotNullValidator validate failed", e);
+                int intValue = Integer.parseInt((String) value);
+                return intValue > 0;
+            } catch (NumberFormatException e) {
+                return false;
             }
         }
 

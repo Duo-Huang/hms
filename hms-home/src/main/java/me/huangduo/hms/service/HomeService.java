@@ -6,7 +6,7 @@ import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 
 public interface HomeService {
-    void createHome(Home home, User user) throws HomeAlreadyExistsException;
+    void createHome(Home home, User user) throws HomeAlreadyExistsException, IllegalArgumentException;
 
     Home getHomeInfo(Integer homeId) throws RecordNotFoundException;
 

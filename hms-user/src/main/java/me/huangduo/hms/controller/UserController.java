@@ -50,8 +50,8 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
                     HmsResponse.error(
-                            HmsErrorCodeEnum.USER_ERROR_106.getCode(),
-                            HmsErrorCodeEnum.USER_ERROR_106.getMessage()
+                            HmsErrorCodeEnum.USER_ERROR_105.getCode(),
+                            HmsErrorCodeEnum.USER_ERROR_105.getMessage()
                     )
             );
         }
@@ -76,8 +76,8 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
                     HmsResponse.error(
-                            HmsErrorCodeEnum.USER_ERROR_109.getCode(),
-                            HmsErrorCodeEnum.USER_ERROR_109.getMessage()
+                            HmsErrorCodeEnum.USER_ERROR_108.getCode(),
+                            HmsErrorCodeEnum.USER_ERROR_108.getMessage()
                     )
             );
         }

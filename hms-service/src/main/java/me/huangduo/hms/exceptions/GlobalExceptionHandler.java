@@ -1,5 +1,7 @@
 package me.huangduo.hms.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.request.HmsRequest;
 import me.huangduo.hms.dto.response.HmsResponse;
@@ -8,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,13 +20,14 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /*
-     * 400 - Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出
+     * 400 - Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出, 用于校验body
      * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HmsResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
@@ -47,6 +49,25 @@ public class GlobalExceptionHandler {
             log.error("The request parameter auto verification failed and get a fallback error.", ex);
             return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage(), errors));
         }
+    }
+
+    /*
+     * 400 - Controller层请求参数校验, ConstraintViolationException 为Spring 校验器抛出,用于校验单个参数
+     * */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<HmsResponse<Map<String, String>>> handleValidationExceptions(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            Path propertyPath = violation.getPropertyPath();
+            String lastFieldName = null;
+
+            for (Path.Node node : propertyPath) {
+                lastFieldName = node.getName();
+            }
+
+            errors.put(Objects.requireNonNullElse(lastFieldName, "unknown"), violation.getMessage());
+        });
+        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003.getCode(), HmsErrorCodeEnum.SYSTEM_ERROR_003.getMessage(), errors));
     }
 
     /*

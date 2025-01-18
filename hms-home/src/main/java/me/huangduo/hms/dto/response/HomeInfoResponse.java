@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record HomeInfoResponse(
         Integer homeId,
         String homeName,
-        String HomeDescription,
+        String homeDescription,
         LocalDateTime createdAt
 ) {
 }

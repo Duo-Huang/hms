@@ -15,6 +15,6 @@ public record UserPasswordUpdateRequest(
 ) implements HmsRequest {
     @Override
     public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_108;
+        return HmsErrorCodeEnum.USER_ERROR_107;
     }
 }

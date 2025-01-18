@@ -2,6 +2,7 @@ package me.huangduo.hms.controller;
 
 
 import jakarta.validation.Valid;
+import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.dto.response.HmsResponse;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.UserToken;
@@ -12,10 +13,12 @@ import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.service.HomeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/homes")
+@Validated
 public class HomeController {
 
     private final HomeService homeService;
@@ -38,13 +41,13 @@ public class HomeController {
     }
 
     @GetMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@PathVariable Integer homeId) {
+    public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@ValidId @PathVariable Integer homeId) {
         Home homeInfo = homeService.getHomeInfo(homeId);
         return ResponseEntity.ok(HmsResponse.success(new HomeInfoResponse(homeInfo.getHomeId(), homeInfo.getHomeName(), homeInfo.getHomeDescription(), homeInfo.getCreatedAt())));
     }
 
     @PatchMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
+    public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@ValidId @PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
         Home home = homeMapper.toModel(homeCreateOrUpdateRequest);
         home.setHomeId(homeId);
         homeService.updateHomeInfo(home);
@@ -52,7 +55,7 @@ public class HomeController {
     }
 
     @DeleteMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> deleteHome(@PathVariable Integer homeId) {
+    public ResponseEntity<HmsResponse<Void>> deleteHome(@ValidId @PathVariable Integer homeId) {
         homeService.deleteHome(homeId);
         return ResponseEntity.ok(HmsResponse.success());
     }

@@ -51,7 +51,7 @@ public class HomeMemberController {
             homeMemberService.inviteUser(homeId, userToken.userInfo().getUserId(), user);
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         }
     }
 
@@ -68,7 +68,7 @@ public class HomeMemberController {
             homeMemberService.acceptInvitation(userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeMemberAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         }
     }
 

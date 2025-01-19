@@ -41,7 +41,7 @@ public class HomeRoleController {
             homeRoleService.createHomeRole(roleCreateRequest.baseRoleId(), role);
             return ResponseEntity.ok(HmsResponse.success());
         } catch (RoleAlreadyExistedException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         }
     }
 

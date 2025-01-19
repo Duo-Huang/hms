@@ -22,21 +22,24 @@
     <dependencies>
         <dependency>
             <groupId>me.huangduo.hms</groupId>
-            <artifactId>hms-financial</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>me.huangduo.hms</groupId>
             <artifactId>hms-user</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>me.huangduo.hms</groupId>
             <artifactId>hms-home</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>me.huangduo.hms</groupId>
+            <artifactId>hms-notification</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.huangduo.hms</groupId>
+            <artifactId>hms-financial</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

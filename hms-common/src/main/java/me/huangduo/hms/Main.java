@@ -11,7 +11,7 @@ import java.util.TimeZone;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
-        System.out.println(HmsErrorCodeEnum.SYSTEM_ERROR_001.getMessage());
+        System.out.println(HmsErrorCodeEnum.SYSTEM_ERROR_002.getMessage());
         System.out.println(HmsRoleType.SYSTEM_ROLE.getValue());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -24,8 +27,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestIdInterceptor).addPathPatterns("/**");
-        registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns("/users/login", "/users/register");
-        registry.addInterceptor(authorizationInterceptor).addPathPatterns("/**").excludePathPatterns("/users/**", "/homes", "/members/homes"); // allow /homes/**
+        String[] excludePaths = {"/error"}; // Spring will redirect to this url when exception occurs. we don't need to handle.
+        registry.addInterceptor(requestIdInterceptor).addPathPatterns("/**").excludePathPatterns(excludePaths);
+        registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns(concat(excludePaths, "/users/login", "/users/register"));
+        registry.addInterceptor(authorizationInterceptor).addPathPatterns("/**").excludePathPatterns(concat(excludePaths, "/users/**", "/homes", "/members/homes")); // allow /homes/**
+    }
+
+    private String[] concat(String[] array, String... additional) {
+        return Stream.concat(Arrays.stream(array), Arrays.stream(additional))
+                .toArray(String[]::new);
     }
 }

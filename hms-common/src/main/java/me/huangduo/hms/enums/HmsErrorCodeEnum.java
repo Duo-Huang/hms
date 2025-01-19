@@ -16,14 +16,10 @@ import lombok.Getter;
 public enum HmsErrorCodeEnum {
 
     // 系统级错误 1xxx (发生在全局范围内或者不确定具体地方)
-    SYSTEM_ERROR_001(1001, "系统内部错误"),
-    SYSTEM_ERROR_002(1002, "数据库连接失败"),
+    SYSTEM_ERROR_001(1001, "未知错误"), // fallback
+    SYSTEM_ERROR_002(1002, "请求错误"), // 处理所有未被全局处理器处理的异常
     SYSTEM_ERROR_003(1003, "请求参数错误"), // 全局参数校验的fallback消息
-    SYSTEM_ERROR_004(1004, "请求的资源未找到"),
-    SYSTEM_ERROR_005(1005, "业务异常"), // 具体异常api内处理, 这里是全局兜底的错误
-    SYSTEM_ERROR_006(1006, "请求方法不支持"),
-    SYSTEM_ERROR_007(1007, "不支持的媒体类型"),
-    SYSTEM_ERROR_008(1008, "错误的请求"), // 400 fallback
+    SYSTEM_ERROR_004(1004, "业务异常"), // 具体异常api内处理, 这里是全局兜底的错误
 
     // 用户模块错误 21xx
     USER_ERROR_101(2101, "用户未认证"),
@@ -31,19 +27,19 @@ public enum HmsErrorCodeEnum {
     USER_ERROR_103(2103, "用户已存在"),
     USER_ERROR_104(2104, "用户名或密码格式错误"), // 注册
     USER_ERROR_105(2105, "用户名或密码错误"), // 登录
-    USER_ERROR_106(2106, "用户昵称格式错误"),
+    USER_ERROR_106(2106, "用户信息格式错误"),
     USER_ERROR_107(2107, "更新密码信息错误"),
-    USER_ERROR_108(2108, "密码错误"),
+    USER_ERROR_108(2108, "密码错误"), // change password
     USER_ERROR_109(2109, "新密码不能和旧密码相同"),
 
     // 家庭模块错误 22xx
     HOME_ERROR_201(2201, "该家庭已存在"),
-    HOME_ERROR_202(2202, "家庭名称或描述格式错误"),
+    HOME_ERROR_202(2202, "家庭信息格式错误"),
     HOME_ERROR_203(2203, "该家庭不存在"),
     HOME_ERROR_204(2204, "该用户不存在"),
     HOME_ERROR_205(2205, "该家庭成员已存在"),
     HOME_ERROR_206(2206, "该家庭成员不存在"),
-    HOME_ERROR_207(2207, "家庭成员名称格式错误"),
+    HOME_ERROR_207(2207, "家庭成员信息格式错误"),
     HOME_ERROR_208(2208, "家庭管理员角色不存在"),
     HOME_ERROR_209(2219, "用户名格式错误"),
     HOME_ERROR_2010(2210, "该角色已存在"),

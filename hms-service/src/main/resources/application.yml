@@ -1,6 +1,10 @@
 server:
     servlet:
         context-path: /api
+    error:
+        whitelabel:
+            enabled: false
+
 spring:
     profiles:
         active: @env@

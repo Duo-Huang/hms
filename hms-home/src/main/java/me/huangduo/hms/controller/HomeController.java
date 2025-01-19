@@ -36,14 +36,14 @@ public class HomeController {
             homeService.createHome(homeMapper.toModel(homeCreateOrUpdateRequest), userToken.userInfo());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         }
     }
 
     @GetMapping("/{homeId:\\d+}")
     public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@ValidId @PathVariable Integer homeId) {
         Home homeInfo = homeService.getHomeInfo(homeId);
-        return ResponseEntity.ok(HmsResponse.success(new HomeInfoResponse(homeInfo.getHomeId(), homeInfo.getHomeName(), homeInfo.getHomeDescription(), homeInfo.getCreatedAt())));
+        return ResponseEntity.ok(HmsResponse.success(homeMapper.toResponse(homeInfo)));
     }
 
     @PatchMapping("/{homeId:\\d+}")

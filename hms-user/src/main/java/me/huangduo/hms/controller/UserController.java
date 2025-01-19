@@ -38,7 +38,7 @@ public class UserController {
             return ResponseEntity.ok(HmsResponse.success(new UserRegistrationResponse(userId)));
 
         } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         }
     }
 
@@ -48,12 +48,7 @@ public class UserController {
             String token = userService.login(userMapper.toModel(userLoginRequest), userLoginRequest.password());
             return ResponseEntity.ok(HmsResponse.success(token));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(
-                    HmsResponse.error(
-                            HmsErrorCodeEnum.USER_ERROR_105.getCode(),
-                            HmsErrorCodeEnum.USER_ERROR_105.getMessage()
-                    )
-            );
+            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_105));
         }
     }
 
@@ -72,14 +67,9 @@ public class UserController {
             userService.changePassword(userToken, userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (DuplicatedPasswordException e) {
-            return ResponseEntity.badRequest().body(HmsResponse.error(e.getHmsErrorCodeEnum().getCode(), e.getHmsErrorCodeEnum().getMessage()));
+            return ResponseEntity.badRequest().body(HmsResponse.error(e.getHmsErrorCodeEnum()));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(
-                    HmsResponse.error(
-                            HmsErrorCodeEnum.USER_ERROR_108.getCode(),
-                            HmsErrorCodeEnum.USER_ERROR_108.getMessage()
-                    )
-            );
+            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.USER_ERROR_108));
         }
     }
 

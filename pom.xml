@@ -37,6 +37,7 @@
         <module>hms-service</module>
         <module>hms-common</module>
         <module>hms-home</module>
+        <module>hms-notification</module>
     </modules>
 
     <properties>

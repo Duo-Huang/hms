@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface HomeMemberService {
 
-    void inviteUser(Integer homeId, Integer inviterId, User user) throws RecordNotFoundException, IllegalArgumentException; // 发送邀请信息
+    void inviteUser(Integer homeId, User inviter, User invitee) throws RecordNotFoundException, IllegalArgumentException; // 发送邀请信息
 
     void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException;
 

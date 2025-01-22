@@ -17,6 +17,7 @@ public enum HmsHttpStatusEnum {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "请求方法不支持"),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "不支持的媒体类型");
 
+
     private final HttpStatus code;
 
     private final String message;

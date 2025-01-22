@@ -11,6 +11,19 @@ create table homes
 )
     comment 'hms homes';
 
+create table messages
+(
+    message_id      int auto_increment comment 'primary key'
+        primary key,
+    message_type    tinyint unsigned                   not null comment '0 - notification, 1 - invitation msg...',
+    message_content varchar(600)                       not null comment 'message content',
+    payload         json                               null comment 'extra info',
+    expiration      datetime                           not null comment 'expiration time',
+    created_at      datetime default CURRENT_TIMESTAMP not null comment 'created time',
+    updated_at      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
+)
+    comment 'Home notification messages';
+
 create table permissions
 (
     permission_id          int auto_increment comment 'primary key'
@@ -99,6 +112,24 @@ create table home_member_roles
             on update cascade on delete cascade
 )
     comment 'The role of a user in the home. A user can have only one unique role in a home.';
+
+create table message_status
+(
+    message_status_id int auto_increment comment 'primary key'
+        primary key,
+    user_id           int                                        not null comment 'foreign key for users',
+    message_id        int                                        not null comment 'foreign key for messages',
+    status            tinyint unsigned default '0'               not null comment 'message status for a user, 0 - unread, 1 - read ...',
+    created_at        datetime                                   not null comment 'created time',
+    updated_at        datetime         default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `message_status-messages-message_id-fk`
+        foreign key (message_id) references messages (message_id)
+            on update cascade on delete cascade,
+    constraint `message_status-users-user_id-fk`
+        foreign key (user_id) references users (user_id)
+            on update cascade on delete cascade
+)
+    comment 'message status';
 
 create table revoked_tokens
 (

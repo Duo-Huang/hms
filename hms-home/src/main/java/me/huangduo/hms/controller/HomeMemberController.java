@@ -48,7 +48,7 @@ public class HomeMemberController {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
         try {
-            homeMemberService.inviteUser(homeId, userToken.userInfo().getUserId(), user);
+            homeMemberService.inviteUser(homeId, userToken.userInfo(), user);
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));

@@ -20,7 +20,7 @@ public interface RolesDao {
 
     @Insert("INSERT INTO roles (role_type, role_name, role_description, home_id) VALUES (#{roleType}, #{roleName}, #{roleDescription}, #{homeId})")
     @Options(useGeneratedKeys = true, keyProperty = "roleId")
-    int add(RoleEntity roleEntity);
+    void add(RoleEntity roleEntity);
 
     int updateByIdAndHomeId(RoleEntity roleEntity);
 

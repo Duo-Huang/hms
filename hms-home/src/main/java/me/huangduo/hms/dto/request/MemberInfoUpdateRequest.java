@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 public record MemberInfoUpdateRequest(
-        @NotEmpty(message = "home member name can not be empty.")
-        @Size(max = 16, message = "home member name must be at most 16 characters long.")
+        @NotEmpty(message = "memberName can not be empty.")
+        @Size(max = 16, message = "memberName must be at most 16 characters long.")
         String memberName
 ) implements HmsRequest {
     @Override

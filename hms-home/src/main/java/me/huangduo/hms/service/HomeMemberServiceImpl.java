@@ -3,7 +3,6 @@ package me.huangduo.hms.service;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.HomesDao;
-import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
 import me.huangduo.hms.dto.model.Home;
@@ -12,22 +11,26 @@ import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.enums.HmsSystemRole;
+import me.huangduo.hms.events.InvitationEvent;
+import me.huangduo.hms.events.InvitationEventFactory;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
 import me.huangduo.hms.utils.InvitationCoder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class HomeMemberServiceImpl implements HomeMemberService {
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final HomeMemberRolesDao homeMemberRolesDao;
 
@@ -35,47 +38,49 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private final CommonService commonService;
 
-    private final RolesDao rolesDao;
-
     private final HomeMapper homeMapper;
 
     private final MemberMapper memberMapper;
 
     private final CheckService checkService;
 
+    private final InvitationEventFactory invitationEventFactory;
+
     public HomeMemberServiceImpl(
+            ApplicationEventPublisher applicationEventPublisher,
             HomeMemberRolesDao homeMemberRolesDao,
             HomesDao homesDao,
             CommonService commonService,
-            RolesDao rolesDao,
             HomeMapper homeMapper,
             MemberMapper memberMapper,
-            CheckService checkService) {
+            CheckService checkService, InvitationEventFactory invitationEventFactory) {
+        this.applicationEventPublisher = applicationEventPublisher;
         this.homeMemberRolesDao = homeMemberRolesDao;
         this.homesDao = homesDao;
         this.commonService = commonService;
-        this.rolesDao = rolesDao;
         this.homeMapper = homeMapper;
         this.memberMapper = memberMapper;
         this.checkService = checkService;
+        this.invitationEventFactory = invitationEventFactory;
     }
 
     @Override
-    public void inviteUser(Integer homeId, Integer inviterId, User user) throws RecordNotFoundException, IllegalArgumentException {
-        if (user == null) {
+    public void inviteUser(Integer homeId, User inviter, User invitee) throws RecordNotFoundException, IllegalArgumentException {
+        if (invitee == null) {
             throw new IllegalArgumentException("user can not be null.");
         }
-        final User userInfo = checkService.checkUserExisted(user.getUsername()); // check and get all newest user info
+        final User inviteeUserInfo = checkService.checkUserExisted(invitee.getUsername()); // check and get all newest user info
 
         List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
 
-        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(userInfo.getUserId()))) {
+        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(inviteeUserInfo.getUserId()))) {
             BusinessException e = new HomeMemberAlreadyExistsException(HmsErrorCodeEnum.HOME_ERROR_205);
             log.error("This home member is already existed.", e);
             throw e;
         }
-        String invitationCode = InvitationCoder.userIdToCode(inviterId);
-        log.info("invitationCode: {}, invitee userId: {}", invitationCode, userInfo.getUserId());
+        String invitationCode = InvitationCoder.userIdToCode(inviter.getUserId());
+        // TODO: 是否需要检查code是否已经存在, 不确定重复率, 可以检查未过期的消息中的code
+        log.info("invitationCode: {}, inviter username: {}, invitee username: {}", invitationCode, inviter.getUsername(), inviteeUserInfo.getUsername());
 
         // TODO: 事件驱动
         /*
@@ -83,6 +88,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
          * 2. 存储一个邀请type的消息, 包含消息id, 邀请码, inviterId 收件人inviteeId, 接受状态, 只有收件人可以接受邀请
          * 3. 发布一个事件,
          * */
+        InvitationEvent invitationEvent = invitationEventFactory.createEvent(inviter, invitationCode, inviter.getUsername(), inviteeUserInfo.getUsername());
+        applicationEventPublisher.publishEvent(invitationEvent);
 
     }
 

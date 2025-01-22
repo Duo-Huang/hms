@@ -3,7 +3,7 @@ package me.huangduo.hms.enums;
 import lombok.Getter;
 
 @Getter
-public enum HmsRoleType {
+public enum HmsRoleType implements EnumValue {
     SYSTEM_ROLE(0),
     CUSTOM_ROLE(1);
 

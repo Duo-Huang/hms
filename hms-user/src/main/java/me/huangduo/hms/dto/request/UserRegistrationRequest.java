@@ -3,7 +3,7 @@ package me.huangduo.hms.dto.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public record UserRegistrationRequest(
         @NotEmpty(message = "username can not be empty.")
@@ -14,9 +14,9 @@ public record UserRegistrationRequest(
         @NotEmpty(message = "password can not be empty.")
         @Size(min = 6, max = 20, message = "The password length must be between 6 and 20 characters.")
         String password
-) implements HmsRequest {
+) implements HmsRequestBody {
     @Override
-    public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_104;
+    public ErrorCode getErrorCode() {
+        return ErrorCode.USER_ERROR_104;
     }
 }

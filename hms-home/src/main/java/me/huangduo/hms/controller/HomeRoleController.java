@@ -6,7 +6,7 @@ import me.huangduo.hms.dto.model.HomeRole;
 import me.huangduo.hms.dto.request.RolePermissionUpdateRequest;
 import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;
-import me.huangduo.hms.dto.response.HmsResponse;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.RoleResponse;
 import me.huangduo.hms.dto.response.RoleWithPermissionResponse;
 import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
@@ -34,47 +34,47 @@ public class HomeRoleController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> createHomeRole(@RequestAttribute Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> createHomeRole(@RequestAttribute Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateRequest) {
         HomeRole role = roleMapper.toModel(roleCreateRequest);
         role.setHomeId(homeId);
         try {
             homeRoleService.createHomeRole(roleCreateRequest.baseRoleId(), role);
-            return ResponseEntity.ok(HmsResponse.success());
+            return ResponseEntity.ok(HmsResponseBody.success());
         } catch (RoleAlreadyExistedException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
         }
     }
 
     @GetMapping
-    public ResponseEntity<HmsResponse<List<RoleResponse>>> getAvailableRolesFromHome(@RequestAttribute Integer homeId) {
+    public ResponseEntity<HmsResponseBody<List<RoleResponse>>> getAvailableRolesFromHome(@RequestAttribute Integer homeId) {
         List<HomeRole> roles = homeRoleService.getAvailableRolesFromHome(homeId);
-        return ResponseEntity.ok(HmsResponse.success(roles.stream().map(roleMapper::toResponse).toList()));
+        return ResponseEntity.ok(HmsResponseBody.success(roles.stream().map(roleMapper::toResponse).toList()));
     }
 
     @PatchMapping("/{roleId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         HomeRole role = roleMapper.toModel(roleUpdateRequest);
         role.setHomeId(homeId);
         role.setRoleId(roleId);
         homeRoleService.updateHomeRoleInfo(role);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @DeleteMapping("/{roleId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
+    public ResponseEntity<HmsResponseBody<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         homeRoleService.deleteHomeRole(homeId, roleId);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @GetMapping("/{roleId:\\d+}")
-    public ResponseEntity<HmsResponse<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
+    public ResponseEntity<HmsResponseBody<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         HomeRole role = homeRoleService.getHomeRoleWithPermissions(homeId, roleId);
-        return ResponseEntity.ok(HmsResponse.success(roleMapper.toResponseWithPermission(role)));
+        return ResponseEntity.ok(HmsResponseBody.success(roleMapper.toResponseWithPermission(role)));
     }
 
     @PutMapping("/{roleId:\\d+}/permissions")
-    public ResponseEntity<HmsResponse<Void>> updatePermissionsForHomeRole(@ValidId @PathVariable Integer roleId, @RequestAttribute Integer homeId, @Valid @RequestBody RolePermissionUpdateRequest permissionsBody) {
+    public ResponseEntity<HmsResponseBody<Void>> updatePermissionsForHomeRole(@ValidId @PathVariable Integer roleId, @RequestAttribute Integer homeId, @Valid @RequestBody RolePermissionUpdateRequest permissionsBody) {
         homeRoleService.updatePermissionsForHomeRole(homeId, roleId, permissionsBody.permissionIds());
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 }

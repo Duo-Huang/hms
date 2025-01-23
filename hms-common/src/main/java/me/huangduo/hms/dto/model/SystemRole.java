@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import me.huangduo.hms.enums.HmsRoleType;
+import me.huangduo.hms.enums.RoleType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class SystemRole {
     private Integer roleId;
 
-    private HmsRoleType roleType;
+    private RoleType roleType;
 
     private String roleName;
 

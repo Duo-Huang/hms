@@ -1,7 +1,7 @@
 package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public record UserLoginRequest(
         @NotEmpty(message = "username can not be empty.")
@@ -9,10 +9,10 @@ public record UserLoginRequest(
 
         @NotEmpty(message = "password can not be empty.")
         String password
-) implements HmsRequest {
+) implements HmsRequestBody {
 
     @Override
-    public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.USER_ERROR_105;
+    public ErrorCode getErrorCode() {
+        return ErrorCode.USER_ERROR_105;
     }
 }

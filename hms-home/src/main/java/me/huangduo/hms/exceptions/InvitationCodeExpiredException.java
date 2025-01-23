@@ -1,9 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public class InvitationCodeExpiredException extends BusinessException {
     public InvitationCodeExpiredException() {
-        super(HmsErrorCodeEnum.HOME_ERROR_2017);
+        super(ErrorCode.HOME_ERROR_2017);
     }
 }

@@ -3,16 +3,16 @@ package me.huangduo.hms.dto.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 import java.util.List;
 
 public record RolePermissionUpdateRequest(
         @NotEmpty(message = "permissionIds can not be empty.")
         List<@NotNull @Positive Integer> permissionIds
-) implements HmsRequest {
+) implements HmsRequestBody {
         @Override
-        public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-                return HmsErrorCodeEnum.HOME_ERROR_2014;
+        public ErrorCode getErrorCode() {
+                return ErrorCode.HOME_ERROR_2014;
         }
 }

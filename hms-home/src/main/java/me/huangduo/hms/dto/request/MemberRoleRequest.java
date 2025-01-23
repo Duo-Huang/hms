@@ -2,15 +2,15 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public record MemberRoleRequest(
         @NotNull(message = "roleId can not be null")
         @Positive(message = "roleId is a positive integer.")
         Integer roleId
-) implements HmsRequest {
+) implements HmsRequestBody {
     @Override
-    public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.HOME_ERROR_2012;
+    public ErrorCode getErrorCode() {
+        return ErrorCode.HOME_ERROR_2012;
     }
 }

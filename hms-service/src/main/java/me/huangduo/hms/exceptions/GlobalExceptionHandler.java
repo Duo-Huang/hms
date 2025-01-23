@@ -3,10 +3,10 @@ package me.huangduo.hms.exceptions;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.dto.request.HmsRequest;
-import me.huangduo.hms.dto.response.HmsResponse;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
-import me.huangduo.hms.enums.HmsHttpStatusEnum;
+import me.huangduo.hms.dto.request.HmsRequestBody;
+import me.huangduo.hms.dto.response.HmsResponseBody;
+import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.HttpCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
      * 400 - Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出, 用于校验body
      * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<HmsResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
+    public ResponseEntity<HmsResponseBody<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             if (error instanceof FieldError fieldError) {
@@ -43,12 +43,12 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
             }
         });
         try {
-            HmsErrorCodeEnum errorCodeEnum = (HmsErrorCodeEnum) HmsRequest.class.getMethod("getHmsErrorCodeEnum").invoke(ex.getBindingResult().getTarget());
+            ErrorCode errorCode = (ErrorCode) HmsRequestBody.class.getMethod("getErrorCode").invoke(ex.getBindingResult().getTarget());
             log.error("The request parameter auto verification failed and get a mapped error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponse.error(errorCodeEnum, errors));
+            return ResponseEntity.badRequest().body(HmsResponseBody.error(errorCode, errors));
         } catch (Exception e) {
             log.error("The request parameter auto verification failed and get a fallback error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003, errors));
+            return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, errors));
         }
     }
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
      * 400 - Controller层请求参数校验, ConstraintViolationException 为Spring 校验器抛出,用于校验单个参数
      * */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<HmsResponse<Map<String, String>>> handleValidationExceptions(ConstraintViolationException ex) {
+    public ResponseEntity<HmsResponseBody<Map<String, String>>> handleValidationExceptions(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach(violation -> {
             Path propertyPath = violation.getPropertyPath();
@@ -68,52 +68,52 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
 
             errors.put(Objects.requireNonNullElse(lastFieldName, "unknown"), violation.getMessage());
         });
-        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003, errors));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, errors));
     }
 
     /*
      * 400 - Service 层参数校验
      * */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<HmsResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<HmsResponseBody<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("The request parameter verification failed and get a fallback error.", ex);
-        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_003, ex.getMessage()));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, ex.getMessage()));
     }
 
     /*
      * 401 - 认证失败 (业务异常)
      * */
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<HmsResponse<Void>> handleRecordNotFoundException(AuthenticationException ex) {
+    public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(AuthenticationException ex) {
         log.error("The user fails to be authenticated.", ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponse.error(ex.getHmsErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponseBody.error(ex.getErrorCode()));
     }
 
     /*
      * 403 - 鉴权失败 (业务异常)
      * */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<HmsResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<HmsResponseBody<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("The user fails to be authorized.", ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponse.error(ex.getHmsErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponseBody.error(ex.getErrorCode()));
     }
 
     /*
      * 404
      * */
     @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<HmsResponse<Void>> handleRecordNotFoundException(RecordNotFoundException e) {
+    public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(RecordNotFoundException e) {
         log.error("The requested resource could not be found.", e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponseBody.error(e.getErrorCode()));
     }
 
     /*
      * 业务异常兜底
      * */
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<HmsResponse<Void>> handleBusinessException(BusinessException e) {
+    public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(BusinessException e) {
         log.error("A business error occurred.", e);
-        return ResponseEntity.badRequest().body(HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_004));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_004));
     }
 
     /*
@@ -132,19 +132,19 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
             Class<? extends HttpMessageConverter<?>> selectedConverterType,
             ServerHttpRequest request, @NonNull ServerHttpResponse response
     ) {
-        if (body instanceof HmsResponse) {
+        if (body instanceof HmsResponseBody) {
             return body; // custom response;
         } else if (body instanceof Map) { // failed response
             Integer status = (Integer) ((Map<?, ?>) body).get("status");
             log.error("An error occurred. response body: {}; returnType: {}; selectedContentType: {}", body, returnType, selectedContentType);
 
-            return HmsResponse.error(
-                    HmsErrorCodeEnum.SYSTEM_ERROR_002.getCode(),
-                    Optional.ofNullable(HmsHttpStatusEnum.getMessageByHttpCode(status)).orElse(HmsErrorCodeEnum.SYSTEM_ERROR_002.getMessage()),
+            return HmsResponseBody.error(
+                    ErrorCode.SYSTEM_ERROR_002.getCode(),
+                    Optional.ofNullable(HttpCode.getMessageByHttpCode(status)).orElse(ErrorCode.SYSTEM_ERROR_002.getMessage()),
                     null);
         }
         // FIXME: not sure what to do, but this is most likely an exception
         log.error("Unknown exception occurs. response body: {}; returnType: {}; selectedContentType: {}", body, returnType, selectedContentType);
-        return HmsResponse.error(HmsErrorCodeEnum.SYSTEM_ERROR_001);
+        return HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_001);
     }
 }

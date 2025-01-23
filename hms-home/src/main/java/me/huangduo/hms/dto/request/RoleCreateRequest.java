@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public record RoleCreateRequest(
         @NotNull(message = "baseRoleId can not be null")
@@ -17,9 +17,9 @@ public record RoleCreateRequest(
 
         @Size(max = 100, message = "roleDescription must be at most 100 characters long")
         String roleDescription
-) implements HmsRequest {
+) implements HmsRequestBody {
     @Override
-    public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.HOME_ERROR_2012;
+    public ErrorCode getErrorCode() {
+        return ErrorCode.HOME_ERROR_2012;
     }
 }

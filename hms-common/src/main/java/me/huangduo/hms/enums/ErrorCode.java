@@ -13,7 +13,7 @@ import lombok.Getter;
  * 第 3 位和第 4 位表示具体是什么错误？例如：01 为手机号不合法，02 为验证码输入错误，可标记 99 个错误。
  */
 @Getter
-public enum HmsErrorCodeEnum {
+public enum ErrorCode {
 
     // 系统级错误 1xxx (发生在全局范围内或者不确定具体地方)
     SYSTEM_ERROR_001(1001, "未知错误"), // fallback
@@ -58,7 +58,7 @@ public enum HmsErrorCodeEnum {
     private final int code;
     private final String message;
 
-    HmsErrorCodeEnum(int code, String message) {
+    ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
     }

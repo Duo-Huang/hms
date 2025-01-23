@@ -1,5 +1,5 @@
 package me.huangduo.hms.enums;
 
-public interface EnumValue {
+public interface SingleValueEnum {
     int getValue();
 }

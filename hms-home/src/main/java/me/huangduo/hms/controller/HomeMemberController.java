@@ -11,7 +11,7 @@ import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
 import me.huangduo.hms.dto.request.UserAcceptHomeInvitationRequest;
-import me.huangduo.hms.dto.response.HmsResponse;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
@@ -46,84 +46,84 @@ public class HomeMemberController {
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<HmsResponse<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
         try {
             homeMemberService.inviteUser(homeId, userToken.userInfo(), user);
-            return ResponseEntity.ok(HmsResponse.success());
+            return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
         }
     }
 
     @GetMapping
-    public ResponseEntity<HmsResponse<List<MemberResponse>>> getMembersForHome(@RequestAttribute Integer homeId) {
+    public ResponseEntity<HmsResponseBody<List<MemberResponse>>> getMembersForHome(@RequestAttribute Integer homeId) {
         List<Member> members = homeMemberService.getMembersWithRoles(homeId);
 
-        return ResponseEntity.ok(HmsResponse.success(members.stream().map(memberMapper::toResponse).collect(Collectors.toList())));
+        return ResponseEntity.ok(HmsResponseBody.success(members.stream().map(memberMapper::toResponse).collect(Collectors.toList())));
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) throws JsonProcessingException {
+    public ResponseEntity<HmsResponseBody<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) throws JsonProcessingException {
         try {
             homeMemberService.acceptInvitation(userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
-            return ResponseEntity.ok(HmsResponse.success());
+            return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeMemberAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
         } catch (InvitationCodeExpiredException e) {
-            return ResponseEntity.status(HttpStatus.GONE).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+            return ResponseEntity.status(HttpStatus.GONE).body(HmsResponseBody.error(e.getErrorCode()));
         } catch (JsonProcessingException e) {
             throw e;
         }
     }
 
     @DeleteMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> removeMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
+    public ResponseEntity<HmsResponseBody<Void>> removeMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
         homeMemberService.removeMember(member);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @GetMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
+    public ResponseEntity<HmsResponseBody<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = homeMemberService.getMemberWithRole(homeId, userId);
 
-        return ResponseEntity.ok(HmsResponse.success(memberMapper.toResponse(member)));
+        return ResponseEntity.ok(HmsResponseBody.success(memberMapper.toResponse(member)));
     }
 
     @PutMapping("/{userId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
         Member member = memberMapper.toModel(memberInfoUpdateRequest);
         member.setHomeId(homeId);
         member.setUserId(userId);
         homeMemberService.updateMemberInfo(member);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @GetMapping("/homes")
-    public ResponseEntity<HmsResponse<List<HomeInfoResponse>>> getHomesForCurrentUser(@RequestAttribute UserToken userToken) {
+    public ResponseEntity<HmsResponseBody<List<HomeInfoResponse>>> getHomesForCurrentUser(@RequestAttribute UserToken userToken) {
         List<Home> homes = homeMemberService.getHomesForUser(Member.builder().userId(userToken.userInfo().getUserId()).build());
-        return ResponseEntity.ok(HmsResponse.success(homes.stream().map(homeMapper::toResponse).collect(Collectors.toList())));
+        return ResponseEntity.ok(HmsResponseBody.success(homes.stream().map(homeMapper::toResponse).collect(Collectors.toList())));
     }
 
     @PutMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponse<Void>> assignRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> assignRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
         homeMemberService.assignRoleForMember(member, memberRoleRequest.roleId());
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @DeleteMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponse<Void>> removeRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
+    public ResponseEntity<HmsResponseBody<Void>> removeRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
         homeMemberService.removeRoleForMember(member);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 }

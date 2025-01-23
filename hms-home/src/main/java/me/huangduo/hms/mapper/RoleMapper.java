@@ -6,11 +6,8 @@ import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;
 import me.huangduo.hms.dto.response.RoleResponse;
 import me.huangduo.hms.dto.response.RoleWithPermissionResponse;
-import me.huangduo.hms.enums.HmsRoleType;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoleMapper {

@@ -3,7 +3,7 @@ package me.huangduo.hms.service;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class CheckServiceImpl implements CheckService {
     public User checkUserExisted(Integer userId) {
         User user = null;
         if (userId == null || Objects.isNull(user = commonService.getUserById(userId))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_204);
             log.error("This user does not existed.", e);
             throw e;
         }
@@ -37,7 +37,7 @@ public class CheckServiceImpl implements CheckService {
     public User checkUserExisted(String username) {
         User user = null;
         if (username == null || Objects.isNull(user = commonService.getUserByName(username))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_204);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_204);
             log.error("This user does not existed.", e);
             throw e;
         }
@@ -57,7 +57,7 @@ public class CheckServiceImpl implements CheckService {
         }
 
         if (!isRoleInHome && !isSystemRole) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_2011);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_2011);
             log.error("This role does not exists in this home and it is not a system role.", e);
             throw e;
         }

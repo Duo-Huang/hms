@@ -1,12 +1,12 @@
 package me.huangduo.hms.dto.response;
 
-import me.huangduo.hms.enums.HmsRoleType;
+import me.huangduo.hms.enums.RoleType;
 
 import java.time.LocalDateTime;
 
 public record RoleResponse(
         Integer roleId,
-        HmsRoleType roleType,
+        RoleType roleType,
         String roleName,
         String roleDescription,
         LocalDateTime createdAt

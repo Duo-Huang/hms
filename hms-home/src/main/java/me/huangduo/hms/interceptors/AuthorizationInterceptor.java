@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
@@ -104,7 +104,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private void checkHomeExisted(Integer homeId) {
         if (commonService.getHomeById(homeId) == null) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_203);
             log.error("The requested home does not exist", e);
             throw e;
         }

@@ -1,6 +1,6 @@
 package me.huangduo.hms.dao.handler;
 
-import me.huangduo.hms.enums.EnumValue;
+import me.huangduo.hms.enums.SingleValueEnum;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class GenericEnumValueHandler<E extends Enum<E> & EnumValue> extends BaseTypeHandler<E> {
+public class GenericEnumValueHandler<E extends Enum<E> & SingleValueEnum> extends BaseTypeHandler<E> {
 
     private final Class<E> type;
 

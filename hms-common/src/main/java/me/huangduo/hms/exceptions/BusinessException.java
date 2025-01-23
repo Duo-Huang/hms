@@ -1,13 +1,13 @@
 package me.huangduo.hms.exceptions;
 
 import lombok.Getter;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 @Getter
 public abstract class BusinessException extends RuntimeException {
-    private final HmsErrorCodeEnum hmsErrorCodeEnum;
+    private final ErrorCode errorCode;
 
-    public BusinessException(HmsErrorCodeEnum hmsErrorCodeEnum) {
-        this.hmsErrorCodeEnum = hmsErrorCodeEnum;
+    public BusinessException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 }

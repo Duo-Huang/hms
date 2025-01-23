@@ -2,9 +2,8 @@ package me.huangduo.hms.service;
 
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Message;
-import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.HmsSystemRole;
+import me.huangduo.hms.enums.SystemRole;
 
 import java.util.List;
 
@@ -18,9 +17,9 @@ public interface CommonService {
 
     boolean isUserInHome(Integer homeId, Integer userId);
 
-    SystemRole getSystemRoleByName(HmsSystemRole hmsSystemRole);
+    me.huangduo.hms.dto.model.SystemRole getSystemRoleByName(SystemRole hmsSystemRole);
 
-    List<SystemRole> getSystemRoles();
+    List<me.huangduo.hms.dto.model.SystemRole> getSystemRoles();
 
     boolean isSystemRole(Integer roleId);
 

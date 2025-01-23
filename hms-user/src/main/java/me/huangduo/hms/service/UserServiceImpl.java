@@ -7,7 +7,6 @@ import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dao.entity.UserEntity;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.DuplicatedPasswordException;

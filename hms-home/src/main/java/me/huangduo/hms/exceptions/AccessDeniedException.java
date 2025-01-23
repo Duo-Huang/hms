@@ -1,13 +1,13 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public class AccessDeniedException extends BusinessException {
     public AccessDeniedException() {
-        super(HmsErrorCodeEnum.HOME_ERROR_2013);
+        super(ErrorCode.HOME_ERROR_2013);
     }
 
-    public AccessDeniedException(HmsErrorCodeEnum hmsErrorCodeEnum) {
-        super(hmsErrorCodeEnum);
+    public AccessDeniedException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

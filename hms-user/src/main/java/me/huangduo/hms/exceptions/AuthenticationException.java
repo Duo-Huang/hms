@@ -1,9 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public class AuthenticationException extends BusinessException {
     public AuthenticationException() {
-        super(HmsErrorCodeEnum.USER_ERROR_101);
+        super(ErrorCode.USER_ERROR_101);
     }
 }

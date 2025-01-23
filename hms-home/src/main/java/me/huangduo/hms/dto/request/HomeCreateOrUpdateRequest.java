@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.Size;
 import me.huangduo.hms.annotations.AtLeastOneNotNull;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 @AtLeastOneNotNull(message = "homeName or homeDescription must be provided.")
 public record HomeCreateOrUpdateRequest(
@@ -11,9 +11,9 @@ public record HomeCreateOrUpdateRequest(
 
         @Size(max = 50, message = "home description must be at most 50 characters long.")
         String homeDescription
-) implements HmsRequest {
+) implements HmsRequestBody {
     @Override
-    public HmsErrorCodeEnum getHmsErrorCodeEnum() {
-        return HmsErrorCodeEnum.HOME_ERROR_202;
+    public ErrorCode getErrorCode() {
+        return ErrorCode.HOME_ERROR_202;
     }
 }

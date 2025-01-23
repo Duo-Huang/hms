@@ -1,9 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public class UserAlreadyExistsException extends BusinessException {
     public UserAlreadyExistsException() {
-        super(HmsErrorCodeEnum.USER_ERROR_103);
+        super(ErrorCode.USER_ERROR_103);
     }
 }

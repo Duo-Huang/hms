@@ -3,7 +3,7 @@ package me.huangduo.hms.enums;
 import lombok.Getter;
 
 @Getter
-public enum MessageType implements EnumValue {
+public enum MessageType implements SingleValueEnum {
     NOTIFICATION(0),
     INVITATION(1);
 

@@ -3,7 +3,7 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.dto.response.HmsResponse;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.HomeCreateOrUpdateRequest;
@@ -31,32 +31,32 @@ public class HomeController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest, @RequestAttribute UserToken userToken) {
+    public ResponseEntity<HmsResponseBody<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest, @RequestAttribute UserToken userToken) {
         try {
             homeService.createHome(homeMapper.toModel(homeCreateOrUpdateRequest), userToken.userInfo());
-            return ResponseEntity.ok(HmsResponse.success());
+            return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
         }
     }
 
     @GetMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<HomeInfoResponse>> getHomeInfo(@ValidId @PathVariable Integer homeId) {
+    public ResponseEntity<HmsResponseBody<HomeInfoResponse>> getHomeInfo(@ValidId @PathVariable Integer homeId) {
         Home homeInfo = homeService.getHomeInfo(homeId);
-        return ResponseEntity.ok(HmsResponse.success(homeMapper.toResponse(homeInfo)));
+        return ResponseEntity.ok(HmsResponseBody.success(homeMapper.toResponse(homeInfo)));
     }
 
     @PatchMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> updateHomeInfo(@ValidId @PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> updateHomeInfo(@ValidId @PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
         Home home = homeMapper.toModel(homeCreateOrUpdateRequest);
         home.setHomeId(homeId);
         homeService.updateHomeInfo(home);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @DeleteMapping("/{homeId:\\d+}")
-    public ResponseEntity<HmsResponse<Void>> deleteHome(@ValidId @PathVariable Integer homeId) {
+    public ResponseEntity<HmsResponseBody<Void>> deleteHome(@ValidId @PathVariable Integer homeId) {
         homeService.deleteHome(homeId);
-        return ResponseEntity.ok(HmsResponse.success());
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 }

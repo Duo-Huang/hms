@@ -3,7 +3,7 @@ package me.huangduo.hms.enums;
 import lombok.Getter;
 
 @Getter
-public enum MessageStatus implements EnumValue {
+public enum MessageStatus implements SingleValueEnum {
     UNREAD(0),
     READ(1);
 

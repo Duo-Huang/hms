@@ -1,9 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
+import me.huangduo.hms.enums.ErrorCode;
 
 public class HomeMemberAlreadyExistsException extends BusinessException {
     public HomeMemberAlreadyExistsException() {
-        super(HmsErrorCodeEnum.HOME_ERROR_205);
+        super(ErrorCode.HOME_ERROR_205);
     }
 }

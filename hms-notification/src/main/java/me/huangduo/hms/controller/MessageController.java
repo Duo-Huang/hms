@@ -1,7 +1,7 @@
 package me.huangduo.hms.controller;
 
 import me.huangduo.hms.dto.model.Message;
-import me.huangduo.hms.dto.response.HmsResponse;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.service.MessageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,8 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<HmsResponse<Void>> getHistoryMessages() {
-        return ResponseEntity.ok(HmsResponse.success());
+    public ResponseEntity<HmsResponseBody<Void>> getHistoryMessages() {
+        return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

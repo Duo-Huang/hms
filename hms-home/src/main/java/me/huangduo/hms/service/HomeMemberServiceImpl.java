@@ -8,8 +8,8 @@ import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
 import me.huangduo.hms.dto.model.*;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
-import me.huangduo.hms.enums.HmsSystemRole;
+import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.SystemRole;
 import me.huangduo.hms.events.InvitationEvent;
 import me.huangduo.hms.events.InvitationEventFactory;
 import me.huangduo.hms.exceptions.BusinessException;
@@ -103,7 +103,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         addMember(inviterHomeId, invitee);
         // assign a default home member role for this user
-        SystemRole homeMemberRole = commonService.getSystemRoleByName(HmsSystemRole.HOME_MEMBER);
+        me.huangduo.hms.dto.model.SystemRole homeMemberRole = commonService.getSystemRoleByName(SystemRole.HOME_MEMBER);
 
         if (Objects.isNull(homeMemberRole)) {
             log.warn("The member is not assigned a default home member role for this new member.");
@@ -122,7 +122,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         if (invatationMessage == null) {
             log.error("Can not found invitation message, invitationCode: {}", invitationCode);
-            throw new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_2016);
+            throw new RecordNotFoundException(ErrorCode.HOME_ERROR_2016);
         }
 
         if (invatationMessage.expiration().isBefore(LocalDateTime.now())) {
@@ -145,7 +145,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         }
 
         if (Objects.isNull(homesDao.getById(messagePayload.getHomeId()))) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_203);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_203);
             log.error("The home of the inviter cannot be found. inviterId: {}, homeId: {}", inviterUserIdFromCode, messagePayload.getHomeId(), e);
             throw e;
         }
@@ -187,7 +187,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         int row = homeMemberRolesDao.removeItemByUserIdAndHomeId(memberMapper.toEntity(member));
 
         if (row == 0) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_206);
             log.error("This home member doesn't existed.", e);
             throw e;
         }
@@ -197,7 +197,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     public Member getMemberWithRole(Integer homeId, Integer userId) throws RecordNotFoundException {
         Member member = homeMemberRolesDao.getMemberWithRoleByHomeIdAndUserId(homeId, userId);
         if (member == null) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_206);
             log.error("This home member doesn't exist.", e);
             throw e;
         }
@@ -211,7 +211,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     public void updateMemberInfo(Member member) throws RecordNotFoundException {
         int row = homeMemberRolesDao.updateMemberNameByUserIdAndHomeId(memberMapper.toEntity(member));
         if (row == 0) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_206);
             log.error("This home member doesn't exist.", e);
             throw e;
         }
@@ -255,7 +255,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         int row = homeMemberRolesDao.updateRoleByUserIdAndHomeId(homeMemberRoleEntity);
         if (row == 0) {
-            BusinessException e = new RecordNotFoundException(HmsErrorCodeEnum.HOME_ERROR_206);
+            BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_206);
             log.error("This home member doesn't exist.", e);
             throw e;
         }

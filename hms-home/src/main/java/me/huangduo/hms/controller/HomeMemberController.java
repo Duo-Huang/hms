@@ -1,5 +1,6 @@
 package me.huangduo.hms.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.dto.model.Home;
@@ -15,6 +16,7 @@ import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
+import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
 import me.huangduo.hms.service.HomeMemberService;
@@ -63,12 +65,16 @@ public class HomeMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) {
+    public ResponseEntity<HmsResponse<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) throws JsonProcessingException {
         try {
             homeMemberService.acceptInvitation(userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
             return ResponseEntity.ok(HmsResponse.success());
         } catch (HomeMemberAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+        } catch (InvitationCodeExpiredException e) {
+            return ResponseEntity.status(HttpStatus.GONE).body(HmsResponse.error(e.getHmsErrorCodeEnum()));
+        } catch (JsonProcessingException e) {
+            throw e;
         }
     }
 

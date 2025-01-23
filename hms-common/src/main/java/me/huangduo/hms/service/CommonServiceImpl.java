@@ -3,6 +3,7 @@ package me.huangduo.hms.service;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dto.model.Home;
+import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsSystemRole;
@@ -53,5 +54,10 @@ public class CommonServiceImpl implements CommonService {
     public boolean isSystemRole(Integer roleId) {
         List<SystemRole> roles = getSystemRoles();
         return roles.stream().anyMatch(role -> role.getRoleId().equals(roleId));
+    }
+
+    @Override
+    public Message getMessageByInvitationCode(String invitationCode) {
+        return commonDao.getMessageByInvitationCode(invitationCode);
     }
 }

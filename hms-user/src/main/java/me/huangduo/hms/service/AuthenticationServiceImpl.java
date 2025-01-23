@@ -12,7 +12,6 @@ import me.huangduo.hms.dao.RevokedUserTokensDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
-import me.huangduo.hms.enums.HmsErrorCodeEnum;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             userInfo = objectMapper.readValue(userInfoJson, User.class);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse token due to JSON parse error.", e);
+            log.error("Failed to parse user token due to JSON parse error.", e);
         }
         LocalDateTime issuedAt = claims.getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime notBefore = claims.getNotBefore().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -112,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             return Jwts.parser().verifyWith(key).requireIssuer(appConfig.getJwtIssuer()).build().parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
-            throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
+            throw new AuthenticationException();
         }
     }
 

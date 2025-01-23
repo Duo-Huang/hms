@@ -64,7 +64,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
         try {
             rolesDao.add(roleEntity);
         } catch (DuplicateKeyException e) {
-            BusinessException ex = new RoleAlreadyExistedException(HmsErrorCodeEnum.HOME_ERROR_2010);
+            BusinessException ex = new RoleAlreadyExistedException();
             log.error("This role is already existed.", ex);
             throw ex;
         }

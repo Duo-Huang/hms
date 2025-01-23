@@ -1,6 +1,7 @@
 package me.huangduo.hms.service;
 
 import me.huangduo.hms.dto.model.Home;
+import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.HmsSystemRole;
@@ -22,4 +23,6 @@ public interface CommonService {
     List<SystemRole> getSystemRoles();
 
     boolean isSystemRole(Integer roleId);
+
+    Message getMessageByInvitationCode(String invitationCode);
 }

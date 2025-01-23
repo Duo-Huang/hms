@@ -112,7 +112,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private void checkUserInHome(Integer homeId, Integer userId) {
         if (!commonService.isUserInHome(homeId, userId)) {
-            BusinessException e = new AccessDeniedException(HmsErrorCodeEnum.HOME_ERROR_2013);
+            BusinessException e = new AccessDeniedException();
             log.error("There is no such user in this home", e);
             throw e;
         }

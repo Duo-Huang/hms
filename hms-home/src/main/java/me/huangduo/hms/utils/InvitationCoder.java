@@ -38,7 +38,11 @@ public class InvitationCoder {
      * @param userId
      * @return
      */
-    public static String userIdToCode(int userId) {
+    public static String userIdToCode(Integer userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId can not be null");
+        }
+
         char[] buf = new char[BIN_LEN];
         int charPos = BIN_LEN;
 
@@ -77,7 +81,11 @@ public class InvitationCoder {
      * @param code
      * @return
      */
-    public static int codeToUserId(String code) {
+    public static Integer codeToUserId(String code) {
+        if (code == null) {
+            throw new IllegalArgumentException("code can not be null");
+        }
+
         char[] charArray = code.toCharArray();
         int result = 0;
         for (int i = 0; i < charArray.length; i++) {

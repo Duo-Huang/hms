@@ -41,12 +41,12 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             User user = userToken.userInfo();
             if (Objects.isNull(user)) {
                 log.error("Current userInfo in request is null.");
-                throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
+                throw new AuthenticationException();
             }
 
             if (Objects.isNull(userService.getProfile(user.getUserId()))) {
                 log.error("Current user is not exists, userId={}", user.getUserId());
-                throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
+                throw new AuthenticationException();
             }
 
             if (!authService.isTokenRevoked(userToken) && authService.validateToken(userToken)) {
@@ -56,7 +56,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             }
         }
         log.error("Current user authentication failed.");
-        throw new AuthenticationException(HmsErrorCodeEnum.USER_ERROR_101);
+        throw new AuthenticationException();
     }
 
     @Override

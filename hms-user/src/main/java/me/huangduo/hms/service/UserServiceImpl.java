@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         try {
             usersDao.create(userEntity);
         } catch (DuplicateKeyException e) {
-            BusinessException ex = new UserAlreadyExistsException(HmsErrorCodeEnum.USER_ERROR_103);
+            BusinessException ex = new UserAlreadyExistsException();
             log.error("This is user is already existed", e);
             throw ex;
         }
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
         if (Objects.equals(oldPassword, newPassword)) {
-            BusinessException e = new DuplicatedPasswordException(HmsErrorCodeEnum.USER_ERROR_109);
+            BusinessException e = new DuplicatedPasswordException();
             log.error("The new password cannot be the same as the old password", e);
             throw e;
         }

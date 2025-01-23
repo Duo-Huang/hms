@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.huangduo.hms.enums.HmsErrorCodeEnum;
 
 @Getter
-public class BusinessException extends RuntimeException {
+public abstract class BusinessException extends RuntimeException {
     private final HmsErrorCodeEnum hmsErrorCodeEnum;
 
     public BusinessException(HmsErrorCodeEnum hmsErrorCodeEnum) {

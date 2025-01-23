@@ -1,5 +1,6 @@
 package me.huangduo.hms.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
 import me.huangduo.hms.dto.model.User;
@@ -12,7 +13,7 @@ public interface HomeMemberService {
 
     void inviteUser(Integer homeId, User inviter, User invitee) throws RecordNotFoundException, IllegalArgumentException; // 发送邀请信息
 
-    void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException;
+    void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException, JsonProcessingException;
 
     void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException, IllegalArgumentException; // 接受邀请信息
 

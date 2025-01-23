@@ -53,7 +53,7 @@ public class HomeServiceImpl implements HomeService {
         try {
             homesDao.create(homeEntity);
         } catch (DuplicateKeyException e) {
-            BusinessException ex = new HomeAlreadyExistsException(HmsErrorCodeEnum.HOME_ERROR_201);
+            BusinessException ex = new HomeAlreadyExistsException();
             log.error("This home is already existed.", ex);
             throw ex;
         }

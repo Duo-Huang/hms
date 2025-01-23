@@ -48,6 +48,9 @@ public enum HmsErrorCodeEnum {
     HOME_ERROR_2013(2213, "该用户无权访问此家庭"),
     HOME_ERROR_2014(2214, "权限信息格式错误"),
     HOME_ERROR_2015(2215, "邀请码格式错误"),
+    HOME_ERROR_2016(2216, "邀请信息不存在"),
+    HOME_ERROR_2017(2217, "邀请已过期"),
+    HOME_ERROR_2018(2218, "家庭成员角色不存在"),
 
     // 财务模块错误 23xx
     FINANCE_ERROR_301(2301, "预算不足");

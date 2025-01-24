@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.enums.ErrorCode;
 import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.exceptions.BusinessException;
@@ -44,8 +43,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        UserToken userToken = (UserToken) request.getAttribute("userToken");
-        User user = userToken.userInfo();
+        User user = (User) request.getAttribute("userInfo");
 
         Integer homeId = url.startsWith("/api/homes")
                 ? getHomeIdFromPath(request)

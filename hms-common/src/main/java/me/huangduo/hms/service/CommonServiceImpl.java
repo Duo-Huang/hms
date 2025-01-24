@@ -6,6 +6,7 @@ import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.SystemRole;
+import me.huangduo.hms.events.InvitationEvent;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Message getMessageByInvitationCode(String invitationCode) {
+    public Message<InvitationEvent.InvitationMessagePayload> getMessageByInvitationCode(String invitationCode) {
         return commonDao.getMessageByInvitationCode(invitationCode);
     }
 }

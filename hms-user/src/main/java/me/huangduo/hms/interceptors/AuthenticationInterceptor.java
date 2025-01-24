@@ -37,20 +37,24 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             UserToken userToken = authService.parseToken(token);
-            User user = userToken.userInfo();
-            if (Objects.isNull(user)) {
-                log.error("Current userInfo in request is null.");
+            Integer userId = userToken.userId();
+
+            if (Objects.isNull(userId)) {
+                log.error("Current userId in request is null.");
                 throw new AuthenticationException();
             }
 
-            if (Objects.isNull(userService.getProfile(user.getUserId()))) {
-                log.error("Current user is not exists, userId={}", user.getUserId());
+            User userInfo = null;
+
+            if (Objects.isNull(userInfo = userService.getProfile(userId))) {
+                log.error("Current user is not exists, userId={}", userId);
                 throw new AuthenticationException();
             }
 
             if (!authService.isTokenRevoked(userToken) && authService.validateToken(userToken)) {
-                request.setAttribute("userToken", userToken); // 包含User对象
-                MDC.put("userId", String.valueOf(userToken.userInfo().getUserId()));
+                request.setAttribute("userToken", userToken);
+                request.setAttribute("userInfo", userInfo);
+                MDC.put("userId", String.valueOf(userId));
                 return true;
             }
         }

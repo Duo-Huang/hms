@@ -21,5 +21,5 @@ public class RevokedUserTokenEntity extends BaseEntity {
 
     private LocalDateTime expiration;
 
-    private String username;
+    private Integer userId;
 }

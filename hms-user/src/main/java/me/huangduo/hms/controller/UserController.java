@@ -1,13 +1,13 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.UserLoginRequest;
 import me.huangduo.hms.dto.request.UserPasswordUpdateRequest;
 import me.huangduo.hms.dto.request.UserProfileUpdateRequest;
 import me.huangduo.hms.dto.request.UserRegistrationRequest;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.UserRegistrationResponse;
 import me.huangduo.hms.enums.ErrorCode;
 import me.huangduo.hms.exceptions.DuplicatedPasswordException;
@@ -61,10 +61,11 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<HmsResponseBody<Void>> changePassword(
             @Valid @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest,
+            @RequestAttribute User userInfo,
             @RequestAttribute UserToken userToken
     ) {
         try {
-            userService.changePassword(userToken, userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
+            userService.changePassword(userInfo, userToken, userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
             return ResponseEntity.ok(HmsResponseBody.success());
         } catch (DuplicatedPasswordException e) {
             return ResponseEntity.badRequest().body(HmsResponseBody.error(e.getErrorCode()));
@@ -75,18 +76,17 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<HmsResponseBody<User>> getProfile(@RequestAttribute UserToken userToken) {
-        User profile = userService.getProfile(userToken.userInfo().getUserId());
+        User profile = userService.getProfile(userToken.userId());
         return ResponseEntity.ok(HmsResponseBody.success(profile));
     }
 
     @PutMapping("/profile")
     public ResponseEntity<HmsResponseBody<Void>> getProfile(
             @Valid @RequestBody UserProfileUpdateRequest userProfileUpdateRequest,
-            @RequestAttribute UserToken userToken
+            @RequestAttribute User userInfo
     ) {
-        User profile = userToken.userInfo();
-        profile.setNickname(userProfileUpdateRequest.nickname());
-        userService.updateProfile(profile);
+        userInfo.setNickname(userProfileUpdateRequest.nickname());
+        userService.updateProfile(userInfo);
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 }

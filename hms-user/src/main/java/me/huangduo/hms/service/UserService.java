@@ -13,7 +13,8 @@ public interface UserService {
 
     /**
      * 注册用户, 接收user业务对象而不是username, 方便以后使用邮箱或手机号登录
-     * @param user 要注册的用户信息
+     *
+     * @param user     要注册的用户信息
      * @param password 要注册的用户密码
      * @return 注册成功的用户id
      * @throws UserAlreadyExistsException 用户已存在
@@ -22,6 +23,7 @@ public interface UserService {
 
     /**
      * 用户登录, 接收user业务对象而不是username, 方便以后使用邮箱或手机号登录
+     *
      * @param user 登录的用户信息
      * @return jwt token
      * @throws IllegalArgumentException 用户名或密码错误
@@ -32,13 +34,14 @@ public interface UserService {
 
     /**
      * 修改用户密码
-     * @param userToken 用户token
+     *
+     * @param user        当前用户
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      * @return 是否修改成功
      * @throws IllegalArgumentException 如果输入的参数无效
      */
-    void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException;
+    void changePassword(User user, UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException;
 
     User getProfile(Integer userId);
 

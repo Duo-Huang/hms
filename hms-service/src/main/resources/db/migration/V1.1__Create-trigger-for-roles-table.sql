@@ -53,24 +53,4 @@ BEGIN
 END;
 //
 
-create definer=`hms_migration_user`@`%` trigger `create-invitation-message-must-have-payload`
-    before insert on messages
-    for each row
-BEGIN
-    IF NEW.message_type = 1 AND NEW.payload IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'payload must be provided when message is invitation type';
-    END IF;
-END;
-//
-
-create definer=`hms_migration_user`@`%` trigger `update-invitation-message-must-have-payload`
-    before update on messages
-    for each row
-BEGIN
-    IF NEW.message_type = 1 AND NEW.payload IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'payload must be provided when message is invitation type';
-    END IF;
-END;
-//
-
 DELIMITER ;

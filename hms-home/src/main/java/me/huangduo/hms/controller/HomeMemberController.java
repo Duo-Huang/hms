@@ -1,12 +1,10 @@
 package me.huangduo.hms.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Member;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
@@ -46,11 +44,11 @@ public class HomeMemberController {
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<HmsResponseBody<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute UserToken userToken, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
+    public ResponseEntity<HmsResponseBody<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute User userInfo, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
         try {
-            homeMemberService.inviteUser(homeId, userToken.userInfo(), user);
+            homeMemberService.inviteUser(homeId, userInfo, user);
             return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
@@ -65,16 +63,14 @@ public class HomeMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponseBody<Void>> acceptInvitation(@RequestAttribute UserToken userToken, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) throws JsonProcessingException {
+    public ResponseEntity<HmsResponseBody<Void>> acceptInvitation(@RequestAttribute User userInfo, @Valid @RequestBody UserAcceptHomeInvitationRequest userAcceptHomeInvitationRequest) {
         try {
-            homeMemberService.acceptInvitation(userToken.userInfo(), userAcceptHomeInvitationRequest.invitationCode());
+            homeMemberService.acceptInvitation(userInfo, userAcceptHomeInvitationRequest.invitationCode());
             return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeMemberAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
         } catch (InvitationCodeExpiredException e) {
             return ResponseEntity.status(HttpStatus.GONE).body(HmsResponseBody.error(e.getErrorCode()));
-        } catch (JsonProcessingException e) {
-            throw e;
         }
     }
 
@@ -104,8 +100,8 @@ public class HomeMemberController {
     }
 
     @GetMapping("/homes")
-    public ResponseEntity<HmsResponseBody<List<HomeInfoResponse>>> getHomesForCurrentUser(@RequestAttribute UserToken userToken) {
-        List<Home> homes = homeMemberService.getHomesForUser(Member.builder().userId(userToken.userInfo().getUserId()).build());
+    public ResponseEntity<HmsResponseBody<List<HomeInfoResponse>>> getHomesForCurrentUser(@RequestAttribute User userInfo) {
+        List<Home> homes = homeMemberService.getHomesForUser(Member.builder().userId(userInfo.getUserId()).build());
         return ResponseEntity.ok(HmsResponseBody.success(homes.stream().map(homeMapper::toResponse).collect(Collectors.toList())));
     }
 

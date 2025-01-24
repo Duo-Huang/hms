@@ -10,16 +10,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface RoleMapper {
-    RoleEntity toEntity(HomeRole home);
-
-    HomeRole toModel(RoleEntity roleEntity);
+public interface RoleMapper extends BaseMapper<RoleEntity, HomeRole> {
 
     HomeRole toModel(RoleCreateRequest roleCreateRequest);
 
     HomeRole toModel(RoleUpdateRequest roleUpdateRequest);
 
-//    @Mapping(source = "roleType", target = "roleType", qualifiedByName = "HmsRoleTypeToInt")
+    //    @Mapping(source = "roleType", target = "roleType", qualifiedByName = "HmsRoleTypeToInt")
     RoleResponse toResponse(HomeRole role);
 
 //    @Named("HmsRoleTypeToInt")

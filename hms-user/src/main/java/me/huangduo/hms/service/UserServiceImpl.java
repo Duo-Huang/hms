@@ -64,18 +64,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout(UserToken userToken) throws AuthenticationException {
-        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder().jti(userToken.jti()).expiration(userToken.expiration()).username(userToken.userInfo().getUsername()).build();
+        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder().jti(userToken.jti()).expiration(userToken.expiration()).userId(userToken.userId()).build();
         revokedUserTokensDao.create(revokedUserTokenEntity);
     }
 
     @Override
-    public void changePassword(UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
+    public void changePassword(User user, UserToken userToken, String oldPassword, String newPassword) throws IllegalArgumentException {
         if (Objects.equals(oldPassword, newPassword)) {
             BusinessException e = new DuplicatedPasswordException();
             log.error("The new password cannot be the same as the old password", e);
             throw e;
         }
-        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(userToken.userInfo().getUsername(), oldPassword);
+        UserEntity userEntity = usersDao.findUserByUsernameAndPassword(user.getUsername(), oldPassword);
         if (Objects.isNull(userEntity)) {
             RuntimeException e = new IllegalArgumentException();
             log.error("Wrong password", e);

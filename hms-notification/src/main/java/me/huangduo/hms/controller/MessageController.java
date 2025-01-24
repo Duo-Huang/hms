@@ -2,6 +2,7 @@ package me.huangduo.hms.controller;
 
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.response.HmsResponseBody;
+import me.huangduo.hms.events.HmsEvent;
 import me.huangduo.hms.service.MessageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class MessageController {
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Message> streamLiveMessages() {
+    public Flux<Message<? extends HmsEvent.MessagePayload>> streamLiveMessages() {
         return messageService.getLiveMessage();
     }
 

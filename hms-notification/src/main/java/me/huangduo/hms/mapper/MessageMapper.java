@@ -2,13 +2,10 @@ package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.MessageEntity;
 import me.huangduo.hms.dto.model.Message;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
+import me.huangduo.hms.events.HmsEvent;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface MessageMapper {
+public interface MessageMapper<E extends MessageEntity<? extends HmsEvent.MessagePayload>, M extends Message<? extends HmsEvent.MessagePayload>> {
+    E toEntity(M m);
 
-    MessageEntity toEntity(Message message);
-
-    Message toModel(MessageEntity messageEntity);
+    M toModel(E e);
 }

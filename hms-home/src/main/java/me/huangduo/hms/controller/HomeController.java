@@ -3,10 +3,10 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.dto.request.HomeCreateOrUpdateRequest;
+import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.mapper.HomeMapper;
@@ -31,9 +31,9 @@ public class HomeController {
     }
 
     @PostMapping
-    public ResponseEntity<HmsResponseBody<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest, @RequestAttribute UserToken userToken) {
+    public ResponseEntity<HmsResponseBody<Void>> createHome(@Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest, @RequestAttribute User userInfo) {
         try {
-            homeService.createHome(homeMapper.toModel(homeCreateOrUpdateRequest), userToken.userInfo());
+            homeService.createHome(homeMapper.toModel(homeCreateOrUpdateRequest), userInfo);
             return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));

@@ -1,17 +1,17 @@
 package me.huangduo.hms.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dto.model.*;
+import me.huangduo.hms.dto.model.Home;
+import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.dto.model.Message;
+import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.ErrorCode;
 import me.huangduo.hms.enums.SystemRole;
 import me.huangduo.hms.events.InvitationEvent;
-import me.huangduo.hms.events.InvitationEventFactory;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
@@ -46,10 +46,6 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
     private final CheckService checkService;
 
-    private final InvitationEventFactory invitationEventFactory;
-
-    private final ObjectMapper objectMapper;
-
     public HomeMemberServiceImpl(
             ApplicationEventPublisher applicationEventPublisher,
             HomeMemberRolesDao homeMemberRolesDao,
@@ -57,7 +53,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             CommonService commonService,
             HomeMapper homeMapper,
             MemberMapper memberMapper,
-            CheckService checkService, InvitationEventFactory invitationEventFactory, ObjectMapper objectMapper) {
+            CheckService checkService) {
         this.applicationEventPublisher = applicationEventPublisher;
         this.homeMemberRolesDao = homeMemberRolesDao;
         this.homesDao = homesDao;
@@ -65,8 +61,6 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         this.homeMapper = homeMapper;
         this.memberMapper = memberMapper;
         this.checkService = checkService;
-        this.invitationEventFactory = invitationEventFactory;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -87,14 +81,14 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         log.info("Ready to send invitations, homeId: {}, invitationCode: {}, inviter username: {}, invitee username: {}", homeId, invitationCode, inviter.getUsername(), inviteeUserInfo.getUsername());
 
-        InvitationEvent invitationEvent = invitationEventFactory.createEvent(inviter, homeId, invitationCode, inviter, inviteeUserInfo);
+        InvitationEvent invitationEvent = new InvitationEvent(this.getClass(), homeId, inviter, invitationCode, inviteeUserInfo);
         applicationEventPublisher.publishEvent(invitationEvent);
 
     }
 
     @Override
     @Transactional
-    public void acceptInvitation(User invitee, String invitationCode) throws JsonProcessingException {
+    public void acceptInvitation(User invitee, String invitationCode) {
         if (invitee == null) {
             throw new IllegalArgumentException("user can not be null.");
         }
@@ -112,50 +106,44 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         }
     }
 
-    private Integer verifyInvitationCode(String invitationCode) throws JsonProcessingException {
+    private Integer verifyInvitationCode(String invitationCode) {
         if (invitationCode == null) {
             throw new IllegalArgumentException("invitationCode can not be null");
         }
-        // TODO: 校验,用invitationCode和加入家庭type的消息查询消息表,如果消息没过期并且未处理,然后比对被邀请人invitee是否是当前user, 不是就抛IllegalArgumentException
 
-        Message invatationMessage = commonService.getMessageByInvitationCode(invitationCode);
+        Message<InvitationEvent.InvitationMessagePayload> invatationMessage = commonService.getMessageByInvitationCode(invitationCode);
 
         if (invatationMessage == null) {
             log.error("Can not found invitation message, invitationCode: {}", invitationCode);
             throw new RecordNotFoundException(ErrorCode.HOME_ERROR_2016);
         }
 
-        if (invatationMessage.expiration().isBefore(LocalDateTime.now())) {
-            log.error("The invitation message has expired. invitationCode: {}, expiration: {}", invitationCode, invatationMessage.expiration());
+        if (invatationMessage.getExpiration().isBefore(LocalDateTime.now())) {
+            log.error("The invitation message has expired. invitationCode: {}, expiration: {}", invitationCode, invatationMessage.getExpiration());
             throw new InvitationCodeExpiredException();
         }
 
         Integer inviterUserIdFromCode = InvitationCoder.codeToUserId(invitationCode);
-        InvitationEvent.InvitationMessagePayload messagePayload = null;
-        try {
-            messagePayload = objectMapper.readValue(invatationMessage.payload(), InvitationEvent.InvitationMessagePayload.class);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to parse invitation message payload due to JSON parse error. value: {}", invatationMessage.payload(), e);
-            throw e;
-        }
 
-        if (!Objects.equals(inviterUserIdFromCode, messagePayload.getInviterUserId())) {
-            log.error("inviterUserIdFromCode is not matched. inviterUserIdFromCode: {}, real inviterUserId: {}", inviterUserIdFromCode, messagePayload.getInviterUserId());
+        InvitationEvent.InvitationMessagePayload messagePayload = invatationMessage.getPayload();
+
+        if (!Objects.equals(inviterUserIdFromCode, messagePayload.getPublisherUserId())) {
+            log.error("inviterUserIdFromCode is not matched. inviterUserIdFromCode: {}, real inviterUserId: {}", inviterUserIdFromCode, messagePayload.getPublisherUserId());
             throw new IllegalArgumentException("Invalid invitation code.");
         }
 
-        if (Objects.isNull(homesDao.getById(messagePayload.getHomeId()))) {
+        if (Objects.isNull(homesDao.getById(invatationMessage.getHomeId()))) {
             BusinessException e = new RecordNotFoundException(ErrorCode.HOME_ERROR_203);
-            log.error("The home of the inviter cannot be found. inviterId: {}, homeId: {}", inviterUserIdFromCode, messagePayload.getHomeId(), e);
+            log.error("The home of the inviter cannot be found. inviterId: {}, homeId: {}", inviterUserIdFromCode, invatationMessage.getHomeId(), e);
             throw e;
         }
 
-        if (!commonService.isUserInHome(messagePayload.getHomeId(), inviterUserIdFromCode)) {
+        if (!commonService.isUserInHome(invatationMessage.getHomeId(), inviterUserIdFromCode)) {
             log.error("The home of the inviter cannot be found. inviterId: {}", inviterUserIdFromCode);
             throw new IllegalArgumentException("Invalid invitation code.");
         }
 
-        return messagePayload.getHomeId();
+        return invatationMessage.getHomeId();
     }
 
     @Override

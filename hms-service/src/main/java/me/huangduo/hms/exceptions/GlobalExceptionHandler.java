@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestControllerAdvice
 @Slf4j
@@ -117,6 +120,15 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     }
 
     /*
+     * Json 序列化
+     * */
+    @ExceptionHandler({JsonSerializationException.class, JsonDeserializationException.class})
+    public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(RuntimeException e) {
+        log.error("Json processing error.", e);
+        return ResponseEntity.internalServerError().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_002.getCode(), HttpCode.getMessageByHttpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+    }
+
+    /*
      * 500 - all others exception handler
      * */
     @Override
@@ -140,8 +152,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
 
             return HmsResponseBody.error(
                     ErrorCode.SYSTEM_ERROR_002.getCode(),
-                    Optional.ofNullable(HttpCode.getMessageByHttpCode(status)).orElse(ErrorCode.SYSTEM_ERROR_002.getMessage()),
-                    null);
+                    Optional.ofNullable(HttpCode.getMessageByHttpCode(status)).orElse(ErrorCode.SYSTEM_ERROR_002.getMessage()));
         }
         // FIXME: not sure what to do, but this is most likely an exception
         log.error("Unknown exception occurs. response body: {}; returnType: {}; selectedContentType: {}", body, returnType, selectedContentType);

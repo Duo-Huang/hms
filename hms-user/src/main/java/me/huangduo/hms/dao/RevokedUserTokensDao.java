@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface RevokedUserTokensDao {
 
-    @Insert("INSERT INTO revoked_tokens (jti, expiration, username) VALUES (#{jti}, #{expiration}, #{username})")
+    @Insert("INSERT INTO revoked_tokens (jti, expiration, user_id) VALUES (#{jti}, #{expiration}, #{userId})")
     int create(RevokedUserTokenEntity revokedUserTokenEntity);
 
     @Select("SELECT * FROM revoked_tokens WHERE jti = #{jti}")

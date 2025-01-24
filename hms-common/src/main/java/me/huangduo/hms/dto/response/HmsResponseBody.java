@@ -23,4 +23,8 @@ public record HmsResponseBody<T>(int code, String message, T data) {
     public static <T> HmsResponseBody<T> error(int code, String message, T data) {
         return new HmsResponseBody<>(code, message, data);
     }
+
+    public static <T> HmsResponseBody<T> error(int code, String message) {
+        return new HmsResponseBody<>(code, message, null);
+    }
 }

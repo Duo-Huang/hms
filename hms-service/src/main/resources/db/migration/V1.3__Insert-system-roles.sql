@@ -1,0 +1,2 @@
+INSERT INTO hms_dev.roles (role_id, role_type, role_name, role_description, home_id) VALUES (1, 0, '家庭管理员', '家庭管理员, 拥有家庭内所有权限', null);
+INSERT INTO hms_dev.roles (role_id, role_type, role_name, role_description, home_id) VALUES (2, 0, '家庭成员', '家庭成员, 拥有家庭内大部分权限,除了部分重要操作', null);

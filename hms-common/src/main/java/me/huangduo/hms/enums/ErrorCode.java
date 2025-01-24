@@ -17,7 +17,7 @@ public enum ErrorCode {
 
     // 系统级错误 1xxx (发生在全局范围内或者不确定具体地方)
     SYSTEM_ERROR_001(1001, "未知错误"), // fallback
-    SYSTEM_ERROR_002(1002, "请求错误"), // 处理所有未被全局处理器处理的异常
+    SYSTEM_ERROR_002(1002, "请求出错了"), // 处理所有未被全局处理器处理的异常
     SYSTEM_ERROR_003(1003, "请求参数错误"), // 全局参数校验的fallback消息
     SYSTEM_ERROR_004(1004, "业务异常"), // 具体异常api内处理, 这里是全局兜底的错误
 

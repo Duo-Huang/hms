@@ -1,7 +1,5 @@
 package me.huangduo.hms.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -31,27 +29,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final RevokedUserTokensDao revokedUserTokensDao;
 
-    private final ObjectMapper objectMapper;
 
-
-    public AuthenticationServiceImpl(AppConfig appConfig, RevokedUserTokensDao revokedUserTokensDao, ObjectMapper objectMapper) {
+    public AuthenticationServiceImpl(AppConfig appConfig, RevokedUserTokensDao revokedUserTokensDao) {
         this.appConfig = appConfig;
         this.key = Keys.hmacShaKeyFor(appConfig.getJwtSecret().getBytes(StandardCharsets.UTF_8));
         this.revokedUserTokensDao = revokedUserTokensDao;
-        this.objectMapper = objectMapper;
     }
 
     @Override
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        String userJson = null;
-        try {
-            userJson = objectMapper.writeValueAsString(user);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to generate token due to JSON stringify error.", e);
-        }
 
-        claims.put("userInfo", userJson);
+        claims.put("userId", user.getUserId());
 
         String jti = UUID.randomUUID().toString();
 
@@ -77,18 +66,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UserToken parseToken(String token) {
         Claims claims = extractAllClaims(token);
-        String userInfoJson = (String) claims.get("userInfo");
-        User userInfo = null;
-        try {
-            userInfo = objectMapper.readValue(userInfoJson, User.class);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to parse user token due to JSON parse error.", e);
-        }
+        Integer userId = (Integer) claims.get("userId");
+
         LocalDateTime issuedAt = claims.getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime notBefore = claims.getNotBefore().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime expiration = claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        return new UserToken(claims.getId(), userInfo, claims.getSubject(), claims.getIssuer(), issuedAt, notBefore, expiration);
+        return new UserToken(claims.getId(), userId, claims.getSubject(), claims.getIssuer(), issuedAt, notBefore, expiration);
     }
 
     @Override
@@ -102,7 +86,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder()
                 .jti(userToken.jti())
                 .expiration(userToken.expiration())
-                .username(userToken.userInfo().getUsername())
+                .userId(userToken.userId())
                 .build();
         revokedUserTokensDao.create(revokedUserTokenEntity);
     }

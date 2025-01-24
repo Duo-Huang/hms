@@ -17,10 +17,14 @@ create table messages
         primary key,
     message_type    tinyint unsigned                   not null comment '0 - notification, 1 - invitation msg...',
     message_content varchar(600)                       not null comment 'message content',
-    payload         json                               null comment 'extra info',
+    payload         json                               not null comment 'extra info',
     expiration      datetime                           not null comment 'expiration time',
+    home_id         int                                not null comment 'foreign key for homes',
     created_at      datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
+    updated_at      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    constraint `messages-homes-home_id-fk`
+        foreign key (home_id) references homes (home_id)
+            on update cascade on delete cascade
 )
     comment 'Home notification messages';
 
@@ -137,14 +141,13 @@ create table revoked_tokens
         primary key,
     jti        varchar(60)                         not null comment 'jwt id',
     expiration datetime                            not null comment 'expiration time',
-    username   varchar(30)                         not null comment 'foreign key for users',
+    user_id    int                                 not null comment 'foreign key for users',
     created_at datetime  default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `jti-unique`
         unique (jti),
-    constraint `revoked_tokens-users-username-fk`
-        foreign key (username) references users (username)
+    constraint `revoked_tokens-users-user_id-fk`
+        foreign key (user_id) references users (user_id)
             on update cascade on delete cascade
 )
     comment 'logged out tokens';
-

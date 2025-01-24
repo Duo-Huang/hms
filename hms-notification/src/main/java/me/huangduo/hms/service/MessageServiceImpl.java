@@ -4,51 +4,40 @@ import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.events.EventHandler;
 import me.huangduo.hms.events.HmsEvent;
 import me.huangduo.hms.events.InvitationEvent;
+import me.huangduo.hms.events.NotificationEvent;
+import me.huangduo.hms.mapper.InvitationMessageMapper;
+import me.huangduo.hms.mapper.NotificationMessageMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 import java.util.List;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private final Sinks.Many<Message> sink = SinksManager.getInstance().getSink();
+    private final SinksManager sinksManager = SinksManager.getInstance();
 
-    public MessageServiceImpl(EventHandlerService eventHandlerService) {
-        EventHandler genericHandler = new EventHandler() {
-            @Override
-            public void handle(HmsEvent event) {
-                Message message = event.getMessage();
-                Sinks.EmitResult result = sink.tryEmitNext(message);
-                if (result.isFailure()) {
-                    switch (result) {
-                        case FAIL_TERMINATED:
-                            System.err.println("Sink has been terminated. Cannot send message: " + message);
-                            break;
-                        case FAIL_OVERFLOW:
-                            System.err.println("Sink buffer is full. Message dropped: " + message);
-                            break;
-                        default:
-                            System.err.println("Unknown error occurred while sending message: " + message);
-                    }
-                } else {
-                    System.out.println("Message sent successfully: " + message);
-                }
-            }
-        };
+    public MessageServiceImpl(EventHandlerService eventHandlerService, InvitationMessageMapper invitationMessageMapper, NotificationMessageMapper notificationMessageMapper) {
 
+        EventHandler genericHandler = event -> sinksManager.emit(event.getMessage());
 
+        // register event handler
         eventHandlerService.registerHandler(InvitationEvent.class, genericHandler);
+        eventHandlerService.registerHandler(NotificationEvent.class, genericHandler);
+
+        // register message mapper
+        eventHandlerService.registerMessageMapper(InvitationEvent.class, invitationMessageMapper);
+        eventHandlerService.registerMessageMapper(NotificationEvent.class, notificationMessageMapper);
     }
 
     @Override
-    public Flux<Message> getLiveMessage() {
-        return SinksManager.getInstance().getSink().asFlux();
+
+    public Flux<Message<? extends HmsEvent.MessagePayload>> getLiveMessage() {
+        return sinksManager.getFlux();
     }
 
     @Override
-    public List<Message> getHistoryMessages(Integer homeId) {
+    public List<Message<? extends HmsEvent.MessagePayload>> getHistoryMessages(Integer homeId) {
         return null;
     }
 }

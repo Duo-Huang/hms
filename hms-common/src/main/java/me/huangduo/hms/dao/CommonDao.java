@@ -4,7 +4,6 @@ import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.events.InvitationEvent;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -32,5 +31,5 @@ public interface CommonDao {
     List<SystemRole> getSystemRoles();
 
     @Select("SELECT * FROM messages WHERE message_type = 1 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$.invitationCode')) = #{invitationCode}")
-    Message<InvitationEvent.InvitationMessagePayload> getMessageByInvitationCode(String invitationCode);
+    Message getMessageByInvitationCode(String invitationCode);
 }

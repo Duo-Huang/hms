@@ -10,7 +10,7 @@ public interface HomeRoleService {
 
     void createHomeRole(Integer basRoleId, HomeRole role) throws RoleAlreadyExistedException, IllegalArgumentException; // create a role base on system role
 
-    List<HomeRole> getAvailableRolesFromHome(Integer homeId) throws RecordNotFoundException;
+    List<HomeRole> getAvailableRolesFromHome(Integer homeId) throws RecordNotFoundException; // TODO: pageable
 
     void updateHomeRoleInfo(HomeRole role) throws RecordNotFoundException;
 

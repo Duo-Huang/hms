@@ -5,9 +5,7 @@ create table homes
     home_name        varchar(60)                        not null comment 'home name',
     home_description varchar(600)                       null comment 'home description',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `home_name-unique`
-        unique (home_name)
+    updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
 )
     comment 'hms homes';
 

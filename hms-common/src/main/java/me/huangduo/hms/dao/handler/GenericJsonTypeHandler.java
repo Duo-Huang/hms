@@ -1,9 +1,6 @@
 package me.huangduo.hms.dao.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import me.huangduo.hms.exceptions.JsonDeserializationException;
-import me.huangduo.hms.exceptions.JsonSerializationException;
+import me.huangduo.hms.utils.JsonUtil;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
@@ -14,50 +11,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GenericJsonTypeHandler<T extends Serializable> extends BaseTypeHandler<T> {
-    private final ObjectMapper objectMapper;
     private final Class<T> type;
 
-    public GenericJsonTypeHandler(ObjectMapper objectMapper, Class<T> type) {
-        this.objectMapper = objectMapper;
+    public GenericJsonTypeHandler(Class<T> type) {
         this.type = type;
     }
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
-        try {
-            ps.setString(i, objectMapper.writeValueAsString(parameter));
-        } catch (JsonProcessingException e) {
-            throw new JsonSerializationException(e);
-        }
+        ps.setString(i, JsonUtil.serialize(parameter));
     }
 
     @Override
     public T getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String json = rs.getString(columnName);
-        try {
-            return json != null ? objectMapper.readValue(json, type) : null;
-        } catch (JsonProcessingException e) {
-            throw new JsonDeserializationException(e);
-        }
+        return json != null ? JsonUtil.deserialize(json, type) : null;
     }
 
     @Override
     public T getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String json = rs.getString(columnIndex);
-        try {
-            return json != null ? objectMapper.readValue(json, type) : null;
-        } catch (JsonProcessingException e) {
-            throw new JsonDeserializationException(e);
-        }
+        return json != null ? JsonUtil.deserialize(json, type) : null;
     }
 
     @Override
     public T getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String json = cs.getString(columnIndex);
-        try {
-            return json != null ? objectMapper.readValue(json, type) : null;
-        } catch (JsonProcessingException e) {
-            throw new JsonDeserializationException(e);
-        }
+        return json != null ? JsonUtil.deserialize(json, type) : null;
     }
 }

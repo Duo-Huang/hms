@@ -83,7 +83,6 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         InvitationEvent invitationEvent = new InvitationEvent(this.getClass(), homeId, inviter, invitationCode, inviteeUserInfo);
         applicationEventPublisher.publishEvent(invitationEvent);
-
     }
 
     @Override
@@ -111,7 +110,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             throw new IllegalArgumentException("invitationCode can not be null");
         }
 
-        Message<InvitationEvent.InvitationMessagePayload> invatationMessage = commonService.getMessageByInvitationCode(invitationCode);
+        Message invatationMessage = commonService.getMessageByInvitationCode(invitationCode);
 
         if (invatationMessage == null) {
             log.error("Can not found invitation message, invitationCode: {}", invitationCode);
@@ -125,7 +124,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         Integer inviterUserIdFromCode = InvitationCoder.codeToUserId(invitationCode);
 
-        InvitationEvent.InvitationMessagePayload messagePayload = invatationMessage.getPayload();
+        InvitationEvent.InvitationMessagePayload messagePayload = InvitationEvent.InvitationMessagePayload.deserialize(invatationMessage.getPayload(), InvitationEvent.InvitationMessagePayload.class);
 
         if (!Objects.equals(inviterUserIdFromCode, messagePayload.getPublisherUserId())) {
             log.error("inviterUserIdFromCode is not matched. inviterUserIdFromCode: {}, real inviterUserId: {}", inviterUserIdFromCode, messagePayload.getPublisherUserId());

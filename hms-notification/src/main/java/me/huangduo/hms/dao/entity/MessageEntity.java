@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageEntity<T> {
+public class MessageEntity {
     private int messageId;
 
     private MessageType messageType;
 
     private String messageContent;
 
-    private T payload;
+    private String payload;
 
     private LocalDateTime expiration;
 

@@ -4,7 +4,6 @@ import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.User;
 import me.huangduo.hms.enums.SystemRole;
-import me.huangduo.hms.events.InvitationEvent;
 
 import java.util.List;
 
@@ -24,5 +23,5 @@ public interface CommonService {
 
     boolean isSystemRole(Integer roleId);
 
-    Message<InvitationEvent.InvitationMessagePayload> getMessageByInvitationCode(String invitationCode);
+    Message getMessageByInvitationCode(String invitationCode);
 }

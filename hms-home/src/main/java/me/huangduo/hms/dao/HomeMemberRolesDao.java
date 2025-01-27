@@ -34,7 +34,7 @@ public interface HomeMemberRolesDao {
             "FROM home_member_roles hmr\n" +
             "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
             "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
-            "WHERE hmr.home_id = 1;")
+            "WHERE hmr.home_id = #{homeId}")
     @Results({
             @Result(property = "createdAt", column = "hmr_created_at"),
             @Result(property = "updatedAt", column = "hmr_updated_at"),
@@ -51,7 +51,7 @@ public interface HomeMemberRolesDao {
             "FROM home_member_roles hmr\n" +
             "LEFT JOIN roles r ON hmr.role_id = r.role_id\n" +
             "LEFT JOIN users u ON hmr.user_id = u.user_id\n" +
-            "WHERE hmr.home_id = 1 AND hmr.user_id = #{userId};")
+            "WHERE hmr.home_id = #{homeId} AND hmr.user_id = #{userId};")
     @Results({
             @Result(property = "createdAt", column = "hmr_created_at"),
             @Result(property = "updatedAt", column = "hmr_updated_at"),

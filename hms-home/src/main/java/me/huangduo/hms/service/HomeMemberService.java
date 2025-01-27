@@ -23,9 +23,9 @@ public interface HomeMemberService {
 
     void updateMemberInfo(Member member) throws RecordNotFoundException; // 修改家庭成员的信息, 不是user的信息
 
-    List<Home> getHomesForUser(User user) throws IllegalArgumentException;
+    List<Home> getHomesForUser(User user) throws IllegalArgumentException; // TODO: pageable
 
-    List<Member> getMembersWithRoles(Integer homeId) throws RecordNotFoundException; // 包含角色信息
+    List<Member> getMembersWithRoles(Integer homeId) throws RecordNotFoundException; // TODO: pageable
 
     void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException, IllegalArgumentException;
 

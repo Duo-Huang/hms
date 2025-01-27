@@ -1,14 +1,13 @@
 package me.huangduo.hms.service;
 
 import me.huangduo.hms.dto.model.Message;
-import me.huangduo.hms.events.HmsEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 public class SinksManager {
 
     private static volatile SinksManager instance;
-    private final Sinks.Many<Message<? extends HmsEvent.MessagePayload>> sink;
+    private final Sinks.Many<Message> sink;
 
     private SinksManager() {
         this.sink = Sinks.many().multicast().onBackpressureBuffer();
@@ -26,11 +25,11 @@ public class SinksManager {
         return instance;
     }
 
-    public Flux<Message<? extends HmsEvent.MessagePayload>> getFlux() {
+    public Flux<Message> getFlux() {
         return sink.asFlux();
     }
 
-    public void emit(Message<? extends HmsEvent.MessagePayload> message) {
+    public void emit(Message message) {
         Sinks.EmitResult result = sink.tryEmitNext(message);
         if (result.isFailure()) {
             handleEmitFailure(result, message);
@@ -39,7 +38,7 @@ public class SinksManager {
         }
     }
 
-    private void handleEmitFailure(Sinks.EmitResult result, Message<? extends HmsEvent.MessagePayload> message) {
+    private void handleEmitFailure(Sinks.EmitResult result, Message message) {
         switch (result) {
             case FAIL_TERMINATED:
                 System.err.println("Sink has been terminated. Cannot send message: " + message);

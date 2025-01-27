@@ -16,11 +16,11 @@ public interface RoleMapper extends BaseMapper<RoleEntity, HomeRole> {
 
     HomeRole toModel(RoleUpdateRequest roleUpdateRequest);
 
-    //    @Mapping(source = "roleType", target = "roleType", qualifiedByName = "HmsRoleTypeToInt")
+    //    @Mapping(source = "roleType", target = "roleType", qualifiedByName = "RoleTypeToInt")
     RoleResponse toResponse(HomeRole role);
 
-//    @Named("HmsRoleTypeToInt")
-//    default int hmsRoleTypeToInt(HmsRoleType roleType) {
+//    @Named("RoleTypeToInt")
+//    default int RoleTypeToInt(RoleType roleType) {
 //        return roleType != null ? roleType.getValue() : -1;
 //    }
 

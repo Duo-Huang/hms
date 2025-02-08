@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import me.huangduo.hms.enums.MessageType;
+import me.huangduo.hms.enums.MessageTypeEnum;
 import me.huangduo.hms.events.HmsEvent;
 import me.huangduo.hms.events.InvitationEvent;
 import me.huangduo.hms.events.NotificationEvent;
@@ -15,18 +15,24 @@ import java.util.Map;
 @AllArgsConstructor
 public class Message {
 
-    private static final Map<MessageType, Class<? extends HmsEvent.MessagePayload>> deserializerMap;
+    private static final Map<MessageTypeEnum, Class<? extends HmsEvent.MessagePayload>> payloadDeserializerMap;
+    private static final Map<MessageTypeEnum, Class<? extends HmsEvent.MessagePayloadResponse>> payloadResponseDeserializerMap;
 
     static {
-        deserializerMap = Map.of(
-                MessageType.INVITATION, InvitationEvent.InvitationMessagePayload.class,
-                MessageType.NOTIFICATION, NotificationEvent.NotificationMessagePayload.class
+        payloadDeserializerMap = Map.of(
+                MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayload.class,
+                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayload.class
+        );
+
+        payloadResponseDeserializerMap = Map.of(
+                MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayloadResponse.class,
+                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayloadResponse.class
         );
     }
 
     private Integer messageId;
 
-    private final MessageType messageType;
+    private final MessageTypeEnum messageType;
 
     private final String messageContent;
 
@@ -34,12 +40,19 @@ public class Message {
 
     private final LocalDateTime expiration;
 
-    private final Integer homeId;
-
     private final LocalDateTime createdAt;
 
     public HmsEvent.MessagePayload getDeserializedPayload() {
-        Class<? extends HmsEvent.MessagePayload> payloadClass = deserializerMap.get(messageType);
+        Class<? extends HmsEvent.MessagePayload> payloadClass = payloadDeserializerMap.get(messageType);
+        if (payloadClass == null) {
+            throw new IllegalArgumentException("No deserializer found for message type: " + messageType);
+        }
+
+        return JsonUtil.deserialize(payload, payloadClass);
+    }
+
+    public HmsEvent.MessagePayloadResponse getDeserializedPayloadResponse() {
+        Class<? extends HmsEvent.MessagePayloadResponse> payloadClass = payloadResponseDeserializerMap.get(messageType);
         if (payloadClass == null) {
             throw new IllegalArgumentException("No deserializer found for message type: " + messageType);
         }

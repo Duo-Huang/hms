@@ -20,7 +20,7 @@ public interface RoleMapper extends BaseMapper<RoleEntity, HomeRole> {
     RoleResponse toResponse(HomeRole role);
 
 //    @Named("RoleTypeToInt")
-//    default int RoleTypeToInt(RoleType roleType) {
+//    default int RoleTypeToInt(RoleTypeEnum roleType) {
 //        return roleType != null ? roleType.getValue() : -1;
 //    }
 

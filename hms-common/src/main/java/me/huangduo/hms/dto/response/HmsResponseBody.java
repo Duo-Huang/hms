@@ -1,6 +1,6 @@
 package me.huangduo.hms.dto.response;
 
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record HmsResponseBody<T>(int code, String message, T data) {
 
@@ -12,12 +12,12 @@ public record HmsResponseBody<T>(int code, String message, T data) {
         return HmsResponseBody.success(null);
     }
 
-    public static <T> HmsResponseBody<T> error(ErrorCode errorCode, T data) {
-        return new HmsResponseBody<>(errorCode.getCode(), errorCode.getMessage(), data);
+    public static <T> HmsResponseBody<T> error(ErrorCodeEnum errorCodeEnum, T data) {
+        return new HmsResponseBody<>(errorCodeEnum.getCode(), errorCodeEnum.getMessage(), data);
     }
 
-    public static <T> HmsResponseBody<T> error(ErrorCode errorCode) {
-        return HmsResponseBody.error(errorCode, null);
+    public static <T> HmsResponseBody<T> error(ErrorCodeEnum errorCodeEnum) {
+        return HmsResponseBody.error(errorCodeEnum, null);
     }
 
     public static <T> HmsResponseBody<T> error(int code, String message, T data) {

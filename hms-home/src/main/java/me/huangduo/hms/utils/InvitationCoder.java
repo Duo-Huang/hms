@@ -78,8 +78,8 @@ public class InvitationCoder {
      * 邀请码解析出userId<br/>
      * 基本操作思路恰好与userIdToCode反向操作。
      *
-     * @param code
-     * @return
+     * @param code 邀请码
+     * @return userId
      */
     public static Integer codeToUserId(String code) {
         if (code == null) {

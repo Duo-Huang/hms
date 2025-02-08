@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record UserProfileUpdateRequest(
         @NotEmpty(message = "nickname can not be empty.")
@@ -10,7 +10,7 @@ public record UserProfileUpdateRequest(
         String nickname
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.USER_ERROR_106;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.USER_ERROR_106;
     }
 }

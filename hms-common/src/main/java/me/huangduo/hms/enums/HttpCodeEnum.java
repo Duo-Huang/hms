@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum HttpCode {
+public enum HttpCodeEnum {
     BUSINESS_ERROR(HttpStatus.UNPROCESSABLE_ENTITY, "业务异常"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "错误的请求"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "未认证的用户"),
@@ -22,13 +22,13 @@ public enum HttpCode {
 
     private final String message;
 
-    HttpCode(HttpStatus code, String message) {
+    HttpCodeEnum(HttpStatus code, String message) {
         this.code = code;
         this.message = message;
     }
 
     public static String getMessageByHttpCode(int statusCode) {
-        for (HttpCode status : HttpCode.values()) {
+        for (HttpCodeEnum status : HttpCodeEnum.values()) {
             if (status.getCode().value() == statusCode) {
                 return status.getMessage();
             }

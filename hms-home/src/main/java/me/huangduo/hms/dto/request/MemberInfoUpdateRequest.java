@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record MemberInfoUpdateRequest(
         @NotEmpty(message = "memberName can not be empty.")
@@ -10,7 +10,7 @@ public record MemberInfoUpdateRequest(
         String memberName
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.HOME_ERROR_207;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.HOME_ERROR_207;
     }
 }

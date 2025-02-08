@@ -35,7 +35,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Flux<Message> getLiveMessage(Integer homeId) {
 
-        return sinksManager.getFlux().filter(message -> message.getHomeId().equals(homeId));
+        return sinksManager.getFlux(); // TODO: filter
     }
 
     @Override

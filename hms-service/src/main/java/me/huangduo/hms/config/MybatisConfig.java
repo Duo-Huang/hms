@@ -1,9 +1,9 @@
 package me.huangduo.hms.config;
 
 import me.huangduo.hms.dao.handler.GenericEnumValueHandler;
-import me.huangduo.hms.enums.MessageStatus;
-import me.huangduo.hms.enums.MessageType;
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.MessageStatusEnum;
+import me.huangduo.hms.enums.MessageTypeEnum;
+import me.huangduo.hms.enums.RoleTypeEnum;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -26,9 +26,9 @@ public class MybatisConfig {
 
         // setup global type handle
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-        typeHandlerRegistry.register(RoleType.class, new GenericEnumValueHandler<>(RoleType.class));
-        typeHandlerRegistry.register(MessageType.class, new GenericEnumValueHandler<>(MessageType.class));
-        typeHandlerRegistry.register(MessageStatus.class, new GenericEnumValueHandler<>(MessageStatus.class));
+        typeHandlerRegistry.register(RoleTypeEnum.class, new GenericEnumValueHandler<>(RoleTypeEnum.class));
+        typeHandlerRegistry.register(MessageTypeEnum.class, new GenericEnumValueHandler<>(MessageTypeEnum.class));
+        typeHandlerRegistry.register(MessageStatusEnum.class, new GenericEnumValueHandler<>(MessageStatusEnum.class));
 
         sessionFactory.setConfiguration(configuration);
 

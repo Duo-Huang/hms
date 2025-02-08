@@ -3,7 +3,7 @@ package me.huangduo.hms.dao.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.huangduo.hms.enums.MessageType;
+import me.huangduo.hms.enums.MessageTypeEnum;
 
 import java.time.LocalDateTime;
 
@@ -13,15 +13,13 @@ import java.time.LocalDateTime;
 public class MessageEntity {
     private int messageId;
 
-    private MessageType messageType;
+    private MessageTypeEnum messageType;
 
     private String messageContent;
 
     private String payload;
 
     private LocalDateTime expiration;
-
-    private Integer homeId;
 
     private LocalDateTime createdAt;
 

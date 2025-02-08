@@ -5,8 +5,8 @@ import jakarta.validation.Path;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.request.HmsRequestBody;
 import me.huangduo.hms.dto.response.HmsResponseBody;
-import me.huangduo.hms.enums.ErrorCode;
-import me.huangduo.hms.enums.HttpCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
+import me.huangduo.hms.enums.HttpCodeEnum;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,12 +46,12 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
             }
         });
         try {
-            ErrorCode errorCode = (ErrorCode) HmsRequestBody.class.getMethod("getErrorCode").invoke(ex.getBindingResult().getTarget());
+            ErrorCodeEnum errorCodeEnum = (ErrorCodeEnum) HmsRequestBody.class.getMethod("getErrorCode").invoke(ex.getBindingResult().getTarget());
             log.error("The request parameter auto verification failed and get a mapped error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponseBody.error(errorCode, errors));
+            return ResponseEntity.badRequest().body(HmsResponseBody.error(errorCodeEnum, errors));
         } catch (Exception e) {
             log.error("The request parameter auto verification failed and get a fallback error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, errors));
+            return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
         }
     }
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
 
             errors.put(Objects.requireNonNullElse(lastFieldName, "unknown"), violation.getMessage());
         });
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, errors));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
     }
 
     /*
@@ -80,7 +80,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HmsResponseBody<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("The request parameter verification failed and get a fallback error.", ex);
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_003, ex.getMessage()));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, ex.getMessage()));
     }
 
     /*
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(AuthenticationException ex) {
         log.error("The user fails to be authenticated.", ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponseBody.error(ex.getErrorCode()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
     }
 
     /*
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("The user fails to be authorized.", ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponseBody.error(ex.getErrorCode()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
     }
 
     /*
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(RecordNotFoundException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(RecordNotFoundException e) {
         log.error("The requested resource could not be found.", e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponseBody.error(e.getErrorCode()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponseBody.error(e.getErrorCodeEnum()));
     }
 
     /*
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(BusinessException e) {
         log.error("A business error occurred.", e);
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_004));
+        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_004));
     }
 
     /*
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler({JsonSerializationException.class, JsonDeserializationException.class})
     public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(RuntimeException e) {
         log.error("Json processing error.", e);
-        return ResponseEntity.internalServerError().body(HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_002.getCode(), HttpCode.getMessageByHttpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+        return ResponseEntity.internalServerError().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_002.getCode(), HttpCodeEnum.getMessageByHttpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())));
     }
 
     /*
@@ -151,11 +151,11 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
             log.error("An error occurred. response body: {}; returnType: {}; selectedContentType: {}", body, returnType, selectedContentType);
 
             return HmsResponseBody.error(
-                    ErrorCode.SYSTEM_ERROR_002.getCode(),
-                    Optional.ofNullable(HttpCode.getMessageByHttpCode(status)).orElse(ErrorCode.SYSTEM_ERROR_002.getMessage()));
+                    ErrorCodeEnum.SYSTEM_ERROR_002.getCode(),
+                    Optional.ofNullable(HttpCodeEnum.getMessageByHttpCode(status)).orElse(ErrorCodeEnum.SYSTEM_ERROR_002.getMessage()));
         }
         // FIXME: not sure what to do, but this is most likely an exception
         log.error("Unknown exception occurs. response body: {}; returnType: {}; selectedContentType: {}", body, returnType, selectedContentType);
-        return HmsResponseBody.error(ErrorCode.SYSTEM_ERROR_001);
+        return HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_001);
     }
 }

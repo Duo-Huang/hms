@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record UserAcceptHomeInvitationRequest(
         @NotEmpty(message = "invitationCode can not be empty.")
@@ -10,7 +10,7 @@ public record UserAcceptHomeInvitationRequest(
         String invitationCode
 ) implements HmsRequestBody {
         @Override
-        public ErrorCode getErrorCode() {
-                return ErrorCode.HOME_ERROR_2015;
+        public ErrorCodeEnum getErrorCode() {
+                return ErrorCodeEnum.HOME_ERROR_2015;
         }
 }

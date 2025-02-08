@@ -1,7 +1,7 @@
 package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.*;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record MemberInvitationRequest(
         @NotEmpty(message = "username can not be empty.")
@@ -10,7 +10,7 @@ public record MemberInvitationRequest(
         String username
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.HOME_ERROR_209;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.HOME_ERROR_209;
     }
 }

@@ -36,7 +36,7 @@ public class HomeController {
             homeService.createHome(homeMapper.toModel(homeCreateOrUpdateRequest), userInfo);
             return ResponseEntity.ok(HmsResponseBody.success());
         } catch (HomeAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCode()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HmsResponseBody.error(e.getErrorCodeEnum()));
         }
     }
 

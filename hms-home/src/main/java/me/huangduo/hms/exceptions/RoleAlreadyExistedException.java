@@ -1,9 +1,9 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public class RoleAlreadyExistedException extends BusinessException {
     public RoleAlreadyExistedException() {
-        super(ErrorCode.HOME_ERROR_2010);
+        super(ErrorCodeEnum.HOME_ERROR_2010);
     }
 }

@@ -17,12 +17,8 @@ create table messages
     message_content varchar(600)                       not null comment 'message content',
     payload         json                               not null comment 'extra info',
     expiration      datetime                           not null comment 'expiration time',
-    home_id         int                                not null comment 'foreign key for homes',
     created_at      datetime default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
-    constraint `messages-homes-home_id-fk`
-        foreign key (home_id) references homes (home_id)
-            on update cascade on delete cascade
+    updated_at      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
 )
     comment 'Home notification messages';
 

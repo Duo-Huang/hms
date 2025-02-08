@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record RoleCreateRequest(
         @NotNull(message = "baseRoleId can not be null")
@@ -19,7 +19,7 @@ public record RoleCreateRequest(
         String roleDescription
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.HOME_ERROR_2012;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.HOME_ERROR_2012;
     }
 }

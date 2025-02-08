@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.ErrorCode;
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.ErrorCodeEnum;
+import me.huangduo.hms.enums.RoleTypeEnum;
 import me.huangduo.hms.events.InvitationEvent;
 
 import java.time.LocalDateTime;
@@ -14,8 +14,8 @@ import java.util.TimeZone;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
-        System.out.println(ErrorCode.SYSTEM_ERROR_002.getMessage());
-        System.out.println(RoleType.SYSTEM_ROLE.getValue());
+        System.out.println(ErrorCodeEnum.SYSTEM_ERROR_002.getMessage());
+        System.out.println(RoleTypeEnum.SYSTEM_ROLE.getValue());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

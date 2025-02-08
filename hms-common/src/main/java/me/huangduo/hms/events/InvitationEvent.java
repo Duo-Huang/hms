@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.MessageType;
+import me.huangduo.hms.enums.MessageTypeEnum;
 
 import java.time.LocalDateTime;
 
@@ -27,10 +27,11 @@ public class InvitationEvent extends HmsEvent {
                 .publisherUserId(publisher.getUserId())
                 .inviteeUserId(invitee.getUserId())
                 .invitationCode(invitationCode)
+                .homeId(homeId)
                 .build().serialize();
         String messageContent = publisher.getNickname() + " 邀请你加入他的家庭";
 
-        return new Message(null, MessageType.INVITATION, messageContent, payload, EXPIRATION, homeId, LocalDateTime.now());
+        return new Message(null, MessageTypeEnum.INVITATION, messageContent, payload, EXPIRATION, LocalDateTime.now());
     }
 
     @Data
@@ -43,16 +44,34 @@ public class InvitationEvent extends HmsEvent {
 
         private final Integer inviteeUserId;
 
+        private final Integer homeId;
+
         @JsonCreator
         public InvitationMessagePayload(
                 @JsonProperty("invitationCode") String invitationCode,
                 @JsonProperty("inviteeUserId") Integer inviteeUserId,
+                @JsonProperty("homeId") Integer homeId,
                 @JsonProperty("publisherUserId") Integer publisherUserId) {
             super(publisherUserId);
             this.invitationCode = invitationCode;
             this.inviteeUserId = inviteeUserId;
+            this.homeId = homeId;
         }
 
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    @SuperBuilder
+    public static class InvitationMessagePayloadResponse extends MessagePayloadResponse {
+        private final String invitationCode;
+
+        @JsonCreator
+        public InvitationMessagePayloadResponse(
+                @JsonProperty("invitationCode") String invitationCode) {
+            this.invitationCode = invitationCode;
+        }
     }
 }
 

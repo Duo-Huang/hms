@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public record UserPasswordUpdateRequest(
         @NotEmpty(message = "oldPassword can not be empty.")
@@ -14,7 +14,7 @@ public record UserPasswordUpdateRequest(
         String newPassword
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.USER_ERROR_107;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.USER_ERROR_107;
     }
 }

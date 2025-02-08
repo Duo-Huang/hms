@@ -15,7 +15,7 @@ public interface HomeMemberService {
 
     void acceptInvitation(User user, String invitationCode) throws IllegalArgumentException, RecordNotFoundException, InvitationCodeExpiredException, HomeMemberAlreadyExistsException;
 
-    void addMember(Integer homeId, User user) throws RecordNotFoundException, HomeMemberAlreadyExistsException, IllegalArgumentException; // 接受邀请信息
+    void addMember(Integer homeId, User user) throws IllegalArgumentException; // 接受邀请信息
 
     void removeMember(Member member) throws RecordNotFoundException;
 

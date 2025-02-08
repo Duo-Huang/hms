@@ -1,5 +1,7 @@
 package me.huangduo.hms.events;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -20,7 +22,9 @@ public abstract class HmsEvent extends ApplicationEvent {
         this.message = message;
     }
 
-    // 子类必须继续
+    /*
+     * 子类必须继承, 实现event的message payload
+     * */
     @Data
     @AllArgsConstructor
     @SuperBuilder
@@ -34,5 +38,17 @@ public abstract class HmsEvent extends ApplicationEvent {
         public String serialize() {
             return JsonUtil.serialize(this);
         }
+    }
+
+
+    /*
+     * 子类必须继承, 实现event的message payload response
+     * */
+    @Data
+    @AllArgsConstructor
+    @SuperBuilder
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static abstract class MessagePayloadResponse implements Serializable {
+
     }
 }

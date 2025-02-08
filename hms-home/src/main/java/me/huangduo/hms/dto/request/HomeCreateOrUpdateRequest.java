@@ -2,7 +2,7 @@ package me.huangduo.hms.dto.request;
 
 import jakarta.validation.constraints.Size;
 import me.huangduo.hms.annotations.AtLeastOneNotNull;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 @AtLeastOneNotNull(message = "homeName or homeDescription must be provided.")
 public record HomeCreateOrUpdateRequest(
@@ -13,7 +13,7 @@ public record HomeCreateOrUpdateRequest(
         String homeDescription
 ) implements HmsRequestBody {
     @Override
-    public ErrorCode getErrorCode() {
-        return ErrorCode.HOME_ERROR_202;
+    public ErrorCodeEnum getErrorCode() {
+        return ErrorCodeEnum.HOME_ERROR_202;
     }
 }

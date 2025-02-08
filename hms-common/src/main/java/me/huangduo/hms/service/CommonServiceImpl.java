@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.CommonDao;
 import me.huangduo.hms.dto.model.Home;
 import me.huangduo.hms.dto.model.Message;
+import me.huangduo.hms.dto.model.SystemRole;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.SystemRole;
+import me.huangduo.hms.enums.SystemRoleEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,18 +41,18 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public me.huangduo.hms.dto.model.SystemRole getSystemRoleByName(SystemRole hmsSystemRole) {
-        return commonDao.getSystemRoleByName(hmsSystemRole.getRoleName());
+    public SystemRole getSystemRoleByName(SystemRoleEnum systemRoleEnum) {
+        return commonDao.getSystemRoleByName(systemRoleEnum.getRoleName());
     }
 
     @Override
-    public List<me.huangduo.hms.dto.model.SystemRole> getSystemRoles() {
+    public List<SystemRole> getSystemRoles() {
         return commonDao.getSystemRoles();
     }
 
     @Override
     public boolean isSystemRole(Integer roleId) {
-        List<me.huangduo.hms.dto.model.SystemRole> roles = getSystemRoles();
+        List<SystemRole> roles = getSystemRoles();
         return roles.stream().anyMatch(role -> role.getRoleId().equals(roleId));
     }
 

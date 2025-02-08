@@ -1,10 +1,10 @@
 package me.huangduo.hms.exceptions;
 
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 public class RecordNotFoundException extends BusinessException {
 
-    public RecordNotFoundException(ErrorCode errorCode) {
-        super(errorCode);
+    public RecordNotFoundException(ErrorCodeEnum errorCodeEnum) {
+        super(errorCodeEnum);
     }
 }

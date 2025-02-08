@@ -8,7 +8,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import me.huangduo.hms.dto.model.Message;
 import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.enums.MessageType;
+import me.huangduo.hms.enums.MessageTypeEnum;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +23,7 @@ public class NotificationEvent extends HmsEvent {
     private static Message createMessage(Integer homeId, User publisher, String message) {
         String payload = NotificationMessagePayload.builder().publisherUserId(publisher.getUserId()).build().serialize();
 
-        return new Message(null, MessageType.NOTIFICATION, message, payload, EXPIRATION, homeId, LocalDateTime.now());
+        return new Message(null, MessageTypeEnum.NOTIFICATION, message, payload, EXPIRATION, LocalDateTime.now());
     }
 
     @Data
@@ -33,9 +33,20 @@ public class NotificationEvent extends HmsEvent {
     public static class NotificationMessagePayload extends MessagePayload {
 
         @JsonCreator
-        public NotificationMessagePayload(
-                @JsonProperty("publisherUserId") Integer publisherUserId) {
+        public NotificationMessagePayload(@JsonProperty("publisherUserId") Integer publisherUserId) {
             super(publisherUserId);
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    @SuperBuilder
+    public static class NotificationMessagePayloadResponse extends MessagePayloadResponse {
+
+        @JsonCreator
+        public NotificationMessagePayloadResponse() {
+
         }
     }
 }

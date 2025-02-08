@@ -3,7 +3,7 @@ package me.huangduo.hms.dto.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import me.huangduo.hms.enums.ErrorCode;
+import me.huangduo.hms.enums.ErrorCodeEnum;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public record RolePermissionUpdateRequest(
         List<@NotNull @Positive Integer> permissionIds
 ) implements HmsRequestBody {
         @Override
-        public ErrorCode getErrorCode() {
-                return ErrorCode.HOME_ERROR_2014;
+        public ErrorCodeEnum getErrorCode() {
+                return ErrorCodeEnum.HOME_ERROR_2014;
         }
 }

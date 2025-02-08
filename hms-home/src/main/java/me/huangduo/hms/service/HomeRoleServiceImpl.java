@@ -7,7 +7,7 @@ import me.huangduo.hms.dao.entity.PermissionEntity;
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dao.entity.RolePermissionEntity;
 import me.huangduo.hms.dto.model.HomeRole;
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.RoleTypeEnum;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
@@ -58,7 +58,7 @@ public class HomeRoleServiceImpl implements HomeRoleService {
             log.warn("Will create a home role without any permissions");
         }
         RoleEntity roleEntity = roleMapper.toEntity(role);
-        roleEntity.setRoleType(RoleType.CUSTOM_ROLE);
+        roleEntity.setRoleType(RoleTypeEnum.CUSTOM_ROLE);
 
         try {
             rolesDao.add(roleEntity);

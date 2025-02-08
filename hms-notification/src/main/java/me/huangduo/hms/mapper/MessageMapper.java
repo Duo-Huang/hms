@@ -10,6 +10,6 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MessageMapper extends BaseMapper<MessageEntity, Message> {
 
-    @Mapping(target = "payload", expression = "java(message.getDeserializedPayload())")
+    @Mapping(target = "payload", expression = "java(message.getDeserializedPayloadResponse())")
     MessageResponse toResponse(Message message);
 }

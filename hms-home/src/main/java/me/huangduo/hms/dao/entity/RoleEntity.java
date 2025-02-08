@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import me.huangduo.hms.enums.RoleType;
+import me.huangduo.hms.enums.RoleTypeEnum;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,7 +16,7 @@ public class RoleEntity extends BaseEntity {
 
     private Integer roleId;
 
-    private RoleType roleType;
+    private RoleTypeEnum roleType;
 
     private String roleName;
 

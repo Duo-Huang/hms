@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import me.huangduo.hms.enums.MessageStatus;
+import me.huangduo.hms.enums.MessageStatusEnum;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,5 +20,5 @@ public class MessageStatusEntity extends BaseEntity {
 
     private int messageId;
 
-    private MessageStatus status;
+    private MessageStatusEnum status;
 }

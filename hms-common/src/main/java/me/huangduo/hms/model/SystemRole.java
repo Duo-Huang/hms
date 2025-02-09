@@ -1,4 +1,4 @@
-package me.huangduo.hms.dto.model;
+package me.huangduo.hms.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

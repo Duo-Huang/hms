@@ -1,12 +1,12 @@
 package me.huangduo.hms.events;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-import me.huangduo.hms.dto.model.Message;
+import me.huangduo.hms.model.Message;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.utils.JsonUtil;
 import org.springframework.context.ApplicationEvent;
 
@@ -29,7 +29,7 @@ public abstract class HmsEvent extends ApplicationEvent {
     @AllArgsConstructor
     @SuperBuilder
     public static abstract class MessagePayload implements Serializable {
-        private final Integer publisherUserId; // who trigger this event, userId
+        private final User publisher; // who trigger this event
 
         public static <T extends MessagePayload> T deserialize(String payload, Class<T> clazz) {
             return JsonUtil.deserialize(payload, clazz);

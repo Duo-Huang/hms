@@ -2,9 +2,9 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.Member;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.Member;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
 import me.huangduo.hms.dto.request.MemberRoleRequest;

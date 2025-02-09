@@ -1,6 +1,6 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.HomeRole;
+import me.huangduo.hms.model.HomeRole;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
 

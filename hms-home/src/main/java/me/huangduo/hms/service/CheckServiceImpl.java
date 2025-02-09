@@ -2,10 +2,9 @@ package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.RolesDao;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.exceptions.BusinessException;
-import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import org.springframework.stereotype.Service;
 

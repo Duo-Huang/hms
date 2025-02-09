@@ -1,7 +1,7 @@
 package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.PermissionEntity;
-import me.huangduo.hms.dto.model.Permission;
+import me.huangduo.hms.model.Permission;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

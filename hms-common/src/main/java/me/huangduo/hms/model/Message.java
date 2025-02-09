@@ -1,4 +1,4 @@
-package me.huangduo.hms.dto.model;
+package me.huangduo.hms.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +34,7 @@ public class Message {
 
     private final MessageTypeEnum messageType;
 
-    private final String messageContent;
+    private String messageContent;
 
     private final String payload;
 

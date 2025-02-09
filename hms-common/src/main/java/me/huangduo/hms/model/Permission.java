@@ -1,4 +1,4 @@
-package me.huangduo.hms.dto.model;
+package me.huangduo.hms.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Home {
-    private Integer homeId;
+public class Permission {
+    private Integer permissionId;
 
-    private String homeName;
+    private String permissionCode;
 
-    private String homeDescription;
+    private String permissionDescription;
 
     private LocalDateTime createdAt;
 

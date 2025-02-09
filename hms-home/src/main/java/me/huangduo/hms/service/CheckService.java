@@ -1,7 +1,6 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 
 public interface CheckService {

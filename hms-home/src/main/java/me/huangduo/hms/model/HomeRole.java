@@ -1,7 +1,8 @@
-package me.huangduo.hms.dto.model;
+package me.huangduo.hms.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import me.huangduo.hms.model.SystemRole;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

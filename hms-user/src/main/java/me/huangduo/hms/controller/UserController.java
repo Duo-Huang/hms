@@ -1,8 +1,8 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.model.User;
+import me.huangduo.hms.model.UserToken;
 import me.huangduo.hms.dto.request.UserLoginRequest;
 import me.huangduo.hms.dto.request.UserPasswordUpdateRequest;
 import me.huangduo.hms.dto.request.UserProfileUpdateRequest;

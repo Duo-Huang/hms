@@ -2,10 +2,10 @@ package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.CommonDao;
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.Message;
-import me.huangduo.hms.dto.model.SystemRole;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.Message;
+import me.huangduo.hms.model.SystemRole;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.enums.SystemRoleEnum;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.model.Member;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.response.MemberResponse;
 import org.mapstruct.Mapper;

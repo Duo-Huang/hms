@@ -1,9 +1,9 @@
 package me.huangduo.hms.dao;
 
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.Message;
-import me.huangduo.hms.dto.model.SystemRole;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.Message;
+import me.huangduo.hms.model.SystemRole;
+import me.huangduo.hms.model.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

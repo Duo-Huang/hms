@@ -1,7 +1,7 @@
 package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.UserEntity;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.dto.request.UserLoginRequest;
 import me.huangduo.hms.dto.request.UserRegistrationRequest;
 import org.mapstruct.Mapper;

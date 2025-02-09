@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.MessageResponse;
 import me.huangduo.hms.mapper.MessageMapper;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.service.MessageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,14 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<HmsResponseBody<List<MessageResponse>>> getHistoryMessages(@RequestAttribute Integer homeId) {
-        return ResponseEntity.ok(HmsResponseBody.success(messageService.getHistoryMessages(homeId).stream().map(messageMapper::toResponse).collect(Collectors.toList())));
+    public ResponseEntity<HmsResponseBody<List<MessageResponse>>> getHistoryMessages(@RequestAttribute User userInfo, @RequestAttribute Integer homeId) {
+        return ResponseEntity.ok(HmsResponseBody.success(messageService.getHistoryMessages(userInfo, homeId).stream().map(messageMapper::toResponse).collect(Collectors.toList())));
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<MessageResponse> streamLiveMessages(@RequestAttribute Integer homeId, HttpServletResponse response) {
+    public Flux<MessageResponse> streamLiveMessages(@RequestAttribute User userInfo, @RequestAttribute Integer homeId, HttpServletResponse response) {
 //        response.setHeader("Content-Security-Policy", "default-src 'self'; connect-src 'self' http://localhost:8081;");
-        return messageService.getLiveMessage(homeId).map(messageMapper::toResponse);
+        return messageService.getLiveMessage(userInfo, homeId).map(messageMapper::toResponse);
     }
 
 }

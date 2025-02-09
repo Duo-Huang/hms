@@ -1,7 +1,7 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 

@@ -5,16 +5,18 @@ import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dto.model.*;
+import me.huangduo.hms.model.*;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.enums.SystemRoleEnum;
 import me.huangduo.hms.events.InvitationEvent;
+import me.huangduo.hms.events.NotificationEvent;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
+import me.huangduo.hms.model.*;
 import me.huangduo.hms.utils.InvitationCoder;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -65,21 +67,25 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         if (invitee == null) {
             throw new IllegalArgumentException("user can not be null.");
         }
+        if (Objects.equals(inviter.getUsername(), invitee.getUsername())) {
+            throw new IllegalArgumentException("invalid invitee user");
+        }
+
         final User inviteeUserInfo = checkService.checkUserExisted(invitee.getUsername()); // check and get all newest user info
 
-        List<HomeMemberRoleEntity> homeMembers = homeMemberRolesDao.getItemsByHomeId(homeId);
-
-        if (homeMembers.stream().anyMatch(x -> x.getUserId().equals(inviteeUserInfo.getUserId()))) {
+        if (commonService.isUserInHome(homeId, invitee.getUserId())) {
             BusinessException e = new HomeMemberAlreadyExistsException();
             log.error("This home member is already existed.", e);
             throw e;
         }
+
         String invitationCode = InvitationCoder.userIdToCode(inviter.getUserId());
 
         log.info("Ready to send invitations, homeId: {}, invitationCode: {}, inviter username: {}, invitee username: {}", homeId, invitationCode, inviter.getUsername(), inviteeUserInfo.getUsername());
 
         InvitationEvent invitationEvent = new InvitationEvent(this.getClass(), homeId, inviter, invitationCode, inviteeUserInfo);
         applicationEventPublisher.publishEvent(invitationEvent);
+        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), homeId, inviter, "一条家庭通知"));
     }
 
     @Override
@@ -106,6 +112,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         } else {
             assignRoleForMember(Member.builder().homeId(inviterHomeId).userId(invitee.getUserId()).build(), homeMemberRole.getRoleId());
         }
+
+        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), inviterHomeId, invitee, invitee.getNickname() + " 加入你的家庭了"));
     }
 
     private Integer verifyInvitationCode(String invitationCode) {
@@ -129,8 +137,8 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         InvitationEvent.InvitationMessagePayload messagePayload = InvitationEvent.InvitationMessagePayload.deserialize(invatationMessage.getPayload(), InvitationEvent.InvitationMessagePayload.class);
 
-        if (!Objects.equals(inviterUserIdFromCode, messagePayload.getPublisherUserId())) {
-            log.error("inviterUserIdFromCode is not matched. inviterUserIdFromCode: {}, real inviterUserId: {}", inviterUserIdFromCode, messagePayload.getPublisherUserId());
+        if (!Objects.equals(inviterUserIdFromCode, messagePayload.getPublisher().getUserId())) {
+            log.error("inviterUserIdFromCode is not matched. inviterUserIdFromCode: {}, real inviterUserId: {}", inviterUserIdFromCode, messagePayload.getPublisher().getUserId());
             throw new IllegalArgumentException("Invalid invitation code.");
         }
 

@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.config.AppConfig;
 import me.huangduo.hms.dao.RevokedUserTokensDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
-import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.model.User;
+import me.huangduo.hms.model.UserToken;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.dto.model.HomeRole;
+import me.huangduo.hms.model.HomeRole;
 import me.huangduo.hms.dto.request.RolePermissionUpdateRequest;
 import me.huangduo.hms.dto.request.RoleCreateRequest;
 import me.huangduo.hms.dto.request.RoleUpdateRequest;

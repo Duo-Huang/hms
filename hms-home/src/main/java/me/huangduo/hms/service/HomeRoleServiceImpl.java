@@ -6,7 +6,7 @@ import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.PermissionEntity;
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dao.entity.RolePermissionEntity;
-import me.huangduo.hms.dto.model.HomeRole;
+import me.huangduo.hms.model.HomeRole;
 import me.huangduo.hms.enums.RoleTypeEnum;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;

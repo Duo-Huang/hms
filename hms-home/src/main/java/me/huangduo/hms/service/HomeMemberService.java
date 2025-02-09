@@ -1,8 +1,8 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.Member;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.Member;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;

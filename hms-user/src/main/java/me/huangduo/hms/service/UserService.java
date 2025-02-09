@@ -1,8 +1,8 @@
 package me.huangduo.hms.service;
 
 
-import me.huangduo.hms.dto.model.User;
-import me.huangduo.hms.dto.model.UserToken;
+import me.huangduo.hms.model.User;
+import me.huangduo.hms.model.UserToken;
 import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.exceptions.UserAlreadyExistsException;
 

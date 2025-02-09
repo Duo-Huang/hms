@@ -3,8 +3,8 @@ package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.dto.model.Home;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.dto.request.HomeCreateOrUpdateRequest;
 import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.HomeInfoResponse;

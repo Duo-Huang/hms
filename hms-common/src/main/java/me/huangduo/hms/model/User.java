@@ -1,4 +1,4 @@
-package me.huangduo.hms.dto.model;
+package me.huangduo.hms.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 /*
- * User 业务模型
+ * User model
  * */
 @Data
 @NoArgsConstructor

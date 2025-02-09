@@ -79,7 +79,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
      * */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HmsResponseBody<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error("The request parameter verification failed and get a fallback error.", ex);
+        log.error("Request validation failed.", ex);
         return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, ex.getMessage()));
     }
 

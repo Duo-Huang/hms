@@ -1,9 +1,11 @@
 package me.huangduo.hms.service;
 
-import me.huangduo.hms.dto.model.Message;
+import lombok.extern.slf4j.Slf4j;
+import me.huangduo.hms.model.Message;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+@Slf4j
 public class SinksManager {
 
     private static volatile SinksManager instance;
@@ -41,22 +43,22 @@ public class SinksManager {
     private void handleEmitFailure(Sinks.EmitResult result, Message message) {
         switch (result) {
             case FAIL_TERMINATED:
-                System.err.println("Sink has been terminated. Cannot send message: " + message);
+                log.error("Sink has been terminated. Cannot send message: " + message);
                 break;
             case FAIL_OVERFLOW:
-                System.err.println("Sink buffer is full. Message dropped: " + message);
+                log.error("Sink buffer is full. Message dropped: " + message);
                 break;
             case FAIL_CANCELLED:
-                System.err.println("Sink has been cancelled. Cannot send message: " + message);
+                log.error("Sink has been cancelled. Cannot send message: " + message);
                 break;
             case FAIL_NON_SERIALIZED:
-                System.err.println("Message could not be serialized. Message: " + message);
+                log.error("Message could not be serialized. Message: " + message);
                 break;
             case FAIL_ZERO_SUBSCRIBER:
-                System.err.println("No subscribers for the sink. Message dropped: " + message);
+                log.error("No subscribers for the sink. Message dropped: " + message);
                 break;
             default:
-                System.err.println("Unknown error occurred while sending message: " + message);
+                log.error("Unknown error occurred while sending message: " + message);
         }
     }
 }

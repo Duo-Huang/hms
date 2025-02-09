@@ -1,7 +1,7 @@
 package me.huangduo.hms.dao;
 
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.dto.model.Member;
+import me.huangduo.hms.model.Member;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

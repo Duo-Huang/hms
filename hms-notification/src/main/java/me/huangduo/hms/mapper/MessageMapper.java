@@ -1,7 +1,7 @@
 package me.huangduo.hms.mapper;
 
 import me.huangduo.hms.dao.entity.MessageEntity;
-import me.huangduo.hms.dto.model.Message;
+import me.huangduo.hms.model.Message;
 import me.huangduo.hms.dto.response.MessageResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

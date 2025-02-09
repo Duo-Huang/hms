@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import me.huangduo.hms.dto.model.User;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.enums.RoleTypeEnum;
 import me.huangduo.hms.events.InvitationEvent;

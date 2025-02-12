@@ -85,7 +85,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         InvitationEvent invitationEvent = new InvitationEvent(this.getClass(), homeId, inviter, invitationCode, inviteeUserInfo);
         applicationEventPublisher.publishEvent(invitationEvent);
-        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), homeId, inviter, "一条家庭通知"));
+        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), homeId, inviter, "测试一条家庭通知"));
     }
 
     @Override

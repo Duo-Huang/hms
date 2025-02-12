@@ -32,4 +32,7 @@ public interface CommonDao {
 
     @Select("SELECT * FROM messages WHERE message_type = 1 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$.invitationCode')) = #{invitationCode}")
     Message getMessageByInvitationCode(String invitationCode);
+
+    @Select("SELECT user_id FROM home_member_roles WHERE home_id = ${homeId}")
+    List<Integer> getUserIdsByHomeId(Integer homeId);
 }

@@ -19,7 +19,7 @@ public interface MessagesDao {
     @Select("SELECT * FROM messages WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, '$.homeId')) = #{homeId} AND expiration > NOW() ORDER BY created_at DESC")
     List<MessageEntity> getHistoryMessagesByHomeId(Integer homeId);
 
-    @Select("SELECT * FROM messages WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, '$.receiveUserId')) = #{userId} AND expiration > NOW() ORDER BY created_at DESC/* LIMIT 10*/")
+    @Select("SELECT * FROM messages WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, '$.receiver.userId')) = #{userId} AND expiration > NOW() ORDER BY created_at DESC/* LIMIT 10*/")
     List<MessageEntity> getHistoryMessagesByReceiveUserId(Integer userId);
 
     @Select("SELECT * FROM messages WHERE message_type = #{messageTypeEnum} AND expiration > NOW() ORDER BY created_at DESC/* LIMIT 10*/")

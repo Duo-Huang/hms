@@ -3,6 +3,7 @@ package me.huangduo.hms.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import me.huangduo.hms.enums.MessageTypeEnum;
+import me.huangduo.hms.events.BroadcastEvent;
 import me.huangduo.hms.events.HmsEvent;
 import me.huangduo.hms.events.InvitationEvent;
 import me.huangduo.hms.events.NotificationEvent;
@@ -21,12 +22,14 @@ public class Message {
     static {
         payloadDeserializerMap = Map.of(
                 MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayload.class,
-                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayload.class
+                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayload.class,
+                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayload.class
         );
 
         payloadResponseDeserializerMap = Map.of(
                 MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayloadResponse.class,
-                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayloadResponse.class
+                MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayloadResponse.class,
+                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayloadResponse.class
         );
     }
 

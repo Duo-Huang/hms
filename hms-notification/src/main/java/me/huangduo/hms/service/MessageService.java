@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 public interface MessageService {
-    Flux<Message> getLiveMessage(User userInfo, Integer homeId);
+    Flux<Message> getLiveMessage(User userInfo);
 
     List<Message> getHistoryMessages(User userInfo, Integer homeId); // TODO: pageable
 

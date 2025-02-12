@@ -2,11 +2,11 @@ package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.dao.CommonDao;
+import me.huangduo.hms.enums.SystemRoleEnum;
 import me.huangduo.hms.model.Home;
 import me.huangduo.hms.model.Message;
 import me.huangduo.hms.model.SystemRole;
 import me.huangduo.hms.model.User;
-import me.huangduo.hms.enums.SystemRoleEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,5 +59,11 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public Message getMessageByInvitationCode(String invitationCode) {
         return commonDao.getMessageByInvitationCode(invitationCode);
+    }
+
+    @Override
+    public List<Integer> getHomeMemberUserIds(Integer homeId) {
+
+        return commonDao.getUserIdsByHomeId(homeId);
     }
 }

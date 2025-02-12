@@ -1,10 +1,10 @@
 package me.huangduo.hms.service;
 
+import me.huangduo.hms.enums.SystemRoleEnum;
 import me.huangduo.hms.model.Home;
 import me.huangduo.hms.model.Message;
 import me.huangduo.hms.model.SystemRole;
 import me.huangduo.hms.model.User;
-import me.huangduo.hms.enums.SystemRoleEnum;
 
 import java.util.List;
 
@@ -25,4 +25,6 @@ public interface CommonService {
     boolean isSystemRole(Integer roleId);
 
     Message getMessageByInvitationCode(String invitationCode);
+
+    List<Integer> getHomeMemberUserIds(Integer homeId);
 }

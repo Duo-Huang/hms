@@ -2,42 +2,63 @@ package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.model.Message;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
 @Slf4j
 public class SinksManager {
 
-    private static volatile SinksManager instance;
-    private final Sinks.Many<Message> sink;
+    private final CommonService commonService;
+    private final Map<Integer, Sinks.Many<Message>> userSinks = new ConcurrentHashMap<>();
 
-    private SinksManager() {
-        this.sink = Sinks.many().multicast().onBackpressureBuffer();
+    public SinksManager(CommonService commonService) {
+        this.commonService = commonService;
     }
 
-    public static SinksManager getInstance() {
-        SinksManager localInstance = instance;
-        if (localInstance == null) {
-            synchronized (SinksManager.class) {
-                if (instance == null) {
-                    instance = new SinksManager();
-                }
+    public void registerSkin(Integer userId) {
+        userSinks.put(userId, Sinks.many().multicast().onBackpressureBuffer());
+    }
+
+    public void removeSkin(Integer userId) {
+        userSinks.remove(userId);
+    }
+
+    public void sendBroadcastMessage(Message message) {
+        for (Sinks.Many<Message> sink : userSinks.values()) {
+            Sinks.EmitResult result = sink.tryEmitNext(message);
+            if (result.isFailure()) {
+                handleEmitFailure(result, message);
+            } else {
+                System.out.println("Message sent successfully: " + message);
             }
         }
-        return instance;
     }
 
-    public Flux<Message> getFlux() {
-        return sink.asFlux();
-    }
-
-    public void emit(Message message) {
-        Sinks.EmitResult result = sink.tryEmitNext(message);
-        if (result.isFailure()) {
-            handleEmitFailure(result, message);
-        } else {
-            System.out.println("Message sent successfully: " + message);
+    public void sendDirectMessage(Integer userId, Message message) {
+        Sinks.Many<Message> sink = userSinks.get(userId);
+        if (sink != null) {
+            Sinks.EmitResult result = sink.tryEmitNext(message);
+            if (result.isFailure()) {
+                handleEmitFailure(result, message);
+            } else {
+                System.out.println("Message sent successfully: " + message);
+            }
         }
+    }
+
+    public void sendHomeMessage(Integer homeId, Message message) {
+        commonService.getHomeMemberUserIds(homeId).forEach(x -> {
+            sendDirectMessage(x, message);
+        });
+    }
+
+    public Flux<Message> getFlux(Integer userId) {
+        return userSinks.get(userId).asFlux();
     }
 
     private void handleEmitFailure(Sinks.EmitResult result, Message message) {

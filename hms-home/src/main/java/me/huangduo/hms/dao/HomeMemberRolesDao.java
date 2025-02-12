@@ -21,9 +21,6 @@ public interface HomeMemberRolesDao {
     @Update("UPDATE home_member_roles SET role_id = #{roleId} WHERE user_id = #{userId} AND home_id = #{homeId}")
     int updateRoleByUserIdAndHomeId(HomeMemberRoleEntity homeMemberRoleEntity);
 
-    @Select("SELECT * FROM home_member_roles WHERE home_id = ${homeId}")
-    List<HomeMemberRoleEntity> getItemsByHomeId(Integer homeId);
-
     @Select("SELECT * FROM home_member_roles WHERE home_id = #{homeId} AND user_id = ${userId}")
     HomeMemberRoleEntity getItemByHomeIdAndUserId(Integer homeId, Integer userId);
 

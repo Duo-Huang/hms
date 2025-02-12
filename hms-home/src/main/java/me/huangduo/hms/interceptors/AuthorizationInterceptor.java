@@ -3,11 +3,11 @@ package me.huangduo.hms.interceptors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import me.huangduo.hms.model.User;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.service.CommonService;
 import me.huangduo.hms.validators.IdValidator;
 import org.slf4j.MDC;
@@ -38,14 +38,19 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String url = request.getRequestURI();
-        if (url.equals("/api/members") && Objects.equals(request.getMethod(), HttpMethod.POST.name())) { // ignore invite accept request
+
+        if (isAcceptInvitationApi(request) || isLiveMessageApi(request)) { // ignore invite accept request
             return true;
         }
 
         User user = (User) request.getAttribute("userInfo");
 
-        Integer homeId = url.startsWith("/api/homes")
+        if (isHistoryMessageApi(request) && request.getHeader("X-Home-ID") == null) {
+            request.setAttribute("homeId", 0);
+            return true;
+        }
+
+        Integer homeId = isHomesApi(request)
                 ? getHomeIdFromPath(request)
                 : getHomeIdFromHeader(request);
 
@@ -115,4 +120,21 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             throw e;
         }
     }
+
+    private boolean isHomesApi(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/api/homes");
+    }
+
+    private boolean isAcceptInvitationApi(HttpServletRequest request) {
+        return request.getRequestURI().equals("/api/members") && Objects.equals(request.getMethod(), HttpMethod.POST.name());
+    }
+
+    private boolean isLiveMessageApi(HttpServletRequest request) {
+        return request.getRequestURI().equals("/api/messages/live");
+    }
+
+    private boolean isHistoryMessageApi(HttpServletRequest request) {
+        return request.getRequestURI().equals("/api/messages");
+    }
+
 }

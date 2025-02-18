@@ -3,9 +3,9 @@ package me.huangduo.hms.interceptors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.model.User;
 import me.huangduo.hms.model.UserToken;
-import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.service.AuthenticationService;
 import me.huangduo.hms.service.UserService;
 import org.slf4j.MDC;
@@ -33,7 +33,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
      * */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws AuthenticationException {
-        if(Objects.equals(request.getMethod(), HttpMethod.OPTIONS.name())) {
+        if (Objects.equals(request.getMethod(), HttpMethod.OPTIONS.name())) {
             return true;
         }
 
@@ -65,10 +65,5 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         log.error("Current user authentication failed.");
         throw new AuthenticationException();
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        MDC.clear();
     }
 }

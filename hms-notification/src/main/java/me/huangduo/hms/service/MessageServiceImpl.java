@@ -14,7 +14,6 @@ import me.huangduo.hms.model.User;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +39,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void run(String... args) throws Exception {
         registerEventHandlers(eventHandlerService);
-//        sinksManager.startHeartbeat(Duration.ofSeconds(5));
+        sinksManager.startHeartbeat();
     }
 
     private void registerEventHandlers(EventHandlerService eventHandlerService) {
@@ -64,10 +63,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Flux<Message> getLiveMessage(User userInfo) {
         log.info("------------get live msg____" + userInfo.getUserId());
-        return sinksManager.getFlux(userInfo.getUserId()).map(message -> enrichMessage(userInfo, message));
+        return sinksManager.getFlux(userInfo.getUserId()).map(message -> convertMessage(userInfo, message));
     }
 
-    private Message enrichMessage(User userInfo, Message message) {
+    private Message convertMessage(User userInfo, Message message) {
         if (message.getMessageType() == MessageTypeEnum.INVITATION) {
             Optional<InvitationEvent.InvitationMessagePayload> payload =
                     extractInvitationPayload(message);
@@ -111,6 +110,6 @@ public class MessageServiceImpl implements MessageService {
 
     private Message mapToModelWithEnrichment(User userInfo, MessageEntity entity) {
         Message message = messageMapper.toModel(entity);
-        return enrichMessage(userInfo, message);
+        return convertMessage(userInfo, message);
     }
 }

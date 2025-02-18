@@ -1,6 +1,7 @@
 package me.huangduo.hms.service;
 
 import lombok.extern.slf4j.Slf4j;
+import me.huangduo.hms.config.AppConfig;
 import me.huangduo.hms.enums.MessageTypeEnum;
 import me.huangduo.hms.model.Message;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class SinksManager {
 
+    private final AppConfig appConfig;
     private final CommonService commonService;
     private final Map<Integer, Sinks.Many<Message>> userSinks = new ConcurrentHashMap<>();
 
-    public SinksManager(CommonService commonService) {
+    public SinksManager(AppConfig appConfig, CommonService commonService) {
+        this.appConfig = appConfig;
         this.commonService = commonService;
     }
 
@@ -39,8 +42,10 @@ public class SinksManager {
         }
     }
 
-    public void startHeartbeat(Duration interval) {
-        Flux.interval(interval).doOnSubscribe(subscription -> log.info("SSE heartbeat started")).subscribe(tick -> sendHeartbeatMessage());
+    public void startHeartbeat() {
+        Flux.interval(Duration.ofSeconds(appConfig.getSseHeartbeatIntervalOfSec()))
+                .doOnSubscribe(subscription -> log.info("SSE heartbeat started"))
+                .subscribe(tick -> sendHeartbeatMessage());
     }
 
     private void sendHeartbeatMessage() {

@@ -61,11 +61,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        MDC.clear();
-    }
-
     @SuppressWarnings("unchecked")
     private Integer getHomeIdFromPath(HttpServletRequest request) throws NoHandlerFoundException {
         Map<String, String> pathVariables = Optional.ofNullable(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))

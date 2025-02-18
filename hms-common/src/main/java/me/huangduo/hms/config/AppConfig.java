@@ -13,4 +13,6 @@ public class AppConfig {
     private String jwtSecret;
 
     private long jwtTokenExpiredTime;
+
+    private int sseHeartbeatIntervalOfSec;
 }

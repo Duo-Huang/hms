@@ -40,18 +40,13 @@ public class MessageController {
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<MessageResponse>> streamLiveMessages(@RequestAttribute User userInfo, HttpServletRequest request) {
-        System.out.println("------------get live msg");
         return messageService.getLiveMessage(userInfo).map(x -> {
             MessageResponse msg = messageMapper.toResponse(x);
             if (msg.messageType() == MessageTypeEnum.HEARTBEAT) {
                 return ServerSentEvent.builder((MessageResponse) null).id(msg.messageId().toString()).event(msg.messageType().name()).build();
             }
             return ServerSentEvent.builder(msg).id(msg.messageId().toString()).event(msg.messageType().name()).build();
-        });/*.doOnCancel(() -> {
-            // 显式触发请求完成
-            ((AsyncWebRequest) WebAsyncUtils.getAsyncManager(request))
-                    .getConcurrentResultContext()[0].setCompleted();
-        });*/
+        });
     }
 
 }

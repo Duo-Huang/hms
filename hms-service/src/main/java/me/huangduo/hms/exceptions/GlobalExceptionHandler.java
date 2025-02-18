@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-@RestControllerAdvice
+@RestControllerAdvice // TODO: 是否按照Accept请求头返回错误?
 @Slf4j
 public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
 
@@ -48,10 +48,10 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
         try {
             ErrorCodeEnum errorCodeEnum = (ErrorCodeEnum) HmsRequestBody.class.getMethod("getErrorCode").invoke(ex.getBindingResult().getTarget());
             log.error("The request parameter auto verification failed and get a mapped error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponseBody.error(errorCodeEnum, errors));
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(errorCodeEnum, errors));
         } catch (Exception e) {
             log.error("The request parameter auto verification failed and get a fallback error.", ex);
-            return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
         }
     }
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
 
             errors.put(Objects.requireNonNullElse(lastFieldName, "unknown"), violation.getMessage());
         });
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, errors));
     }
 
     /*
@@ -80,16 +80,16 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HmsResponseBody<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("Request validation failed.", ex);
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, ex.getMessage()));
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_003, ex.getMessage()));
     }
 
     /*
      * 401 - 认证失败 (业务异常)
      * */
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(AuthenticationException ex) {
+    public ResponseEntity<HmsResponseBody<Void>> handleAuthenticationException(AuthenticationException ex) {
         log.error("The user fails to be authenticated.", ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
     }
 
     /*
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("The user fails to be authorized.", ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ex.getErrorCodeEnum()));
     }
 
     /*
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(RecordNotFoundException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleRecordNotFoundException(RecordNotFoundException e) {
         log.error("The requested resource could not be found.", e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HmsResponseBody.error(e.getErrorCodeEnum()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(e.getErrorCodeEnum()));
     }
 
     /*
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(BusinessException e) {
         log.error("A business error occurred.", e);
-        return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_004));
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_004));
     }
 
     /*
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler({JsonSerializationException.class, JsonDeserializationException.class})
     public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(RuntimeException e) {
         log.error("Json processing error.", e);
-        return ResponseEntity.internalServerError().body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_002.getCode(), HttpCodeEnum.getMessageByHttpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+        return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_002.getCode(), HttpCodeEnum.getMessageByHttpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())));
     }
 
     /*
@@ -144,6 +144,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
             Class<? extends HttpMessageConverter<?>> selectedConverterType,
             ServerHttpRequest request, @NonNull ServerHttpResponse response
     ) {
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         if (body instanceof HmsResponseBody) {
             return body; // custom response;
         } else if (body instanceof Map) { // failed response

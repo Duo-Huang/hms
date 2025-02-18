@@ -9,6 +9,7 @@ import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.service.AuthenticationService;
 import me.huangduo.hms.service.UserService;
 import org.slf4j.MDC;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -32,6 +33,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
      * */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws AuthenticationException {
+        if(Objects.equals(request.getMethod(), HttpMethod.OPTIONS.name())) {
+            return true;
+        }
+
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum MessageTypeEnum implements SingleValueEnum {
     NOTIFICATION(0),
     INVITATION(1),
-    BROADCAST(2);
+    BROADCAST(2),
+    HEARTBEAT(3);
 
 
     private final int value;

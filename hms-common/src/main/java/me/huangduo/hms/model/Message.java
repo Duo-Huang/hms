@@ -23,13 +23,15 @@ public class Message {
         payloadDeserializerMap = Map.of(
                 MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayload.class,
                 MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayload.class,
-                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayload.class
+                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayload.class,
+                MessageTypeEnum.HEARTBEAT, HmsEvent.MessagePayload.class
         );
 
         payloadResponseDeserializerMap = Map.of(
                 MessageTypeEnum.INVITATION, InvitationEvent.InvitationMessagePayloadResponse.class,
                 MessageTypeEnum.NOTIFICATION, NotificationEvent.NotificationMessagePayloadResponse.class,
-                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayloadResponse.class
+                MessageTypeEnum.BROADCAST, BroadcastEvent.BroadcastMessagePayloadResponse.class,
+                MessageTypeEnum.HEARTBEAT, HmsEvent.MessagePayloadResponse.class
         );
     }
 

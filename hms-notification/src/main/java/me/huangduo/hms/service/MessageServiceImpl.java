@@ -14,6 +14,7 @@ import me.huangduo.hms.model.User;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,16 +25,22 @@ import java.util.stream.Stream;
 @Slf4j
 public class MessageServiceImpl implements MessageService {
 
+    private final EventHandlerService eventHandlerService;
     private final SinksManager sinksManager;
     private final MessagesDao messagesDao;
     private final MessageMapper messageMapper;
 
     public MessageServiceImpl(EventHandlerService eventHandlerService, SinksManager sinksManager, MessagesDao messagesDao, MessageMapper messageMapper) {
+        this.eventHandlerService = eventHandlerService;
         this.sinksManager = sinksManager;
         this.messagesDao = messagesDao;
         this.messageMapper = messageMapper;
+    }
 
+    @Override
+    public void run(String... args) throws Exception {
         registerEventHandlers(eventHandlerService);
+//        sinksManager.startHeartbeat(Duration.ofSeconds(5));
     }
 
     private void registerEventHandlers(EventHandlerService eventHandlerService) {
@@ -56,16 +63,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Flux<Message> getLiveMessage(User userInfo) {
-        return sinksManager.getFlux(userInfo.getUserId())
-                .doOnCancel(() -> cleanUpUser(userInfo))
-                .doOnComplete(() -> cleanUpUser(userInfo))
-                .doOnTerminate(() -> cleanUpUser(userInfo))
-                .map(message -> enrichMessage(userInfo, message));
-    }
-
-    private void cleanUpUser(User userInfo) {
-        log.info("Cleanup - remove skin: {}", userInfo.getUserId());
-        sinksManager.removeSkin(userInfo.getUserId());
+        log.info("------------get live msg____" + userInfo.getUserId());
+        return sinksManager.getFlux(userInfo.getUserId()).map(message -> enrichMessage(userInfo, message));
     }
 
     private Message enrichMessage(User userInfo, Message message) {

@@ -7,8 +7,10 @@
     <contextName>logback</contextName>
     <!-- name的值是变量的名称，value的值是变量定义的值。通过定义的值会被插入到logger上下文中。定义变量后，可以使“${}”来使用变量。 -->
     <property name="log.path" value="${user.home}/var/logs/hms"/>
+
     <property name="console_log_pattern"
-              value="%boldCyan([requestId=%X{requestId},homId=%X{homeId},userId=%X{userId}]%n) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) - %boldYellow(%msg%n)"/>
+              value="%boldWhite(RequestId: %X{requestId}) %boldWhite(Method: %X{method}) %boldWhite(Path: %X{path}) %boldWhite(Context: %boldCyan([homId=%X{homeId},userId=%X{userId}]%n)) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) - %boldYellow(%msg%n)"/>
+
     <property name="charset" value="UTF-8"/>
 
 

@@ -11,7 +11,7 @@ public interface AuthenticationService {
 
     UserToken parseToken(String token) throws AuthenticationException;
 
-    Boolean isTokenRevoked(UserToken userToken);
+    boolean isTokenRevoked(UserToken userToken);
 
     void revokeToken(UserToken userToken);
 

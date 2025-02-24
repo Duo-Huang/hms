@@ -76,7 +76,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Boolean isTokenRevoked(UserToken userToken) {
+    public boolean isTokenRevoked(UserToken userToken) {
         RevokedUserTokenEntity revokedJti = revokedUserTokensDao.getByJti(userToken.jti());
         return Objects.nonNull(revokedJti);
     }

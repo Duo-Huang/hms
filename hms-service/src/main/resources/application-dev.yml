@@ -14,4 +14,4 @@ spring:
 app:
     jwt-secret: "DaBcD3fGh1jKlMnOpQrStUvWxYz1234567890!@#$%^&*()"
     jwt-token-expired-time: 86400000
-    sse-heartbeat-interval-of-sec: 30
+    sse-heartbeat-interval-of-sec: 5

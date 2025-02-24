@@ -5,7 +5,6 @@ import me.huangduo.hms.dao.HomeMemberRolesDao;
 import me.huangduo.hms.dao.HomesDao;
 import me.huangduo.hms.dao.entity.HomeEntity;
 import me.huangduo.hms.dao.entity.HomeMemberRoleEntity;
-import me.huangduo.hms.model.*;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.enums.SystemRoleEnum;
 import me.huangduo.hms.events.InvitationEvent;
@@ -85,7 +84,6 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         InvitationEvent invitationEvent = new InvitationEvent(this.getClass(), homeId, inviter, invitationCode, inviteeUserInfo);
         applicationEventPublisher.publishEvent(invitationEvent);
-        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), homeId, inviter, "测试一条家庭通知"));
     }
 
     @Override
@@ -113,7 +111,15 @@ public class HomeMemberServiceImpl implements HomeMemberService {
             assignRoleForMember(Member.builder().homeId(inviterHomeId).userId(invitee.getUserId()).build(), homeMemberRole.getRoleId());
         }
 
-        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), inviterHomeId, invitee, invitee.getNickname() + " 加入你的家庭了"));
+        String message = """
+                <#if currentUser.userId == %d>
+                  你已加入此家庭<#t>
+                <#else>
+                  %s 加入家庭了<#t>
+                </#if>
+                """.formatted(invitee.getUserId(), invitee.getNickname());
+
+        applicationEventPublisher.publishEvent(new NotificationEvent(this.getClass(), inviterHomeId, invitee, message));
     }
 
     private Integer verifyInvitationCode(String invitationCode) {

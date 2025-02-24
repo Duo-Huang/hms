@@ -27,7 +27,7 @@ public class SinksManager {
     }
 
     private Sinks.Many<Message> registerSink(Integer userId) {
-        userSinks.computeIfAbsent(userId, k -> Sinks.many().multicast().onBackpressureBuffer());
+        userSinks.computeIfAbsent(userId, k -> Sinks.many().multicast().onBackpressureBuffer(3, true));
         return userSinks.get(userId);
     }
 
@@ -89,7 +89,6 @@ public class SinksManager {
         return Flux.using(() -> registerSink(userId), Sinks.Many::asFlux, (userSink) -> {
             log.debug("Flux using clean");
             removeSink(userId);
-
         }).doOnSubscribe(subscription -> {
             log.debug("doOnSubscribe - A new subscriber for user: {}", userId);
         });

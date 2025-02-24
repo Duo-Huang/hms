@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,11 +27,14 @@ public class MessageServiceImpl implements MessageService {
     private final MessagesDao messagesDao;
     private final MessageMapper messageMapper;
 
-    public MessageServiceImpl(EventHandlerService eventHandlerService, SinksManager sinksManager, MessagesDao messagesDao, MessageMapper messageMapper) {
+    private final TemplateRenderService templateRenderService;
+
+    public MessageServiceImpl(EventHandlerService eventHandlerService, SinksManager sinksManager, MessagesDao messagesDao, MessageMapper messageMapper, TemplateRenderService templateRenderService) {
         this.eventHandlerService = eventHandlerService;
         this.sinksManager = sinksManager;
         this.messagesDao = messagesDao;
         this.messageMapper = messageMapper;
+        this.templateRenderService = templateRenderService;
     }
 
     @Override
@@ -62,32 +63,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Flux<Message> getLiveMessage(User userInfo) {
-        log.info("------------get live msg____" + userInfo.getUserId());
         return sinksManager.getFlux(userInfo.getUserId()).map(message -> convertMessage(userInfo, message));
-    }
-
-    private Message convertMessage(User userInfo, Message message) {
-        if (message.getMessageType() == MessageTypeEnum.INVITATION) {
-            Optional<InvitationEvent.InvitationMessagePayload> payload =
-                    extractInvitationPayload(message);
-            payload.ifPresent(invitationMessagePayload -> updateMessageContent(userInfo, message, invitationMessagePayload));
-        }
-        return message;
-    }
-
-    private Optional<InvitationEvent.InvitationMessagePayload> extractInvitationPayload(Message message) {
-        HmsEvent.MessagePayload messagePayload = message.getDeserializedPayload();
-        return messagePayload instanceof InvitationEvent.InvitationMessagePayload
-                ? Optional.of((InvitationEvent.InvitationMessagePayload) messagePayload)
-                : Optional.empty();
-    }
-
-    private void updateMessageContent(User userInfo, Message message, InvitationEvent.InvitationMessagePayload invitationMessagePayload) {
-        if (Objects.equals(userInfo.getUserId(), invitationMessagePayload.getReceiver().getUserId())) {
-            message.setMessageContent(String.format("%s 邀请你加入他的家庭", invitationMessagePayload.getPublisher().getNickname()));
-        } else if (Objects.equals(userInfo.getUserId(), invitationMessagePayload.getPublisher().getUserId())) {
-            message.setMessageContent(String.format("你已邀请 %s 加入家庭", invitationMessagePayload.getReceiver().getNickname()));
-        }
     }
 
     @Override
@@ -97,9 +73,16 @@ public class MessageServiceImpl implements MessageService {
         List<MessageEntity> otherMessages = getOtherMessages(homeId);
 
         return Stream.concat(directedMessages.stream(), otherMessages.stream())
-                .map(x -> mapToModelWithEnrichment(userInfo, x))
+                .map(x -> mapToModelWithConvert(userInfo, x))
                 .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
                 .collect(Collectors.toList());
+    }
+
+    private Message convertMessage(User userInfo, Message message) {
+        if (message.getMessageType() != MessageTypeEnum.HEARTBEAT) {
+            message.setMessageContent(templateRenderService.render(message.getMessageContent(), userInfo));
+        }
+        return message;
     }
 
     private List<MessageEntity> getOtherMessages(Integer homeId) {
@@ -108,7 +91,7 @@ public class MessageServiceImpl implements MessageService {
                 : messagesDao.getHistoryMessagesByTypeOrHomeId(MessageTypeEnum.BROADCAST, homeId);
     }
 
-    private Message mapToModelWithEnrichment(User userInfo, MessageEntity entity) {
+    private Message mapToModelWithConvert(User userInfo, MessageEntity entity) {
         Message message = messageMapper.toModel(entity);
         return convertMessage(userInfo, message);
     }

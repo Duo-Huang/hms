@@ -30,7 +30,19 @@ public class InvitationEvent extends HmsEvent {
                 .homeId(homeId)
                 .build()
                 .serialize();
-        String messageContent = publisher.getNickname() + " 邀请 " + invitee.getNickname() + " 加入你的家庭了";
+
+        String messageContent = """
+                <#if currentUser.userId == %d>
+                  你已邀请 %s 加入你的家庭<#t>
+                <#elseif currentUser.userId == %d>
+                  %s 邀请你加入他的家庭<#t>
+                <#else>
+                  %s 邀请 %s 加入你的家庭<#t>
+                </#if>
+                """
+                // TODO: 是否只存userId在获取消息时填充以保持最新的user profile?
+                .formatted(publisher.getUserId(), invitee.getNickname(), invitee.getUserId(), publisher.getNickname(), publisher.getNickname(), invitee.getNickname());
+
 
         return new Message(null, MessageTypeEnum.INVITATION, messageContent, payload, EXPIRATION, LocalDateTime.now());
     }

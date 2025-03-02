@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.enums.MessageTypeEnum;
 import me.huangduo.hms.model.Message;
 import me.huangduo.hms.model.User;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 public class InvitationEvent extends HmsEvent {
 
     private final static LocalDateTime EXPIRATION = LocalDateTime.now().plusDays(3);

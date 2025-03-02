@@ -23,11 +23,11 @@ public class CleanServiceImpl implements CleanService {
 
     private void cleanMessages() {
         int row = scheduleDao.deleteExpiredMessages();
-        log.info("[cleanMessages] {} messages has been deleted", row);
+        log.info("{} messages has been deleted", row);
     }
 
     private void cleanRevokedTokens() {
         int row = scheduleDao.deleteExpiredRevokedTokens();
-        log.info("[cleanRevokedTokens] {} revoked tokens has been deleted", row);
+        log.info("{} revoked tokens has been deleted", row);
     }
 }

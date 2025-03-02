@@ -38,6 +38,7 @@
         <module>hms-common</module>
         <module>hms-home</module>
         <module>hms-notification</module>
+        <module>hms-schedule</module>
     </modules>
 
     <properties>

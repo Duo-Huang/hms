@@ -9,7 +9,7 @@
     <property name="log.path" value="${user.home}/var/logs/hms"/>
 
     <property name="console_log_pattern"
-              value="%boldWhite(RequestId: %X{requestId}) %boldWhite(Method: %X{method}) %boldWhite(Path: %X{path}) %boldWhite(Context: %boldCyan([homId=%X{homeId},userId=%X{userId}]%n)) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) - %boldYellow(%msg%n)"/>
+              value="%boldWhite(RequestId: %X{requestId}) %boldWhite(Method: %X{method}) %boldWhite(Path: %X{path}) %boldWhite(Context: %boldCyan([homId=%X{homeId},userId=%X{userId}]%n)) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) [%method] - %boldYellow(%msg%n)"/>
 
     <property name="charset" value="UTF-8"/>
 

@@ -6,13 +6,13 @@ import me.huangduo.hms.dao.RolesDao;
 import me.huangduo.hms.dao.entity.PermissionEntity;
 import me.huangduo.hms.dao.entity.RoleEntity;
 import me.huangduo.hms.dao.entity.RolePermissionEntity;
-import me.huangduo.hms.model.HomeRole;
 import me.huangduo.hms.enums.RoleTypeEnum;
 import me.huangduo.hms.exceptions.BusinessException;
 import me.huangduo.hms.exceptions.RecordNotFoundException;
 import me.huangduo.hms.exceptions.RoleAlreadyExistedException;
 import me.huangduo.hms.mapper.PermissionMapper;
 import me.huangduo.hms.mapper.RoleMapper;
+import me.huangduo.hms.model.HomeRole;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -101,13 +101,13 @@ public class HomeRoleServiceImpl implements HomeRoleService {
             throw new IllegalArgumentException("role can not be null.");
         }
         checkService.checkRoleAccess(role.getHomeId(), role.getRoleId(), true);
-        rolesDao.updateByIdAndHomeId(roleMapper.toEntity(role));
+        rolesDao.updateById(roleMapper.toEntity(role));
     }
 
     @Override
     public void deleteHomeRole(Integer homeId, Integer roleId) throws RecordNotFoundException, IllegalArgumentException {
         checkService.checkRoleAccess(homeId, roleId, true);
-        rolesDao.deleteByIdAndHomeId(homeId, roleId);
+        rolesDao.deleteById(roleId);
     }
 
     @Override

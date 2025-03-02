@@ -5,7 +5,7 @@
 
 <mapper namespace="me.huangduo.hms.dao.RolesDao">
 
-    <update id="updateByIdAndHomeId">
+    <update id="updateById">
         UPDATE roles
         <set>
             <if test="roleName != null">
@@ -15,6 +15,6 @@
                 role_description = #{roleDescription},
             </if>
         </set>
-        WHERE role_id = #{roleId} AND home_id=#{homeId};
+        WHERE role_id = #{roleId};
     </update>
 </mapper>

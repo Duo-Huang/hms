@@ -1,6 +1,5 @@
 package me.huangduo.hms.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.MessageResponse;
 import me.huangduo.hms.enums.MessageTypeEnum;
@@ -39,7 +38,7 @@ public class MessageController {
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<MessageResponse>> streamLiveMessages(@RequestAttribute User userInfo, HttpServletRequest request) {
+    public Flux<ServerSentEvent<MessageResponse>> streamLiveMessages(@RequestAttribute User userInfo) {
         return messageService.getLiveMessage(userInfo).map(x -> {
             MessageResponse msg = messageMapper.toResponse(x);
             if (msg.messageType() == MessageTypeEnum.HEARTBEAT) {

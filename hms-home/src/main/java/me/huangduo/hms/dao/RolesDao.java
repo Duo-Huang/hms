@@ -22,8 +22,8 @@ public interface RolesDao {
     @Options(useGeneratedKeys = true, keyProperty = "roleId")
     void add(RoleEntity roleEntity);
 
-    int updateByIdAndHomeId(RoleEntity roleEntity);
+    int updateById(RoleEntity roleEntity);
 
-    @Delete("DELETE FROM roles WHERE role_id = #{roleId} AND home_id=#{homeId}")
-    int deleteByIdAndHomeId(Integer homeId, Integer roleId);
+    @Delete("DELETE FROM roles WHERE role_id = #{roleId}")
+    int deleteById(Integer roleId);
 }

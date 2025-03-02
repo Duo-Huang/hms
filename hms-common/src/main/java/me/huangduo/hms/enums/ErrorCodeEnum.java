@@ -51,6 +51,8 @@ public enum ErrorCodeEnum {
     HOME_ERROR_2016(2216, "邀请信息不存在"),
     HOME_ERROR_2017(2217, "邀请已过期"),
     HOME_ERROR_2018(2218, "家庭成员角色不存在"),
+    HOME_ERROR_2019(2219, "无操作权限, 请联系家庭管理员"),
+    HOME_ERROR_2020(2220, "无法更改自己的角色, 需要其他家庭管理员修改"),
 
     // 财务模块错误 23xx
     FINANCE_ERROR_301(2301, "预算不足");

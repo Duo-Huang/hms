@@ -1,10 +1,8 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
+import me.huangduo.hms.annotations.PermissionCheck;
 import me.huangduo.hms.annotations.ValidId;
-import me.huangduo.hms.model.Home;
-import me.huangduo.hms.model.Member;
-import me.huangduo.hms.model.User;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
 import me.huangduo.hms.dto.request.MemberRoleRequest;
@@ -12,11 +10,15 @@ import me.huangduo.hms.dto.request.UserAcceptHomeInvitationRequest;
 import me.huangduo.hms.dto.response.HmsResponseBody;
 import me.huangduo.hms.dto.response.HomeInfoResponse;
 import me.huangduo.hms.dto.response.MemberResponse;
+import me.huangduo.hms.exceptions.IllegalAssignRoleException;
 import me.huangduo.hms.exceptions.HomeAlreadyExistsException;
 import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
 import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
+import me.huangduo.hms.model.Home;
+import me.huangduo.hms.model.Member;
+import me.huangduo.hms.model.User;
 import me.huangduo.hms.service.HomeMemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,7 @@ public class HomeMemberController {
     }
 
     @PostMapping("/invite")
+    @PermissionCheck("home:member:invite")
     public ResponseEntity<HmsResponseBody<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute User userInfo, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
@@ -56,6 +59,7 @@ public class HomeMemberController {
     }
 
     @GetMapping
+    @PermissionCheck("home:member:view")
     public ResponseEntity<HmsResponseBody<List<MemberResponse>>> getMembersForHome(@RequestAttribute Integer homeId) {
         List<Member> members = homeMemberService.getMembersWithRoles(homeId);
 
@@ -75,6 +79,7 @@ public class HomeMemberController {
     }
 
     @DeleteMapping("/{userId:\\d+}")
+    @PermissionCheck("home:member:delete")
     public ResponseEntity<HmsResponseBody<Void>> removeMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
@@ -84,6 +89,7 @@ public class HomeMemberController {
     }
 
     @GetMapping("/{userId:\\d+}")
+    @PermissionCheck("home:member:view")
     public ResponseEntity<HmsResponseBody<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = homeMemberService.getMemberWithRole(homeId, userId);
 
@@ -91,6 +97,7 @@ public class HomeMemberController {
     }
 
     @PutMapping("/{userId:\\d+}")
+    @PermissionCheck("home:member:edit")
     public ResponseEntity<HmsResponseBody<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
         Member member = memberMapper.toModel(memberInfoUpdateRequest);
         member.setHomeId(homeId);
@@ -106,20 +113,30 @@ public class HomeMemberController {
     }
 
     @PutMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponseBody<Void>> assignRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
+    @PermissionCheck("home:member:edit")
+    public ResponseEntity<HmsResponseBody<Void>> assignRoleForMember(@RequestAttribute User userInfo, @RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
-        homeMemberService.assignRoleForMember(member, memberRoleRequest.roleId());
+        try {
+            homeMemberService.assignRoleForMember(userInfo, member, memberRoleRequest.roleId(), false);
+        } catch (IllegalAssignRoleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HmsResponseBody.error(e.getErrorCodeEnum()));
+        }
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @DeleteMapping("/{userId:\\d+}/role")
-    public ResponseEntity<HmsResponseBody<Void>> removeRoleForMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
+    @PermissionCheck("home:member:edit")
+    public ResponseEntity<HmsResponseBody<Void>> removeRoleForMember(@RequestAttribute User userInfo, @RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
-        homeMemberService.removeRoleForMember(member);
+        try {
+            homeMemberService.removeRoleForMember(userInfo, member);
+        } catch (IllegalAssignRoleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HmsResponseBody.error(e.getErrorCodeEnum()));
+        }
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 }

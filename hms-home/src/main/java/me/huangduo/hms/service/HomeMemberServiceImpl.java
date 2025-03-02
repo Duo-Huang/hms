@@ -9,10 +9,7 @@ import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.enums.SystemRoleEnum;
 import me.huangduo.hms.events.InvitationEvent;
 import me.huangduo.hms.events.NotificationEvent;
-import me.huangduo.hms.exceptions.BusinessException;
-import me.huangduo.hms.exceptions.HomeMemberAlreadyExistsException;
-import me.huangduo.hms.exceptions.InvitationCodeExpiredException;
-import me.huangduo.hms.exceptions.RecordNotFoundException;
+import me.huangduo.hms.exceptions.*;
 import me.huangduo.hms.mapper.HomeMapper;
 import me.huangduo.hms.mapper.MemberMapper;
 import me.huangduo.hms.model.*;
@@ -108,7 +105,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
         if (Objects.isNull(homeMemberRole)) {
             log.warn("The member is not assigned a default home member role for this new member.");
         } else {
-            assignRoleForMember(Member.builder().homeId(inviterHomeId).userId(invitee.getUserId()).build(), homeMemberRole.getRoleId());
+            assignRoleForMember(invitee, Member.builder().homeId(inviterHomeId).userId(invitee.getUserId()).build(), homeMemberRole.getRoleId(), true);
         }
 
         String message = """
@@ -239,9 +236,13 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException, IllegalArgumentException {
+    public void assignRoleForMember(User currentUser, Member member, Integer roleId, boolean isInitialAssign) throws RecordNotFoundException, IllegalArgumentException, IllegalAssignRoleException {
         if (member == null) {
             throw new IllegalArgumentException("user can not be null.");
+        }
+
+        if (!isInitialAssign && Objects.equals(currentUser.getUserId(), member.getUserId())) {
+            throw new IllegalAssignRoleException();
         }
 
         checkService.checkRoleAccess(member.getHomeId(), roleId, false);
@@ -258,7 +259,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
     }
 
     @Override
-    public void removeRoleForMember(Member member) throws RecordNotFoundException, IllegalArgumentException {
-        assignRoleForMember(member, null);
+    public void removeRoleForMember(User currentUser, Member member) throws RecordNotFoundException, IllegalArgumentException {
+        assignRoleForMember(currentUser, member, null, false);
     }
 }

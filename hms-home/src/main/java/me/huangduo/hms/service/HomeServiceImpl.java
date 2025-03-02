@@ -73,7 +73,7 @@ public class HomeServiceImpl implements HomeService {
             throw e;
         }
 
-        homeMemberService.assignRoleForMember(member, adminRole.getRoleId());
+        homeMemberService.assignRoleForMember(user, member, adminRole.getRoleId(), true);
     }
 
     @Override

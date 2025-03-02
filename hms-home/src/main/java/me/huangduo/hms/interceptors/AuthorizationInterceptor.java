@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/*
+* 家庭级别的访问控制
+* */
 @Component
 @Slf4j
 public class AuthorizationInterceptor implements HandlerInterceptor {

@@ -2,6 +2,7 @@ package me.huangduo.hms.controller;
 
 
 import jakarta.validation.Valid;
+import me.huangduo.hms.annotations.PermissionCheck;
 import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.model.Home;
 import me.huangduo.hms.model.User;
@@ -47,6 +48,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{homeId:\\d+}")
+    @PermissionCheck("home:edit")
     public ResponseEntity<HmsResponseBody<Void>> updateHomeInfo(@ValidId @PathVariable Integer homeId, @Valid @RequestBody HomeCreateOrUpdateRequest homeCreateOrUpdateRequest) {
         Home home = homeMapper.toModel(homeCreateOrUpdateRequest);
         home.setHomeId(homeId);
@@ -55,6 +57,7 @@ public class HomeController {
     }
 
     @DeleteMapping("/{homeId:\\d+}")
+    @PermissionCheck("home:delete")
     public ResponseEntity<HmsResponseBody<Void>> deleteHome(@ValidId @PathVariable Integer homeId) {
         homeService.deleteHome(homeId);
         return ResponseEntity.ok(HmsResponseBody.success());

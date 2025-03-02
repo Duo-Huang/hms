@@ -1,6 +1,7 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
+import me.huangduo.hms.annotations.PermissionCheck;
 import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.model.HomeRole;
 import me.huangduo.hms.dto.request.RolePermissionUpdateRequest;
@@ -34,6 +35,7 @@ public class HomeRoleController {
     }
 
     @PostMapping
+    @PermissionCheck("home:role:create")
     public ResponseEntity<HmsResponseBody<Void>> createHomeRole(@RequestAttribute Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateRequest) {
         HomeRole role = roleMapper.toModel(roleCreateRequest);
         role.setHomeId(homeId);
@@ -46,12 +48,14 @@ public class HomeRoleController {
     }
 
     @GetMapping
+    @PermissionCheck("home:role:view")
     public ResponseEntity<HmsResponseBody<List<RoleResponse>>> getAvailableRolesFromHome(@RequestAttribute Integer homeId) {
         List<HomeRole> roles = homeRoleService.getAvailableRolesFromHome(homeId);
         return ResponseEntity.ok(HmsResponseBody.success(roles.stream().map(roleMapper::toResponse).toList()));
     }
 
     @PatchMapping("/{roleId:\\d+}")
+    @PermissionCheck("home:role:edit")
     public ResponseEntity<HmsResponseBody<Void>> updateHomeRoleInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId, @Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         HomeRole role = roleMapper.toModel(roleUpdateRequest);
         role.setHomeId(homeId);
@@ -61,18 +65,21 @@ public class HomeRoleController {
     }
 
     @DeleteMapping("/{roleId:\\d+}")
+    @PermissionCheck("home:role:delete")
     public ResponseEntity<HmsResponseBody<Void>> deleteHomeRole(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         homeRoleService.deleteHomeRole(homeId, roleId);
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 
     @GetMapping("/{roleId:\\d+}")
+    @PermissionCheck("home:role:view")
     public ResponseEntity<HmsResponseBody<RoleWithPermissionResponse>> getHomeRoleWithPermissions(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer roleId) {
         HomeRole role = homeRoleService.getHomeRoleWithPermissions(homeId, roleId);
         return ResponseEntity.ok(HmsResponseBody.success(roleMapper.toResponseWithPermission(role)));
     }
 
     @PutMapping("/{roleId:\\d+}/permissions")
+    @PermissionCheck("home:role:edit")
     public ResponseEntity<HmsResponseBody<Void>> updatePermissionsForHomeRole(@ValidId @PathVariable Integer roleId, @RequestAttribute Integer homeId, @Valid @RequestBody RolePermissionUpdateRequest permissionsBody) {
         homeRoleService.updatePermissionsForHomeRole(homeId, roleId, permissionsBody.permissionIds());
         return ResponseEntity.ok(HmsResponseBody.success());

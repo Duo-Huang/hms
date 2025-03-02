@@ -1,5 +1,6 @@
 package me.huangduo.hms.service;
 
+import me.huangduo.hms.exceptions.IllegalAssignRoleException;
 import me.huangduo.hms.model.Home;
 import me.huangduo.hms.model.Member;
 import me.huangduo.hms.model.User;
@@ -23,11 +24,11 @@ public interface HomeMemberService {
 
     void updateMemberInfo(Member member) throws RecordNotFoundException; // 修改家庭成员的信息, 不是user的信息
 
-    List<Home> getHomesForUser(User user) throws IllegalArgumentException; // TODO: pageable
+    List<Home> getHomesForUser(User currentUser) throws IllegalArgumentException; // TODO: pageable
 
     List<Member> getMembersWithRoles(Integer homeId) throws RecordNotFoundException; // TODO: pageable
 
-    void assignRoleForMember(Member member, Integer roleId) throws RecordNotFoundException, IllegalArgumentException;
+    void assignRoleForMember(User currentUser, Member member, Integer roleId, boolean isInitialAssign) throws RecordNotFoundException, IllegalArgumentException, IllegalAssignRoleException;
 
-    void removeRoleForMember(Member member) throws RecordNotFoundException, IllegalArgumentException;
+    void removeRoleForMember(User currentUser, Member member) throws RecordNotFoundException, IllegalArgumentException;
 }

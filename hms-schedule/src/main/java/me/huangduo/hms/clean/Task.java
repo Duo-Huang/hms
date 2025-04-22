@@ -15,7 +15,6 @@ public class Task {
 
     @Scheduled(cron = "0 0 0 * * WED")
     public void run() {
-        System.out.println(123);
         cleanService.clean();
     }
 }

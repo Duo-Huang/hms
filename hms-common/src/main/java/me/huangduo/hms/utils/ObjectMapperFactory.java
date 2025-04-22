@@ -37,6 +37,7 @@ public class ObjectMapperFactory {
 
         objectMapper.registerModule(javaTimeModule);
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//        objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true); // 设置枚举序列化方式
         // 设置全局时区
         objectMapper.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         return objectMapper;

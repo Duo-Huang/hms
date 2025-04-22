@@ -39,11 +39,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void run(String... args) throws Exception {
-        registerEventHandlers(eventHandlerService);
+        registerEventHandlers();
         sinksManager.startHeartbeat();
     }
 
-    private void registerEventHandlers(EventHandlerService eventHandlerService) {
+    private void registerEventHandlers() {
         eventHandlerService.registerEventHandler(InvitationEvent.class, this::handleInvitationEvent);
         eventHandlerService.registerEventHandler(NotificationEvent.class, this::handleNotificationEvent);
         eventHandlerService.registerEventHandler(BroadcastEvent.class, evt -> sinksManager.sendBroadcastMessage(evt.getMessage()));

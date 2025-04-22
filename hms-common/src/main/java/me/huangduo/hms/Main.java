@@ -11,9 +11,7 @@ import me.huangduo.hms.model.User;
 import me.huangduo.hms.service.TemplateRenderServiceImpl;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws JsonProcessingException {
@@ -55,5 +53,58 @@ public class Main {
 
         System.out.println(s);
 
+        List<? extends Animal> animals = new ArrayList<>(); // readonly
+
+//        Animal animal = animals.get(0);
+        List<? super Dog> dogs = new ArrayList<Animal>(); // writable
+
+
+        dogs.add(new Dog("dog"));
+
+        test(1, 2, 3);
+
+    }
+
+    public static void test(int a, int... ints) {
+        System.out.println("First params is: " + a);
+        for (int anInt : ints) {
+            System.out.println(anInt);
+        }
+    }
+}
+
+class Dog extends Animal {
+    public Dog(String name) {
+        super(name);
+    }
+
+    public void eat() {
+        System.out.println("dog eat");
+    }
+}
+
+class Cat extends Animal {
+    public Cat(String name) {
+        super(name);
+    }
+
+    public void eat() {
+        System.out.println("cat eat");
+    }
+}
+
+class Animal {
+    private String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

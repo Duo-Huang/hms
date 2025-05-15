@@ -5,7 +5,7 @@ services:
         user: mysql
         environment:
             - 'TZ=Asia/Shanghai'
-            - 'MYSQL_DATABASE=hms_dev' # keep same as setup-dev.sql
+            - 'MYSQL_DATABASE=hms_dev' # keep same as setup-dev.sql, spring docker compose needs it !!!
             #      - 'MYSQL_PASSWORD=1234'
             - 'MYSQL_ROOT_PASSWORD=12345'
         #      - 'MYSQL_USER=hmsuser' # keep same as setup-dev.sql

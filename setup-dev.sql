@@ -14,7 +14,7 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- create migration user
-SET @create_migration_user_sql = CONCAT('CREATE USER IF NOT EXISTS ''', @migration_user, '''@''%'' IDENTIFIED BY ''', @migration_password, ''';');
+SET @create_migration_user_sql = CONCAT('CREATE USER ''', @migration_user, '''@''%'' IDENTIFIED BY ''', @migration_password, ''';');
 PREPARE stmt FROM @create_migration_user_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
@@ -25,7 +25,7 @@ PREPARE stmt FROM @grant_privileges_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- grant SUPER access to create trigger
+-- grant SUPER access for migration user to create trigger
 SET @grant_super_sql = CONCAT('GRANT SUPER ON *.* TO ''', @migration_user, '''@''%''');
 PREPARE stmt FROM @grant_super_sql;
 EXECUTE stmt;
@@ -41,11 +41,10 @@ FLUSH PRIVILEGES;
 
 
 -- create app user
-SET @create_app_user_sql = CONCAT('CREATE USER IF NOT EXISTS ''', @app_user, '''@''%'' IDENTIFIED BY ''', @app_password, ''';');
+SET @create_app_user_sql = CONCAT('CREATE USER ''', @app_user, '''@''%'' IDENTIFIED BY ''', @app_password, ''';');
 PREPARE stmt FROM @create_app_user_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-
 
 -- grant access
 SET @grant_app_privileges_sql = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE ON `', @db_name, '`.* TO ''', @app_user, '''@''%''');

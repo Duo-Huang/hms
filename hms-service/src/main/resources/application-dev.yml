@@ -2,9 +2,12 @@ server:
     port: 8081
 
 spring:
+    docker:
+        compose:
+            enabled: true
     datasource:
         url: "jdbc:mysql://localhost:3308/hms_dev"
-        username: "hmsuser-dev"
+        username: "hmsuser"
         password: "hms.dev.123"
     flyway:
         enabled: true

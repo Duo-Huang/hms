@@ -33,11 +33,11 @@ DEALLOCATE PREPARE stmt;
 
 FLUSH PRIVILEGES;
 
--- drop app user to remove all default permissions
--- SET @drop_app_user_sql = CONCAT('DROP USER IF EXISTS ''', @app_user, '''@''%'';');
--- PREPARE stmt FROM @drop_app_user_sql;
--- EXECUTE stmt;
--- DEALLOCATE PREPARE stmt;
+-- drop app user to remove all default permissions, only for dev, spring-docker-compose maybe created the app user in compose-file
+SET @drop_app_user_sql = CONCAT('DROP USER IF EXISTS ''', @app_user, '''@''%'';');
+PREPARE stmt FROM @drop_app_user_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 
 -- create app user

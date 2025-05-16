@@ -17,6 +17,9 @@ spring:
     web:
         resources:
             add-mappings: false
+    docker:
+        compose:
+            enabled: false
 
 app:
     jwt-issuer: hms

@@ -9,7 +9,7 @@ public record HmsResponseBody<T>(int code, String message, T data) {
     }
 
     public static <T> HmsResponseBody<T> success() {
-        return HmsResponseBody.success(null);
+        return success(null);
     }
 
     public static <T> HmsResponseBody<T> error(ErrorCodeEnum errorCodeEnum, T data) {
@@ -17,7 +17,7 @@ public record HmsResponseBody<T>(int code, String message, T data) {
     }
 
     public static <T> HmsResponseBody<T> error(ErrorCodeEnum errorCodeEnum) {
-        return HmsResponseBody.error(errorCodeEnum, null);
+        return error(errorCodeEnum, null);
     }
 
     public static <T> HmsResponseBody<T> error(int code, String message, T data) {

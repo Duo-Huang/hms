@@ -1,11 +1,11 @@
 package me.huangduo.hms.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import me.huangduo.hms.annotations.AtLeastOneNotNull;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 
-@AtLeastOneNotNull(message = "homeName or homeDescription must be provided.")
 public record HomeCreateOrUpdateRequest(
+        @NotBlank
         @Size(min = 1, max = 16, message = "The length of the home name must be between 1 and 16.")
         String homeName,
 

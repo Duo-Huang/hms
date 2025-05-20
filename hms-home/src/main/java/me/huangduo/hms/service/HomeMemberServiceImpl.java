@@ -128,7 +128,7 @@ public class HomeMemberServiceImpl implements HomeMemberService {
 
         if (invatationMessage == null) {
             log.error("Can not found invitation message, invitationCode: {}", invitationCode);
-            throw new RecordNotFoundException(ErrorCodeEnum.HOME_ERROR_2016);
+            throw new RecordNotFoundException(ErrorCodeEnum.HOME_ERROR_216);
         }
 
         if (invatationMessage.getExpiration().isBefore(LocalDateTime.now())) {

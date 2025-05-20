@@ -14,6 +14,6 @@ public record RoleUpdateRequest(
 ) implements HmsRequestBody {
     @Override
     public ErrorCodeEnum getErrorCode() {
-        return ErrorCodeEnum.HOME_ERROR_2012;
+        return ErrorCodeEnum.HOME_ERROR_212;
     }
 }

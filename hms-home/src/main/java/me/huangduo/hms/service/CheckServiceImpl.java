@@ -57,7 +57,7 @@ public class CheckServiceImpl implements CheckService {
         }
 
         if (!isRoleInHome && !isSystemRole) {
-            BusinessException e = new RecordNotFoundException(ErrorCodeEnum.HOME_ERROR_2011);
+            BusinessException e = new RecordNotFoundException(ErrorCodeEnum.HOME_ERROR_211);
             log.error("This role does not exists in this home and it is not a system role.", e);
             throw e;
         }

@@ -31,7 +31,7 @@ public class PermissionCheckAspect {
     public Object checkPermission(ProceedingJoinPoint joinPoint, PermissionCheck permissionCheck) throws Throwable {
         String[] requiredPermissions = permissionCheck.value();
         if (!hasPermission(requiredPermissions)) {
-            throw new AccessDeniedException(ErrorCodeEnum.HOME_ERROR_2019);
+            throw new AccessDeniedException(ErrorCodeEnum.HOME_ERROR_219);
         }
         return joinPoint.proceed();
     }

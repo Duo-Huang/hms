@@ -137,7 +137,7 @@ create table revoked_tokens
     expiration datetime                            not null comment 'expiration time',
     user_id    int                                 not null comment 'foreign key for users',
     created_at datetime  default CURRENT_TIMESTAMP not null comment 'created time',
-    updated_at timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
+    updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `jti-unique`
         unique (jti),
     constraint `revoked_tokens-users-user_id-fk`

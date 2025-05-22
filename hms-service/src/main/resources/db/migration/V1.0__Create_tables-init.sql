@@ -2,8 +2,8 @@ create table homes
 (
     home_id          int auto_increment comment 'primary key'
         primary key,
-    home_name        varchar(60)                        not null comment 'home name',
-    home_description varchar(600)                       null comment 'home description',
+    home_name        varchar(30)                        not null comment 'home name',
+    home_description varchar(60)                       null comment 'home description',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time'
 )
@@ -14,7 +14,7 @@ create table messages
     message_id      int auto_increment comment 'primary key'
         primary key,
     message_type    tinyint unsigned                   not null comment '0 - notification, 1 - invitation msg...',
-    message_content varchar(600)                       not null comment 'message content',
+    message_content varchar(500)                       not null comment 'message content',
     payload         json                               not null comment 'extra info',
     expiration      datetime                           not null comment 'expiration time',
     created_at      datetime default CURRENT_TIMESTAMP not null comment 'created time',
@@ -26,8 +26,8 @@ create table permissions
 (
     permission_id          int auto_increment comment 'primary key'
         primary key,
-    permission_code        varchar(128)                       not null comment 'format: {module}:{function}:{action}, for example: financial:account:edit; action must be create/edit/view/delete',
-    permission_description varchar(128)                       not null comment 'permission description',
+    permission_code        varchar(200)                       not null comment 'format: {module}:{function}:{action}, for example: financial:account:edit; action must be create/edit/view/delete',
+    permission_description varchar(300)                       not null comment 'permission description',
     created_at             datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at             datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `permissions_code-unique`
@@ -40,8 +40,8 @@ create table roles
     role_id          int auto_increment comment 'primary key'
         primary key,
     role_type        tinyint unsigned                   not null comment 'system role(0) or custom role(1)',
-    role_name        varchar(60)                        not null comment 'role name',
-    role_description varchar(600)                       null comment 'role description',
+    role_name        varchar(30)                        not null comment 'role name',
+    role_description varchar(60)                       null comment 'role description',
     home_id          int                                null comment 'foreign key for homes',
     created_at       datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
@@ -78,8 +78,8 @@ create table users
     user_id    int auto_increment comment 'primary key'
         primary key,
     username   varchar(30)                        not null comment 'username for login',
-    password   varchar(40)                        not null comment 'password for login',
-    nickname   varchar(60)                        null comment 'The full name used for display',
+    password   varchar(30)                        not null comment 'password for login',
+    nickname   varchar(30)                        null comment 'The full name used for display',
     created_at datetime default CURRENT_TIMESTAMP not null comment 'create time',
     updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'update time',
     constraint `username-unique`
@@ -94,7 +94,7 @@ create table home_member_roles
     user_id     int                                not null comment 'foreign key for users',
     home_id     int                                not null comment 'foreign key for homes',
     role_id     int                                null comment 'foreign key for roles',
-    member_name varchar(60)                        null comment 'home member name',
+    member_name varchar(30)                        null comment 'home member name',
     created_at  datetime default CURRENT_TIMESTAMP not null comment 'created time',
     updated_at  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updated time',
     constraint `user_id-home_id-unique`

@@ -8,11 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserMapper {
-
-    UserEntity toEntity(User user);
-
-    User toModel(UserEntity userEntity);
+public interface UserMapper extends BaseMapper<UserEntity, User> {
 
     User toModel(UserRegistrationRequest userRegistrationRequest);
 

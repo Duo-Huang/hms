@@ -54,7 +54,7 @@ public class SinksManager {
 
     public void sendBroadcastMessage(Message message) {
         if (userSinks.isEmpty()) {
-            log.info("No any sinks found");
+            log.debug("No any sinks found");
             return;
         }
 

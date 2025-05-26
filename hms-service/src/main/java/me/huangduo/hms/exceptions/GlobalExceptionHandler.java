@@ -34,7 +34,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
      * 400 - Controller层请求参数校验, MethodArgumentNotValidException 为Spring 校验器抛出, 用于校验body
      * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<HmsResponseBody<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) throws NoSuchFieldException {
+    public ResponseEntity<HmsResponseBody<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             if (error instanceof FieldError fieldError) {

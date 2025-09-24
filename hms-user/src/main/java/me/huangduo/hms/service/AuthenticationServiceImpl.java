@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.huangduo.hms.config.AppConfig;
 import me.huangduo.hms.dao.RevokedUserTokensDao;
 import me.huangduo.hms.dao.entity.RevokedUserTokenEntity;
+import me.huangduo.hms.exceptions.AuthenticationException;
 import me.huangduo.hms.model.User;
 import me.huangduo.hms.model.UserToken;
-import me.huangduo.hms.exceptions.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -46,33 +46,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Date now = new Date(System.currentTimeMillis());
 
-        return Jwts.builder()
-                .id(jti)
-                .claims(claims)
-                .subject(user.getUsername())
-                .issuer(appConfig.getJwtIssuer())
-                .issuedAt(now)
-                .notBefore(now)
-                .expiration(new Date(System.currentTimeMillis() + appConfig.getJwtTokenExpiredTime()))
-                .signWith(key)
-                .compact();
+        return Jwts.builder().id(jti).claims(claims).subject(user.getUsername()).issuer(appConfig.getJwtIssuer()).issuedAt(now).notBefore(now).expiration(new Date(System.currentTimeMillis() + appConfig.getJwtTokenExpiredTime())).signWith(key).compact();
     }
 
-    @Override
-    public boolean validateToken(UserToken userToken) throws AuthenticationException {
-        return userToken.issuedAt().isBefore(LocalDateTime.now()) && userToken.notBefore().isBefore(LocalDateTime.now()) && userToken.issuer().equals(appConfig.getJwtIssuer()) && userToken.expiration().isAfter(LocalDateTime.now());
-    }
 
     @Override
     public UserToken parseToken(String token) {
-        Claims claims = extractAllClaims(token);
+        Claims claims = null;
+
+        try {
+            claims = Jwts.parser().verifyWith(key).requireIssuer(appConfig.getJwtIssuer()).build().parseSignedClaims(token).getPayload();
+        } catch (JwtException e) {
+            throw new AuthenticationException();
+        }
+
         Integer userId = (Integer) claims.get("userId");
 
         LocalDateTime issuedAt = claims.getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime notBefore = claims.getNotBefore().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime expiration = claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        return new UserToken(claims.getId(), userId, claims.getSubject(), claims.getIssuer(), issuedAt, notBefore, expiration);
+        UserToken userToken = new UserToken(claims.getId(), userId, claims.getSubject(), claims.getIssuer(), issuedAt, notBefore, expiration);
+
+        if (!validateToken(userToken)) {
+            throw new AuthenticationException();
+        }
+
+        return userToken;
     }
 
     @Override
@@ -83,20 +83,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void revokeToken(UserToken userToken) {
-        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder()
-                .jti(userToken.jti())
-                .expiration(userToken.expiration())
-                .userId(userToken.userId())
-                .build();
+        RevokedUserTokenEntity revokedUserTokenEntity = RevokedUserTokenEntity.builder().jti(userToken.jti()).expiration(userToken.expiration()).userId(userToken.userId()).build();
         revokedUserTokensDao.create(revokedUserTokenEntity);
     }
 
-    private Claims extractAllClaims(String token) {
-        try {
-            return Jwts.parser().verifyWith(key).requireIssuer(appConfig.getJwtIssuer()).build().parseSignedClaims(token).getPayload();
-        } catch (JwtException e) {
-            throw new AuthenticationException();
-        }
+    private boolean validateToken(UserToken userToken) throws AuthenticationException {
+        return userToken.issuedAt().isBefore(LocalDateTime.now()) && userToken.notBefore().isBefore(LocalDateTime.now()) && userToken.issuer().equals(appConfig.getJwtIssuer()) && userToken.expiration().isAfter(LocalDateTime.now());
     }
 
 }

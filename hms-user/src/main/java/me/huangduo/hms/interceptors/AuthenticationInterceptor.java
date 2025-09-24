@@ -49,14 +49,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 throw new AuthenticationException();
             }
 
-            User userInfo = null;
+            User userInfo = userService.getProfile(userId);
 
-            if (Objects.isNull(userInfo = userService.getProfile(userId))) {
-                log.error("Current user is not exists, userId={}", userId);
-                throw new AuthenticationException();
-            }
-
-            if (!authService.isTokenRevoked(userToken) && authService.validateToken(userToken)) {
+            if (!authService.isTokenRevoked(userToken)) {
                 request.setAttribute("userToken", userToken);
                 request.setAttribute("userInfo", userInfo);
                 MDC.put("userId", String.valueOf(userId));

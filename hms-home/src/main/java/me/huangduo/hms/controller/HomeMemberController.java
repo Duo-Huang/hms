@@ -1,7 +1,7 @@
 package me.huangduo.hms.controller;
 
 import jakarta.validation.Valid;
-import me.huangduo.hms.annotations.PermissionCheck;
+import me.huangduo.hms.annotations.RequirePermissions;
 import me.huangduo.hms.annotations.ValidId;
 import me.huangduo.hms.dto.request.MemberInfoUpdateRequest;
 import me.huangduo.hms.dto.request.MemberInvitationRequest;
@@ -46,7 +46,7 @@ public class HomeMemberController {
     }
 
     @PostMapping("/invite")
-    @PermissionCheck("home:member:invite")
+    @RequirePermissions("home:member:invite")
     public ResponseEntity<HmsResponseBody<Void>> inviteMember(@RequestAttribute Integer homeId, @RequestAttribute User userInfo, @Valid @RequestBody MemberInvitationRequest memberInvitationRequest) {
         User user = new User();
         user.setUsername(memberInvitationRequest.username());
@@ -59,7 +59,7 @@ public class HomeMemberController {
     }
 
     @GetMapping
-    @PermissionCheck("home:member:view")
+    @RequirePermissions("home:member:view")
     public ResponseEntity<HmsResponseBody<List<MemberResponse>>> getMembersForHome(@RequestAttribute Integer homeId) {
         List<Member> members = homeMemberService.getMembersWithRoles(homeId);
 
@@ -79,7 +79,7 @@ public class HomeMemberController {
     }
 
     @DeleteMapping("/{userId:\\d+}")
-    @PermissionCheck("home:member:delete")
+    @RequirePermissions("home:member:delete")
     public ResponseEntity<HmsResponseBody<Void>> removeMember(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);
@@ -89,7 +89,7 @@ public class HomeMemberController {
     }
 
     @GetMapping("/{userId:\\d+}")
-    @PermissionCheck("home:member:view")
+    @RequirePermissions("home:member:view")
     public ResponseEntity<HmsResponseBody<MemberResponse>> getMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = homeMemberService.getMemberWithRole(homeId, userId);
 
@@ -97,7 +97,7 @@ public class HomeMemberController {
     }
 
     @PutMapping("/{userId:\\d+}")
-    @PermissionCheck("home:member:edit")
+    @RequirePermissions("home:member:edit")
     public ResponseEntity<HmsResponseBody<Void>> updateMemberInfo(@RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
         Member member = memberMapper.toModel(memberInfoUpdateRequest);
         member.setHomeId(homeId);
@@ -113,7 +113,7 @@ public class HomeMemberController {
     }
 
     @PutMapping("/{userId:\\d+}/role")
-    @PermissionCheck("home:member:edit")
+    @RequirePermissions("home:member:edit")
     public ResponseEntity<HmsResponseBody<Void>> assignRoleForMember(@RequestAttribute User userInfo, @RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId, @Valid @RequestBody MemberRoleRequest memberRoleRequest) {
         Member member = new Member();
         member.setHomeId(homeId);
@@ -127,7 +127,7 @@ public class HomeMemberController {
     }
 
     @DeleteMapping("/{userId:\\d+}/role")
-    @PermissionCheck("home:member:edit")
+    @RequirePermissions("home:member:edit")
     public ResponseEntity<HmsResponseBody<Void>> removeRoleForMember(@RequestAttribute User userInfo, @RequestAttribute Integer homeId, @ValidId @PathVariable Integer userId) {
         Member member = new Member();
         member.setHomeId(homeId);

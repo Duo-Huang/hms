@@ -1,5 +1,5 @@
 # 开启spring-docker-compose后, spring默认使用以下mysql的环境变量来连接数据库, app以及flyway连接数据库的配置会失效(spring.datasource/spring.flyway)
-# spring默认只拾取一个唯一的用户名密码组合, 优先级是: MYSQL_USER+MYSQL_PASSWORD(全配置的情况下) > root + MYSQL_ROOT_PASSWORD(前者补全, 且有MYSQL_ROOT_PASSWORD)
+# spring默认只拾取一个唯一的用户名密码组合, 优先级是: MYSQL_USER+MYSQL_PASSWORD(全配置的情况下) > root + MYSQL_ROOT_PASSWORD(前者不完整, 且有MYSQL_ROOT_PASSWORD)
 # 要为app和migration使用不同user, 必须关闭spring-docker-compose, 因为它只使用一个user, 即MYSQL_USER或者root
 # 而一旦选择了MYSQL_USER启动应用, migration将无权限运行, 除非在数据库启动时给MYSQL_USER分配相关权限, 简单起见, 本地开发直接让spring使用root, 参考前面的方法只设置MYSQL_ROOT_PASSWORD
 # 提前测试不同user的权限, 避免生产分离部署模式下的权限问题

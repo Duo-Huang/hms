@@ -1,7 +1,7 @@
 package me.huangduo.hms.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
-import me.huangduo.hms.annotations.PermissionCheck;
+import me.huangduo.hms.annotations.RequirePermissions;
 import me.huangduo.hms.enums.ErrorCodeEnum;
 import me.huangduo.hms.exceptions.AccessDeniedException;
 import me.huangduo.hms.model.HomeRole;
@@ -27,9 +27,9 @@ public class PermissionCheckAspect {
         this.homeRoleService = homeRoleService;
     }
 
-    @Around("@annotation(permissionCheck)")
-    public Object checkPermission(ProceedingJoinPoint joinPoint, PermissionCheck permissionCheck) throws Throwable {
-        String[] requiredPermissions = permissionCheck.value();
+    @Around("@annotation(requirePermissions)")
+    public Object checkPermission(ProceedingJoinPoint joinPoint, RequirePermissions requirePermissions) throws Throwable {
+        String[] requiredPermissions = requirePermissions.value();
         if (!hasPermission(requiredPermissions)) {
             throw new AccessDeniedException(ErrorCodeEnum.HOME_ERROR_219);
         }

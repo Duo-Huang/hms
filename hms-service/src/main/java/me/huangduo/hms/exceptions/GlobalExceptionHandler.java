@@ -116,7 +116,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<HmsResponseBody<Void>> handleBusinessException(BusinessException e) {
         log.error("A business error occurred.", e);
-        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(ErrorCodeEnum.SYSTEM_ERROR_004));
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(HmsResponseBody.error(e.getErrorCodeEnum()));
     }
 
     /*

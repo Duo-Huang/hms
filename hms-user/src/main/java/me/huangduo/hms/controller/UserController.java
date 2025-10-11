@@ -67,9 +67,7 @@ public class UserController {
         try {
             userService.changePassword(userInfo, userToken, userPasswordUpdateRequest.oldPassword(), userPasswordUpdateRequest.newPassword());
             return ResponseEntity.ok(HmsResponseBody.success());
-        } catch (DuplicatedPasswordException e) {
-            return ResponseEntity.badRequest().body(HmsResponseBody.error(e.getErrorCodeEnum()));
-        } catch (IllegalArgumentException e) {
+        }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(HmsResponseBody.error(ErrorCodeEnum.USER_ERROR_108));
         }
     }

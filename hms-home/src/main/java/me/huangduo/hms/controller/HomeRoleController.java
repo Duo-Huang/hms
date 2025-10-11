@@ -35,7 +35,7 @@ public class HomeRoleController {
     }
 
     @PostMapping
-    @RequirePermissions("home:role:create")
+    @RequirePermissions("home:role:create") // 在这个home中的member需要这个角色,
     public ResponseEntity<HmsResponseBody<Void>> createHomeRole(@RequestAttribute Integer homeId, @Valid @RequestBody RoleCreateRequest roleCreateRequest) {
         HomeRole role = roleMapper.toModel(roleCreateRequest);
         role.setHomeId(homeId);

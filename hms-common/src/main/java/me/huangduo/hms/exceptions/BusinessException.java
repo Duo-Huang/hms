@@ -7,7 +7,7 @@ import me.huangduo.hms.enums.ErrorCodeEnum;
 public abstract class BusinessException extends RuntimeException {
     private final ErrorCodeEnum errorCodeEnum;
 
-    public BusinessException(ErrorCodeEnum errorCodeEnum) {
+    protected BusinessException(ErrorCodeEnum errorCodeEnum) {
         this.errorCodeEnum = errorCodeEnum;
     }
 }

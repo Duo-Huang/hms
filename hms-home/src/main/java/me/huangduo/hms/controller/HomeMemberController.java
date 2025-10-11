@@ -118,11 +118,7 @@ public class HomeMemberController {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
-        try {
-            homeMemberService.assignRoleForMember(userInfo, member, memberRoleRequest.roleId(), false);
-        } catch (IllegalAssignRoleException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HmsResponseBody.error(e.getErrorCodeEnum()));
-        }
+        homeMemberService.assignRoleForMember(userInfo, member, memberRoleRequest.roleId(), false);
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 
@@ -132,11 +128,7 @@ public class HomeMemberController {
         Member member = new Member();
         member.setHomeId(homeId);
         member.setUserId(userId);
-        try {
-            homeMemberService.removeRoleForMember(userInfo, member);
-        } catch (IllegalAssignRoleException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HmsResponseBody.error(e.getErrorCodeEnum()));
-        }
+        homeMemberService.removeRoleForMember(userInfo, member);
         return ResponseEntity.ok(HmsResponseBody.success());
     }
 }
